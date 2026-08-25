@@ -1,0 +1,78 @@
+name: Deploy to Cloudflare
+
+# Master'ga push bo'lganda frontend (Pages) va API (Workers) deploy qilinadi.
+# Faqat qo'lda ishga tushirish ham mumkin (workflow_dispatch).
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Bir vaqtda bitta deploy — ketma-ket push'lar navbatga turadi.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # ----- Frontend -> Cloudflare Pages (xavfsiz: statik, bazaga tegmaydi) -----
+  deploy-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+
+      - name: Build web
+        env:
+          # API manzili — repo Variables'da VITE_API_URL sifatida saqlanadi.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+        run: npm run build --workspace=apps/web
+
+      - name: Deploy to Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy apps/web/dist --project-name=energetika-institute --branch=master
+
+  # ----- API -> Cloudflare Workers -----
+  # DIQQAT: avval migratsiya, keyin kod deploy — yangi kod staffCount/isAdvisory
+  # ustunlarini kutadi. Aks holda GET /api/structure 500 qaytaradi.
+  # Bir martalik shart: production baza baseline qilingan bo'lsin (README ga qarang).
+  deploy-api:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run db:generate
+
+      - name: Apply DB migrations (avval!)
+        working-directory: packages/db
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: apps/api
+          command: deploy

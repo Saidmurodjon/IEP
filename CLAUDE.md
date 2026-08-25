@@ -112,7 +112,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 6 | Kontakt formasi email yubormaydi, faqat bazaga yozadi | 🟠 Ochiq |
 | 7 | SSR/prerender va sitemap yo'q — SEO nolga teng | 🟠 Ochiq |
 | 8 | ~~Bazada faqat demo ma'lumot~~ — tuzilma rasmiy 2025 hujjatiga ko'chirildi (kod tayyor, lokal test bazada tasdiqlangan). Production seed foydalanuvchi tasdig'ini kutmoqda; demo nashrlar hali qolgan | 🟠 Qisman |
-| 9 | Cloudflare Pages GitHub'ga ulanmagan — deploy qo'lda | 🟡 Ochiq |
+| 9 | ~~Cloudflare Pages GitHub'ga ulanmagan~~ — GitHub Actions workflow yozildi (`.github/workflows/deploy.yml`), sozlash: `docs/deploy.md`. Secret'lar + baseline foydalanuvchi tomonidan kutilmoqda | 🟠 Qisman |
 | 10 | Test yo'q, CI yo'q | 🟡 Ochiq |
 | 11 | ~~`apps/api/src/lib/db.ts` — `PrismaNeon` HTTP drayveri bilan noto'g'ri ishlatilgan~~ — `PrismaNeonHTTP` ga o'tkazildi, haqiqiy Neon bilan tekshirildi | ✅ Tuzatildi |
 

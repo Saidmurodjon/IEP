@@ -13,7 +13,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-25
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 5 ta kommit: auth, lokal-fix, UI, rasmlar, kontent)
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 6 ta kommit; remote hali `dfc4167` — eski kod)
 
 ### Nima ishlaydi
 - **Lokal muhit to'liq ishlaydi:** `wrangler dev` (API :3000, haqiqiy Workers runtime) + `vite` (web :5173).
@@ -66,6 +66,29 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-25 · GitHub Actions deploy pipeline (sozlanmagan)
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `ci: add GitHub Actions deploy to Cloudflare (Pages + Workers)`
+
+Muammo #9 (GitHub orqali deploy). Foydalanuvchi so'radi.
+
+- `.github/workflows/deploy.yml` — master'ga push → 2 job: `deploy-web` (Pages, statik, xavfsiz)
+  va `deploy-api` (avval `prisma migrate deploy`, keyin `wrangler deploy`). `cloudflare/wrangler-action@v3`.
+- `docs/deploy.md` — to'liq sozlash: CF token, GitHub secret/variable, Worker secret, **bir martalik baseline**
+  (`migrate resolve --applied 0_init`, chunki baza db push bilan yaratilgan), deploy tartibi, seed qo'lda.
+
+**BAJARILMADI / bloklangan:**
+- Push qilinmadi (deploy outward-facing, shartlari bor, foydalanuvchi tasdig'i kerak).
+- Cloudflare auth yo'q — token/secret o'rnatolmadim. Bu foydalanuvchi qadami.
+- Production baza baseline qilinmagan → `migrate deploy` hozir xato beradi (hujjatda tushuntirildi).
+
+**Tekshirildi:** YAML struktura to'g'ri (2 job, push+dispatch trigger). Haqiqiy deploy sinovi imkonsiz (auth yo'q).
+
+**Qaror:** migratsiya CI'da deploy'dan avval (ustun tartibi). Seed CI'da EMAS (DELETE — xavfli, qo'lda).
+Frontend uchun `VITE_API_URL` majburiy (Pages'da proxy yo'q).
+
+---
 
 ### 2026-08-25 · 04-kontent (kod qismi) — rasmiy tuzilma
 
