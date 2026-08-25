@@ -13,7 +13,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-25
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 6 ta kommit; remote hali `dfc4167` — eski kod)
+**Branch:** `master` · **Push qilinganmi:** ✅ ha — `origin/master` = `cad0755` (6 kommit push qilindi 2026-08-25).
+CI birinchi marta muvaffaqiyatsiz bo'ladi (secret'lar + baseline hali yo'q — `docs/deploy.md`).
 
 ### Nima ishlaydi
 - **Lokal muhit to'liq ishlaydi:** `wrangler dev` (API :3000, haqiqiy Workers runtime) + `vite` (web :5173).
