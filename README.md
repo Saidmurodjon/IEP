@@ -50,10 +50,22 @@ npm run dev
 ## Admin Credentials (after seed)
 
 - **URL**: http://localhost:5173/admin/login
-- **Email**: admin@energetika.uz
-- **Password**: Admin123!
+- **Email**: `ADMIN_EMAIL` (default: admin@energetika.uz)
+- **Password**: `ADMIN_PASSWORD` from `.env` — there is no default.
 
-> ⚠️ Change the password immediately after first login!
+The seed refuses to run unless `ADMIN_PASSWORD` is set (minimum 10 characters),
+so no well-known password ever ends up in the database:
+
+```bash
+# .env
+ADMIN_PASSWORD="$(openssl rand -base64 24)"
+```
+
+Passwords are stored as PBKDF2-HMAC-SHA256 (210,000 iterations, random 16-byte salt).
+
+> ⚠️ Change the password after first login:
+> `POST /api/auth/change-password` with `{ "currentPassword": "...", "newPassword": "..." }`
+> and a `Bearer` token (new password: minimum 10 characters).
 
 ## Deployment
 

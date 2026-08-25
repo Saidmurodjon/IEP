@@ -1,23 +1,42 @@
 import { PrismaClient } from '@prisma/client';
-import { hash } from 'bcryptjs';
+import { hashPassword } from '@energetika/shared';
 
 const prisma = new PrismaClient();
+
+/** Admin hisobi uchun parolni muhit o'zgaruvchisidan oladi — kodda hard-code qilinmaydi. */
+function readAdminPassword(): string {
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) {
+    throw new Error(
+      'ADMIN_PASSWORD muhit o\'zgaruvchisi o\'rnatilmagan.\n' +
+        'Seed default parol qo\'ymaydi. .env fayliga kuchli parol yozing, masalan:\n' +
+        '  ADMIN_PASSWORD="$(openssl rand -base64 24)"'
+    );
+  }
+  if (password.length < 10) {
+    throw new Error('ADMIN_PASSWORD kamida 10 belgidan iborat bo\'lishi kerak.');
+  }
+  return password;
+}
 
 async function main() {
   console.log('Seeding database...');
 
   // Create admin
-  const hashedPassword = await hash('Admin123!', 12);
+  const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@energetika.uz';
+  const hashedPassword = await hashPassword(readAdminPassword());
   await prisma.admin.upsert({
-    where: { email: 'admin@energetika.uz' },
-    update: {},
+    where: { email: adminEmail },
+    // Parol ADMIN_PASSWORD dan olinadi, shuning uchun qayta seed qilinganda
+    // mavjud admin hash'i ham yangi formatga yangilanadi.
+    update: { password: hashedPassword },
     create: {
-      email: 'admin@energetika.uz',
+      email: adminEmail,
       name: 'Administrator',
       password: hashedPassword,
     },
   });
-  console.log('✓ Admin created: admin@energetika.uz / Admin123!');
+  console.log(`✓ Admin tayyor: ${adminEmail} (parol ADMIN_PASSWORD dan olindi)`);
 
   // Seed structure
   const directorUnit = await prisma.structureUnit.upsert({
@@ -133,5 +152,8 @@ async function main() {
 }
 
 main()
-  .catch(console.error)
+  .catch((err: unknown) => {
+    console.error('\n❌ Seed bajarilmadi:', err instanceof Error ? err.message : err);
+    process.exitCode = 1;
+  })
   .finally(() => prisma.$disconnect());

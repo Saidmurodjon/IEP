@@ -6,12 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Zap, LogIn } from 'lucide-react';
 
 const schema = z.object({
   email: z.string().email('Email noto\'g\'ri'),
-  password: z.string().min(6, 'Parol kamida 6 ta belgi'),
+  password: z.string().min(8, 'Parol kamida 8 ta belgi'),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -22,15 +22,17 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Already logged in
-  if (isAuthenticated) {
-    navigate('/admin/dashboard');
-    return null;
-  }
-
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+
+  // Allaqachon kirgan bo'lsa — dashboard'ga yo'naltiramiz.
+  // Bu `useEffect` ichida bo'lishi shart: render paytida `navigate()` chaqirish
+  // yoki hook'lardan oldin `return` qilish React'ning hook qoidasini buzadi
+  // ("Rendered fewer hooks than expected") va admin panel ochilmay qoladi.
+  useEffect(() => {
+    if (isAuthenticated) navigate('/admin/dashboard', { replace: true });
+  }, [isAuthenticated, navigate]);
 
   const onSubmit = async ({ email, password }: FormData) => {
     try {

@@ -11,6 +11,7 @@
     "studio": "prisma studio"
   },
   "dependencies": {
+    "@energetika/shared": "*",
     "@prisma/client": "^6.2.0"
   },
   "devDependencies": {

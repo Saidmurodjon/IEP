@@ -20,7 +20,17 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 && window.location.pathname.startsWith('/admin')) {
+    // Login so'rovining o'zidagi 401 — bu "parol noto'g'ri" degani, sessiya
+    // tugagani emas. Uni qayta yo'naltirsak, sahifa to'liq qayta yuklanadi va
+    // foydalanuvchi xato xabarini umuman ko'rmaydi.
+    const url: string = err.config?.url ?? '';
+    const isLoginRequest = url.includes('/api/auth/login');
+
+    if (
+      err.response?.status === 401 &&
+      !isLoginRequest &&
+      window.location.pathname.startsWith('/admin')
+    ) {
       localStorage.removeItem('admin_token');
       window.location.href = '/admin/login';
     }
