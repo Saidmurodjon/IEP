@@ -33,15 +33,15 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
-      {/* Top bar */}
-      <div className="bg-primary-900 text-white text-xs py-1.5">
+      {/* Top bar — yengil variant (to'q blok emas) */}
+      <div className="bg-primary-50 text-primary-800 text-xs py-1.5 border-b border-primary-100">
         <div className="container flex justify-between items-center">
           <span>O'zbekiston Respublikasi Fanlar akademiyasi</span>
           <div className="flex items-center gap-4">
-            <a href="tel:+998712620000" className="hover:text-primary-200 transition-colors">
+            <a href="tel:+998712620000" className="hover:text-primary-600 transition-colors">
               +998 71 262-00-00
             </a>
-            <a href="mailto:info@energetika.uz" className="hover:text-primary-200 transition-colors">
+            <a href="mailto:info@energetika.uz" className="hover:text-primary-600 transition-colors">
               info@energetika.uz
             </a>
           </div>

@@ -20,7 +20,13 @@
     "stats_research": "Ilmiy yo'nalish",
     "stats_labs": "Laboratoriya",
     "stats_publications": "Nashr",
-    "stats_years": "Yil tajriba"
+    "stats_years": "Yil tajriba",
+    "about_kicker": "Institut haqida",
+    "about_title": "Energetika fanining O‘zbekistondagi markazi",
+    "about_p1": "Energetika muammolari instituti — O‘zbekiston Respublikasi Fanlar akademiyasi tarkibidagi yetakchi ilmiy muassasa. Institut energetika tizimlari, muqobil energiya manbalari va energiya samaradorligi yo‘nalishlarida fundamental hamda amaliy tadqiqotlar olib boradi.",
+    "about_p2": "Bizning laboratoriyalarimizda quyosh va shamol energetikasi, aqlli tarmoqlar va energiyani tejash texnologiyalari ustida ish olib boriladi. Institut mutaxassislari respublika energetika siyosatini ilmiy asoslashda faol ishtirok etadi.",
+    "about_more": "Institut haqida batafsil",
+    "contact_desc": "Ilmiy hamkorlik, savol va takliflaringiz uchun biz bilan bog‘laning."
   },
   "about": {
     "title": "Institut haqida",
