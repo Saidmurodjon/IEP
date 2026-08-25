@@ -13,14 +13,16 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-25
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 3 ta kommit: `df8e7db`, `b6ed9b2`, + shu UI kommiti)
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 4 ta kommit: auth, lokal-fix, UI, rasmlar)
 
 ### Nima ishlaydi
 - **Lokal muhit to'liq ishlaydi:** `wrangler dev` (API :3000, haqiqiy Workers runtime) + `vite` (web :5173).
   Admin login lokalda ishlaydi: `admin@iep.uz` + `.env` dagi `ADMIN_PASSWORD`, Dashboard ochiladi.
 - Auth: PBKDF2, JWT (alg tekshiruvi), rate limiting, `change-password` — hammasi lokalda tekshirilgan.
-- **02-dizayn tugadi:** akademik navy + oltin palitra, hero rasm+qoplama, yengil seksiyalar,
-  "Institut haqida" seksiyasi (3 tilda), stat ikonkalari, yangilik placeholder'lari.
+- **02-dizayn tugadi:** akademik navy + oltin palitra, yengil seksiyalar, "Institut haqida"
+  seksiyasi (3 tilda), stat ikonkalari, yangilik placeholder'lari.
+  Hero va "Institut haqida" endi **haqiqiy public-domain fotolar** (AQSh DoE, Wikimedia Commons):
+  `hero-solar.jpg`, `about-wind.jpg` — manba/litsenziya `public/images/CREDITS.md` da.
   `tsc` + `build` toza, mobil (375px) overflow yo'q, 3 til tekshirilgan.
 
 ### Nima hali ishlamaydi / bajarilmagan
@@ -55,6 +57,30 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-25 · Placeholder SVG'lar haqiqiy fotolarga almashtirildi
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(ui): use real public-domain energy photos for hero and about`
+
+Foydalanuvchi haqiqiy, mavzuga oid rasm so'radi. Topshiriq "tashqi rasm yuklamang" degan edi
+(litsenziya xavfi) — shuning uchun **faqat public-domain** rasm ishlatildi (huquqiy xavf yo'q).
+
+- `public/images/hero-solar.jpg` — AQSh DoE quyosh stansiyasi fotosi (Chris Allan), public domain.
+- `public/images/about-wind.jpg` — AQSh DoE shamol fermasi (Power County, Idaho), public domain.
+- Ikkalasi ham Wikimedia Commons'dan, `sips` bilan kichraytirilib siqildi (hero 1600px/336K, about 1100px/156K).
+- `public/images/CREDITS.md` (yangi) — manba, muallif, litsenziya, Commons havolalari.
+- Eski `hero-placeholder.svg`, `about-placeholder.svg` o'chirildi.
+- `HomePage.tsx` — hero fon `hero-solar.jpg` (dekorativ, aria-hidden); about `about-wind.jpg` +
+  tavsifiy alt (`home.about_img_alt`, 3 tilda), `object-cover aspect-[4/3]`, `loading="lazy"`.
+
+**Tekshirildi:** `tsc` + `build` toza; brauzerda hero foto `naturalWidth=1600` yuklandi, matn kontrasti
+yetarli (to'q qoplama chapda); about foto ko'rinadi; ikkala rasm HTTP 200 `image/jpeg`; mobil overflow yo'q.
+
+**Qaror:** public-domain (CC-BY/CC-BY-SA emas) — atribut majburiyati yo'q, davlat sayti uchun eng xavfsiz.
+AQSh DoE fotolari — energetika idorasi manbasi, mavzuga to'liq mos. Institut o'z fotosini bergach,
+shu fayllar almashtiriladi (yo'llar o'zgarmaydi).
+
+---
 
 ### 2026-08-25 · 02-dizayn bajarildi (akademik palitra + hero)
 

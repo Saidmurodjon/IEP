@@ -51,7 +51,7 @@ export default function HomePage() {
       {/* Hero — rasm + qoplama (yagona to'q seksiya) */}
       <section className="relative text-white overflow-hidden">
         <img
-          src="/images/hero-placeholder.svg"
+          src="/images/hero-solar.jpg"
           alt=""
           aria-hidden="true"
           className="absolute inset-0 w-full h-full object-cover"
@@ -117,10 +117,10 @@ export default function HomePage() {
             </div>
             <div className="relative">
               <img
-                src="/images/about-placeholder.svg"
-                alt=""
-                aria-hidden="true"
-                className="w-full rounded-xl shadow-sm border border-primary-100"
+                src="/images/about-wind.jpg"
+                alt={t('home.about_img_alt')}
+                loading="lazy"
+                className="w-full aspect-[4/3] object-cover rounded-xl shadow-sm border border-primary-100"
               />
             </div>
           </div>
