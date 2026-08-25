@@ -12,8 +12,10 @@ interface Unit {
   id: string;
   nameUz: string; nameEn: string; nameRu: string;
   descriptionUz: string; descriptionEn: string; descriptionRu: string;
-  head?: string;
+  head?: string | null;
   type: string;
+  staffCount?: number | null;
+  isAdvisory?: boolean;
   order: number;
   children?: Unit[];
 }
@@ -24,9 +26,13 @@ const TYPE_COLORS: Record<string, string> = {
   center: 'bg-purple-100 text-purple-700 border-purple-200',
   division: 'bg-orange-100 text-orange-700 border-orange-200',
   sector: 'bg-gray-100 text-gray-600 border-gray-200',
+  council: 'bg-accent-100 text-accent-700 border-accent-200',
+  position: 'bg-primary-50 text-primary-600 border-primary-200',
+  service: 'bg-gray-100 text-gray-600 border-gray-200',
 };
 
 function StructureNode({ unit, lang, depth = 0 }: { unit: Unit; lang: string; depth?: number }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(depth < 1);
   const hasChildren = unit.children && unit.children.length > 0;
 
@@ -39,7 +45,9 @@ function StructureNode({ unit, lang, depth = 0 }: { unit: Unit; lang: string; de
     <div className={clsx('relative', depth > 0 && 'ml-6 border-l-2 border-gray-200 pl-4')}>
       <div className={clsx(
         'card p-4 mb-3 hover:shadow-md transition-shadow',
-        depth === 0 && 'border-primary-200 bg-primary-50'
+        depth === 0 && 'border-primary-200 bg-primary-50',
+        // Maslahat organi — hujjatda punktir chiziq, bo'ysunuvchi emas.
+        unit.isAdvisory && 'border-dashed border-2 border-accent-300 bg-accent-50'
       )}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -48,10 +56,21 @@ function StructureNode({ unit, lang, depth = 0 }: { unit: Unit; lang: string; de
                 'text-xs font-medium px-2 py-0.5 rounded border',
                 TYPE_COLORS[unit.type] ?? TYPE_COLORS.department
               )}>
-                {unit.type}
+                {t(`structure.type_${unit.type}`)}
               </span>
+              {unit.isAdvisory && (
+                <span className="text-xs font-medium px-2 py-0.5 rounded border bg-accent-100 text-accent-700 border-accent-300">
+                  {t('structure.advisory')}
+                </span>
+              )}
               <h3 className="font-semibold text-gray-900 text-sm">{name}</h3>
             </div>
+            {typeof unit.staffCount === 'number' && (
+              <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                <Users className="h-3 w-3" />
+                <span>{unit.staffCount} {t('structure.staff')}</span>
+              </div>
+            )}
             {unit.head && (
               <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                 <Users className="h-3 w-3" />

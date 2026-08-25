@@ -11,8 +11,12 @@ const unitSchema = z.object({
   descriptionUz: z.string().default(''),
   descriptionEn: z.string().default(''),
   descriptionRu: z.string().default(''),
-  head: z.string().optional(),
-  type: z.enum(['department', 'laboratory', 'division', 'center', 'sector']).default('department'),
+  head: z.string().optional().nullable(),
+  type: z
+    .enum(['department', 'laboratory', 'division', 'center', 'sector', 'council', 'position', 'service'])
+    .default('department'),
+  staffCount: z.number().int().nonnegative().optional().nullable(),
+  isAdvisory: z.boolean().optional().default(false),
   order: z.number().int().default(0),
   parentId: z.string().optional().nullable(),
 });

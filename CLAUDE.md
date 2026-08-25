@@ -3,6 +3,9 @@
 O'zbekiston Respublikasi Fanlar akademiyasi **Energetika muammolari instituti** rasmiy veb-sayti.
 Bu fayl Claude Code uchun loyiha qoidalari. Ish boshlashdan oldin to'liq o'qing.
 
+> ⚠️ **Har bir sessiya `docs/JOURNAL.md` ni o'qishdan boshlanadi va unga yozuv qo'shish bilan tugaydi.**
+> Batafsil qoida — 9-bo'lim. Buni o'tkazib yubormang: sizdan oldin nima qilinganini faqat shu fayl biladi.
+
 ---
 
 ## 1. Loyiha haqida
@@ -108,7 +111,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 5 | Fayl yuklash yo'q — R2 binding yo'q, `imageUrl`/`fileUrl` faqat qo'lda URL | 🟠 Ochiq |
 | 6 | Kontakt formasi email yubormaydi, faqat bazaga yozadi | 🟠 Ochiq |
 | 7 | SSR/prerender va sitemap yo'q — SEO nolga teng | 🟠 Ochiq |
-| 8 | Bazada faqat demo ma'lumot (`prof. Mirzayev A.K.` — o'ylab topilgan) | 🟡 Ochiq |
+| 8 | ~~Bazada faqat demo ma'lumot~~ — tuzilma rasmiy 2025 hujjatiga ko'chirildi (kod tayyor, lokal test bazada tasdiqlangan). Production seed foydalanuvchi tasdig'ini kutmoqda; demo nashrlar hali qolgan | 🟠 Qisman |
 | 9 | Cloudflare Pages GitHub'ga ulanmagan — deploy qo'lda | 🟡 Ochiq |
 | 10 | Test yo'q, CI yo'q | 🟡 Ochiq |
 | 11 | ~~`apps/api/src/lib/db.ts` — `PrismaNeon` HTTP drayveri bilan noto'g'ri ishlatilgan~~ — `PrismaNeonHTTP` ga o'tkazildi, haqiqiy Neon bilan tekshirildi | ✅ Tuzatildi |
@@ -157,3 +160,54 @@ Ishni tugadi deb hisoblashdan oldin:
 - Production'ga (`wrangler deploy`) so'ramasdan deploy qilmang.
 - Katta refactor'ni o'z bilganingizcha boshlamang — avval reja taklif qiling.
 - Ishlab turgan funksiyani "yaxshilash" uchun sindirmang.
+
+---
+
+## 9. Ish jurnali — `docs/JOURNAL.md`
+
+Kontekst siqilganda (compaction) yoki yangi sessiya boshlanganda, sizdan oldin nima qilinganini
+**faqat shu fayl biladi**. Git tarixi "nima o'zgardi" ni ko'rsatadi, jurnal esa "nega, nima
+tekshirildi, nima qolib ketdi" ni saqlaydi.
+
+### 9.1 Ish boshlashda — majburiy
+
+1. `docs/JOURNAL.md` ni o'qing. Avval **"HOZIRGI HOLAT"** blokini — u eng muhim qismi.
+2. **"HOZIRDA KIM NIMA USTIDA ISHLAYAPTI"** jadvaliga qarang. Agar boshqa sessiya siz
+   tegmoqchi bo'lgan fayllar ustida ishlayotgan bo'lsa — **boshlamang**, foydalanuvchidan so'rang.
+3. O'zingizni o'sha jadvalga qo'shing: sessiya nomi, topshiriq, tegilayotgan fayllar, sana.
+4. `git status` va `git log --oneline -5` bilan jurnal haqiqatga mos ekanini tekshiring.
+   Mos kelmasa — foydalanuvchini ogohlantiring, o'zingiz taxmin qilib tuzatmang.
+
+### 9.2 Ish tugaganda — majburiy
+
+Kommit qilgandan **keyin**, quyidagilarni bajaring:
+
+1. **"HOZIRGI HOLAT"** blokini yangilang — eskisini o'chirib, o'rniga joriy holatni yozing:
+   HEAD, push qilinganmi, nima ishlaydi, nima ishlamaydi, keyingi qadam, ochiq savollar.
+2. **"YOZUVLAR"** bo'limining **eng tepasiga** yangi yozuv qo'shing:
+   - Sana, kim (Claude Code / PM sessiyasi), kommit hash'lari.
+   - Nima qilindi — qisqa, fayl nomlari bilan.
+   - **Nima tekshirildi va qanday** — "tsc toza", "haqiqiy HTTP so'rov bilan 200 olindi".
+   - **Nima tekshirilmadi** — buni yashirmang.
+   - Spetsifikatsiyada yo'q, lekin yo'l-yo'lakay topilgan narsalar.
+   - Qabul qilingan qarorlar va **sababi** (masalan: "bcryptjs emas, PBKDF2 — Workers'da sekin").
+3. O'zingizni **"KIM NIMA USTIDA ISHLAYAPTI"** jadvalidan o'chiring.
+
+### 9.3 Jurnal qoidalari
+
+- **"HOZIRGI HOLAT" doim joriy bo'lsin** — u tarix emas, snapshot. Eskirgan ma'lumot
+  jurnalni foydasiz qiladi.
+- **Yozuvlar qisqa bo'lsin.** Har biri 20–30 qatordan oshmasin. Kod nusxasini yozmang —
+  fayl nomi va kommit hash'i yetarli.
+- **Yozuvlar hech qachon tahrirlanmaydi va o'chirilmaydi** — faqat yangisi qo'shiladi.
+  Xato qilgan bo'lsangiz, keyingi yozuvda tuzating.
+- Jurnal 400 qatordan oshsa, eng eski yozuvlarni `docs/journal-archive/YYYY-MM.md` ga
+  ko'chiring va jurnalda faqat havola qoldiring.
+- **Tekshirilmagan narsani "tayyor" deb yozmang.** Bu 7-bo'lim qoidasining davomi.
+- Jurnal kommitga kirsin — alohida `docs:` kommit qilmang, ishning o'zi bilan birga ketsin.
+
+### 9.4 Bir vaqtda bir nechta sessiya ishlaganda
+
+- Bitta faylni ikki sessiya bir vaqtda tahrirlamasin — jadval shuning uchun.
+- Boshqa sessiya kommit qilgan bo'lsa, ishni davom ettirishdan oldin `git log` ni qayta o'qing.
+- Konflikt chiqsa — o'zingiz hal qilmang, foydalanuvchidan so'rang.

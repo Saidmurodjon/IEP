@@ -38,73 +38,120 @@ async function main() {
   });
   console.log(`✓ Admin tayyor: ${adminEmail} (parol ADMIN_PASSWORD dan olindi)`);
 
-  // Seed structure
-  const directorUnit = await prisma.structureUnit.upsert({
-    where: { id: 'director' },
-    update: {},
-    create: {
-      id: 'director',
-      nameUz: 'Institut direktori',
-      nameEn: 'Director of the Institute',
-      nameRu: 'Директор института',
-      descriptionUz: 'Institutni boshqarish va rivojlantirish',
-      descriptionEn: 'Managing and developing the institute',
-      descriptionRu: 'Управление и развитие института',
-      head: 'prof. Mirzayev A.K.',
-      type: 'department',
-      order: 0,
-    },
-  });
+  // Tuzilma — FA Prezidiumining 2025-yil 27-fevraldagi 12-son qarori, 10-ilova.
+  // Manba: docs/reference/tuzilma-2025-02-27.jpg. `head` HAMMA joyda null —
+  // ism-sharifni institut o'zi kiritadi, o'ylab topilmaydi.
+  type Unit = {
+    id: string;
+    nameUz: string; nameEn: string; nameRu: string;
+    type: string;
+    parentId: string | null;
+    staffCount?: number;
+    isAdvisory?: boolean;
+    order: number;
+    descriptionUz?: string; descriptionEn?: string; descriptionRu?: string;
+  };
 
-  const departments = [
-    {
-      id: 'dept-energy-systems',
-      nameUz: 'Energetika tizimlari laboratoriyasi',
-      nameEn: 'Energy Systems Laboratory',
-      nameRu: 'Лаборатория энергетических систем',
-      type: 'laboratory',
-      order: 1,
-    },
-    {
-      id: 'dept-renewable',
-      nameUz: 'Qayta tiklanuvchi energiya manbalari bo\'limi',
-      nameEn: 'Renewable Energy Sources Department',
-      nameRu: 'Отдел возобновляемых источников энергии',
-      type: 'department',
-      order: 2,
-    },
-    {
-      id: 'dept-efficiency',
-      nameUz: 'Energiya samaradorligi markazi',
-      nameEn: 'Energy Efficiency Center',
-      nameRu: 'Центр энергоэффективности',
-      type: 'center',
-      order: 3,
-    },
-    {
-      id: 'dept-solar',
-      nameUz: 'Quyosh energetikasi laboratoriyasi',
-      nameEn: 'Solar Energy Laboratory',
-      nameRu: 'Лаборатория солнечной энергетики',
-      type: 'laboratory',
-      order: 4,
-    },
+  const units: Unit[] = [
+    // — Boshqaruv —
+    { id: 'director', nameUz: 'Direktor', nameEn: 'Director', nameRu: 'Директор',
+      type: 'position', parentId: null, order: 0 },
+    { id: 'academic-council', nameUz: 'Ilmiy kengash', nameEn: 'Academic Council', nameRu: 'Учёный совет',
+      type: 'council', parentId: 'director', isAdvisory: true, order: 1 },
+    { id: 'scientific-secretary', nameUz: 'Ilmiy kotib', nameEn: 'Scientific Secretary', nameRu: 'Учёный секретарь',
+      type: 'position', parentId: 'director', order: 2 },
+    { id: 'deputy-science', nameUz: "Ilm-fan bo'yicha direktor o'rinbosari",
+      nameEn: 'Deputy Director for Science', nameRu: 'Заместитель директора по науке',
+      type: 'position', parentId: 'director', order: 3 },
+    { id: 'deputy-general', nameUz: "Umumiy masalalar bo'yicha direktor o'rinbosari",
+      nameEn: 'Deputy Director for General Affairs', nameRu: 'Заместитель директора по общим вопросам',
+      type: 'position', parentId: 'director', order: 4 },
+
+    // — 6 ilmiy laboratoriya (Ilm-fan o'rinbosari ostida) —
+    { id: 'lab-energy-security',
+      nameUz: "“Energetikaning rivojlanish istiqbollari va energetik xavfsizlik” ilmiy laboratoriyasi",
+      nameEn: 'Laboratory for Energy Development Prospects and Energy Security',
+      nameRu: 'Лаборатория перспектив развития энергетики и энергетической безопасности',
+      type: 'laboratory', parentId: 'deputy-science', staffCount: 3, order: 10 },
+    { id: 'lab-power-systems',
+      nameUz: "“Elektr energetika tizimlari va majmualari” ilmiy laboratoriyasi",
+      nameEn: 'Laboratory of Electric Power Systems and Complexes',
+      nameRu: 'Лаборатория электроэнергетических систем и комплексов',
+      type: 'laboratory', parentId: 'deputy-science', staffCount: 3, order: 11 },
+    { id: 'lab-renewable',
+      nameUz: "“Muqobil va qayta tiklanuvchi energiya manbalaridan kompleks foydalanish” ilmiy laboratoriyasi",
+      nameEn: 'Laboratory for Integrated Use of Alternative and Renewable Energy Sources',
+      nameRu: 'Лаборатория комплексного использования альтернативных и возобновляемых источников энергии',
+      type: 'laboratory', parentId: 'deputy-science', staffCount: 4, order: 12 },
+    { id: 'lab-electrotech',
+      nameUz: "“Elektrotexnologiyalar va energetik uskunalarni ekspluatatsiya qilish” ilmiy laboratoriyasi",
+      nameEn: 'Laboratory of Electrotechnologies and Operation of Power Equipment',
+      nameRu: 'Лаборатория электротехнологий и эксплуатации энергетического оборудования',
+      type: 'laboratory', parentId: 'deputy-science', staffCount: 2, order: 13 },
+    { id: 'lab-efficiency',
+      nameUz: "“Energiya samaradorligi va energiya tejash tizimlari” ilmiy laboratoriyasi",
+      nameEn: 'Laboratory of Energy Efficiency and Energy Saving Systems',
+      nameRu: 'Лаборатория энергоэффективности и систем энергосбережения',
+      type: 'laboratory', parentId: 'deputy-science', staffCount: 2, order: 14 },
+    { id: 'lab-smart-grid',
+      nameUz: "“Intellektual energiya tizimlari, energetik tizimlar va quvvatlarni integratsiyalash” ilmiy laboratoriyasi",
+      nameEn: 'Laboratory of Intelligent Energy Systems and Integration of Power Systems and Capacities',
+      nameRu: 'Лаборатория интеллектуальных энергетических систем, интеграции энергосистем и мощностей',
+      type: 'laboratory', parentId: 'deputy-science', staffCount: 3, order: 15 },
+    { id: 'integration-center',
+      nameUz: 'Integratsiya-resurs markazi mutaxassisi',
+      nameEn: 'Integration and Resource Centre Specialist',
+      nameRu: 'Специалист интеграционно-ресурсного центра',
+      type: 'position', parentId: 'deputy-science', staffCount: 1, order: 16 },
+
+    // — Ma'muriy bo'linmalar —
+    { id: 'finance-dept', nameUz: 'Moliya-iqtisodiyot bo\'limi',
+      nameEn: 'Finance and Economics Department', nameRu: 'Финансово-экономический отдел',
+      type: 'department', parentId: 'director', staffCount: 3, order: 20 },
+    { id: 'legal-counsel', nameUz: 'Bosh yuriskonsult',
+      nameEn: 'Chief Legal Counsel', nameRu: 'Главный юрисконсульт',
+      type: 'position', parentId: 'director', staffCount: 1, order: 21 },
+    { id: 'hr-chancellery', nameUz: 'Xodimlar bo\'yicha inspektor va devonxona',
+      nameEn: 'HR Inspector and Chancellery', nameRu: 'Инспектор по кадрам и канцелярия',
+      type: 'position', parentId: 'director', staffCount: 2, order: 22 },
+    { id: 'ict-specialist', nameUz: 'AKT bo\'yicha mutaxassis',
+      nameEn: 'ICT Specialist', nameRu: 'Специалист по ИКТ',
+      type: 'position', parentId: 'director', staffCount: 1, order: 23 },
+    { id: 'engineering-service', nameUz: 'Injener-texnik va xo\'jalik xizmati',
+      nameEn: 'Engineering and Maintenance Service', nameRu: 'Инженерно-техническая и хозяйственная служба',
+      type: 'service', parentId: 'deputy-general', order: 24,
+      descriptionUz: 'Ilmiy-yordamchi va yordamchi xodimlar soni qonunchilik hujjatlariga muvofiq normativlar bo\'yicha belgilanadi.',
+      descriptionEn: 'The number of research-support and support staff is set according to the norms established by law.',
+      descriptionRu: 'Численность научно-вспомогательного и вспомогательного персонала определяется по нормативам согласно законодательству.' },
   ];
 
-  for (const dept of departments) {
+  // Eski demo yozuvlarni olib tashlash (taxminiy tuzilma — hujjatda yo'q).
+  // DIQQAT: bu DELETE. Production'da ehtiyot bo'ling (CLAUDE.md 8-qoida).
+  const legacyIds = [
+    'dept-energy-systems', 'dept-renewable', 'dept-efficiency', 'dept-solar',
+    'dept-wind', 'dept-grid',
+  ];
+  await prisma.structureUnit.deleteMany({ where: { id: { in: legacyIds } } });
+
+  // Ota-birlik avval yaratilishi kerak (FK) — `units` massivi shu tartibda tuzilgan.
+  for (const u of units) {
+    const data = {
+      nameUz: u.nameUz, nameEn: u.nameEn, nameRu: u.nameRu,
+      descriptionUz: u.descriptionUz ?? '', descriptionEn: u.descriptionEn ?? '', descriptionRu: u.descriptionRu ?? '',
+      head: null,
+      type: u.type,
+      staffCount: u.staffCount ?? null,
+      isAdvisory: u.isAdvisory ?? false,
+      order: u.order,
+      parentId: u.parentId,
+    };
     await prisma.structureUnit.upsert({
-      where: { id: dept.id },
-      update: {},
-      create: {
-        ...dept,
-        descriptionUz: '',
-        descriptionEn: '',
-        descriptionRu: '',
-        parentId: directorUnit.id,
-      },
+      where: { id: u.id },
+      update: data,
+      create: { id: u.id, ...data },
     });
   }
-  console.log('✓ Structure units created');
+  console.log(`✓ Structure units created (${units.length} ta, hujjatga muvofiq)`);
 
   // Seed sample news
   await prisma.news.upsert({

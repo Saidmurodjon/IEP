@@ -13,12 +13,15 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-25
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 4 ta kommit: auth, lokal-fix, UI, rasmlar)
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q (lokalda 5 ta kommit: auth, lokal-fix, UI, rasmlar, kontent)
 
 ### Nima ishlaydi
 - **Lokal muhit to'liq ishlaydi:** `wrangler dev` (API :3000, haqiqiy Workers runtime) + `vite` (web :5173).
   Admin login lokalda ishlaydi: `admin@iep.uz` + `.env` dagi `ADMIN_PASSWORD`, Dashboard ochiladi.
 - Auth: PBKDF2, JWT (alg tekshiruvi), rate limiting, `change-password` — hammasi lokalda tekshirilgan.
+- **04-kontent (kod) tugadi:** tuzilma rasmiy 2025 hujjatiga ko'chirildi — 17 birlik, 6 lab (3,3,4,2,2,3),
+  18 ilmiy / 29 umumiy xodim, barcha `head` null, Ilmiy kengash maslahat organi. Migratsiya + seed + frontend +
+  i18n tayyor, LOKAL test bazada (`energetika_mig`) to'liq tekshirilgan (GET /api/structure, StructurePage, LabsPage).
 - **02-dizayn tugadi:** akademik navy + oltin palitra, yengil seksiyalar, "Institut haqida"
   seksiyasi (3 tilda), stat ikonkalari, yangilik placeholder'lari.
   Hero va "Institut haqida" endi **haqiqiy public-domain fotolar** (AQSh DoE, Wikimedia Commons):
@@ -33,6 +36,12 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 - **Deploy bloklangan:** `wrangler` autentifikatsiya qilinmagan (`.env` da CF token ham placeholder).
   Foydalanuvchi `wrangler login` qilishi kerak.
 - `FRONTEND_URL` production'da **allaqachon bor** (CORS orqali tasdiqlandi) — 03-ning shu qadami shart emas.
+
+- **04-kontent production'ga qo'llanmagan:** migratsiya (staffCount, isAdvisory) + seed production Neon'ga
+  yozilmagan. Rule 8 (DELETE) va production yozuv — foydalanuvchi tasdig'i kutilmoqda.
+- **DIQQAT deploy tartibi:** yangi kod staffCount/isAdvisory ustunlarini kutadi. Migratsiya production'ga
+  qo'llanmasa, deploy'dan keyin `GET /api/structure` 500 beradi. **Avval migratsiya, keyin deploy.**
+- **Demo nashrlar hali production'da** (Mirzayev/Toshmatov mualliflari) — o'chirish production DELETE, tasdiq kerak.
 
 ### Keyingi qadam
 1. 03-production 2-bosqichi: foydalanuvchi `wrangler login` qilgach → `wrangler secret list` →
@@ -57,6 +66,33 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-25 · 04-kontent (kod qismi) — rasmiy tuzilma
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(content): replace demo data with official 2025 institute structure`
+
+Manba: `docs/reference/tuzilma-2025-02-27.jpg` (FA Prezidiumi 2025-02-27, 12-son qaror, 10-ilova).
+Hujjat topshiriq jadvallari bilan solishtirildi — **to'liq mos, nomuvofiqlik yo'q**.
+
+- `schema.prisma` — `staffCount Int?`, `isAdvisory Boolean` qo'shildi.
+- `prisma/migrations/0_init` + `1_add_structure_staff_fields` — baselining (DB db push bilan yaratilgan,
+  migration tarixi yo'q edi). `migrate diff` bilan yaratildi, lokal bazada `migrate deploy` toza qo'llandi.
+- `seed.ts` — 17 birlik hujjatga muvofiq, barcha `head: null`; eski 6 demo `dept-*` id `deleteMany` bilan olib tashlanadi.
+- `structure.ts` route — `unitSchema` ga yangi tiplar (council/position/service) + staffCount/isAdvisory.
+- `shared/types.ts` — `StructureUnit` yangilandi.
+- Frontend: `StructurePage` (tip tarjimasi, staffCount, maslahat organi punktir), `LabsPage` (staffCount),
+  `HomePage` stats (6/18/29 + jonli nashr, `+` yo'q). `locales/*.json` — tip yorliqlari, uchala tilda mos.
+
+**Tekshirildi (LOKAL test baza `energetika_mig`):** migrate deploy toza; seed 17 birlik; GET /api/structure to'g'ri
+daraxt (6 lab, sonlar 3,3,4,2,2,3; ilmiy 18); StructurePage/LabsPage brauzerda (skrinshot) — 6 lab, maslahat organi
+ajratilgan, xodim sonlari; home stats 6/18/29; soxta ism yo'q; head hamma joyda null; tsc+build (api+web) toza; 3 til mos.
+
+**Production'ga QO'LLANMADI** (rule 8: DELETE + production yozuv → tasdiq kerak). Deploy tartibi: avval migratsiya, keyin kod.
+
+**Qolib ketdi:** demo nashrlar (Mirzayev/Toshmatov) production'da — o'chirish tasdiq kutmoqda. Lab tavsiflari
+bo'sh (o'ylab topilmadi) — institut beradi. Manzil/sana/telefon/rahbar ismlari — foydalanuvchiga savollar berildi.
+
+---
 
 ### 2026-08-25 · Placeholder SVG'lar haqiqiy fotolarga almashtirildi
 

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
 import {
-  ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, Lightbulb, Zap,
+  ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, GraduationCap, Users, Zap,
 } from 'lucide-react';
 import { newsApi, pubsApi } from '@/lib/api';
 import { format } from 'date-fns';
@@ -34,11 +34,13 @@ export default function HomePage() {
     item[`summary${lang.charAt(0).toUpperCase() + lang.slice(1)}`] ??
     item.summaryUz ?? item.summaryEn ?? '';
 
+  // Raqamlar rasmiy tuzilma hujjatidan (2025-02-27). Nashr soni bazadan (jonli).
+  const totalPubs = pubsData?.data?.total ?? 0;
   const stats = [
-    { value: '8+', label: t('home.stats_research'), icon: Lightbulb },
-    { value: '12+', label: t('home.stats_labs'), icon: Beaker },
-    { value: '500+', label: t('home.stats_publications'), icon: BookOpen },
-    { value: '30+', label: t('home.stats_years'), icon: Calendar },
+    { value: '6', label: t('home.stats_labs'), icon: Beaker },
+    { value: '18', label: t('home.stats_scientists'), icon: GraduationCap },
+    { value: '29', label: t('home.stats_staff'), icon: Users },
+    { value: String(totalPubs), label: t('home.stats_publications'), icon: BookOpen },
   ];
 
   return (

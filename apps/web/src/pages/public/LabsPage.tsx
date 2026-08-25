@@ -9,7 +9,7 @@ import type { Lang } from '@energetika/shared';
 interface Unit {
   id: string; nameUz: string; nameEn: string; nameRu: string;
   descriptionUz: string; descriptionEn: string; descriptionRu: string;
-  head?: string; type: string; children?: Unit[];
+  head?: string | null; type: string; staffCount?: number | null; children?: Unit[];
 }
 
 function flattenLabs(units: Unit[]): Unit[] {
@@ -75,10 +75,10 @@ export default function LabsPage() {
               {getDesc(lab) && (
                 <p className="text-sm text-gray-500 mb-4 line-clamp-3">{getDesc(lab)}</p>
               )}
-              {lab.head && (
+              {typeof lab.staffCount === 'number' && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 border-t border-gray-100 pt-3 mt-3">
                   <Users className="h-4 w-4 text-gray-400" />
-                  <span>{lab.head}</span>
+                  <span>{lab.staffCount} {t('labs.staff')}</span>
                 </div>
               )}
             </div>

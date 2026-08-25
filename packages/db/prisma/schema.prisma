@@ -66,6 +66,10 @@ model StructureUnit {
   descriptionRu String          @default("") @db.Text
   head          String?
   type          String          @default("department")
+  // Shtat birligi soni (hujjatdagi raqam). Direktor/Ilmiy kengash kabi birliklarda ko'rsatilmagan → nullable.
+  staffCount    Int?
+  // Ilmiy kengash — maslahat organi (hujjatda punktir chiziq), bo'ysunuvchi emas.
+  isAdvisory    Boolean         @default(false)
   order         Int             @default(0)
   parentId      String?
   parent        StructureUnit?  @relation("StructureHierarchy", fields: [parentId], references: [id])

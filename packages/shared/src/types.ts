@@ -30,12 +30,24 @@ export interface Publication {
   createdAt: string;
 }
 
+export type StructureUnitType =
+  | 'department'
+  | 'laboratory'
+  | 'division'
+  | 'center'
+  | 'sector'
+  | 'council'
+  | 'position'
+  | 'service';
+
 export interface StructureUnit {
   id: string;
   name: Translation;
   description: Translation;
-  head?: string;
-  type: 'department' | 'laboratory' | 'division' | 'center' | 'sector';
+  head?: string | null;
+  type: StructureUnitType;
+  staffCount?: number | null;
+  isAdvisory?: boolean;
   parentId?: string;
   order: number;
   children?: StructureUnit[];
