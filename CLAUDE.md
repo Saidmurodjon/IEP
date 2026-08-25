@@ -111,7 +111,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 8 | Bazada faqat demo ma'lumot (`prof. Mirzayev A.K.` — o'ylab topilgan) | 🟡 Ochiq |
 | 9 | Cloudflare Pages GitHub'ga ulanmagan — deploy qo'lda | 🟡 Ochiq |
 | 10 | Test yo'q, CI yo'q | 🟡 Ochiq |
-| 11 | `apps/api/src/lib/db.ts` — `PrismaNeon` HTTP drayveri bilan noto'g'ri ishlatilgan; lock'dagi adapter 6.19.3 da keyingi deploy API'ni sindiradi | 🔴 Ochiq |
+| 11 | ~~`apps/api/src/lib/db.ts` — `PrismaNeon` HTTP drayveri bilan noto'g'ri ishlatilgan~~ — `PrismaNeonHTTP` ga o'tkazildi, haqiqiy Neon bilan tekshirildi | ✅ Tuzatildi |
 
 Muammoni tuzatganingizda shu jadvalni ham yangilang (🔴 → ✅).
 

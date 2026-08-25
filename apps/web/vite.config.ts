@@ -4,6 +4,9 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  // `.env` loyiha ildizida turadi (README dagi `cp .env.example .env`),
+  // Vite esa sukut bo'yicha uni faqat `apps/web/` dan qidiradi.
+  envDir: path.resolve(__dirname, '../..'),
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
