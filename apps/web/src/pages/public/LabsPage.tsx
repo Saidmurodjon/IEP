@@ -5,21 +5,7 @@ import { structureApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Users, Beaker } from 'lucide-react';
 import type { Lang } from '@energetika/shared';
-
-interface Unit {
-  id: string; nameUz: string; nameEn: string; nameRu: string;
-  descriptionUz: string; descriptionEn: string; descriptionRu: string;
-  head?: string | null; type: string; staffCount?: number | null; children?: Unit[];
-}
-
-function flattenLabs(units: Unit[]): Unit[] {
-  const labs: Unit[] = [];
-  for (const unit of units) {
-    if (unit.type === 'laboratory') labs.push(unit);
-    if (unit.children) labs.push(...flattenLabs(unit.children));
-  }
-  return labs;
-}
+import { flattenLabs, type Unit } from '@/lib/structure';
 
 export default function LabsPage() {
   const { t, i18n } = useTranslation();
@@ -45,7 +31,7 @@ export default function LabsPage() {
   return (
     <>
       <Helmet>
-        <title>{t('labs.title')} | Energetika instituti</title>
+        <title>{t('labs.title')} | {t('common.institute_name')}</title>
       </Helmet>
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">

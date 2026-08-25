@@ -30,7 +30,7 @@ export default function PublicationsPage() {
   return (
     <>
       <Helmet>
-        <title>{t('publications.title')} | Energetika instituti</title>
+        <title>{t('publications.title')} | {t('common.institute_name')}</title>
       </Helmet>
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
@@ -62,9 +62,12 @@ export default function PublicationsPage() {
         {isLoading && <LoadingSpinner />}
 
         {!isLoading && pubs.length === 0 && (
-          <div className="text-center py-12">
-            <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500">{t('publications.no_pubs')}</p>
+          <div className="card border-dashed border-2 border-gray-200 bg-gray-50/60 py-16 px-6 text-center">
+            <div className="bg-white shadow-sm rounded-full w-16 h-16 mx-auto mb-5 flex items-center justify-center">
+              <BookOpen className="h-7 w-7 text-primary-300" />
+            </div>
+            <p className="text-gray-700 font-medium">{t('publications.no_pubs')}</p>
+            <p className="text-sm text-gray-500 mt-1.5 max-w-md mx-auto">{t('publications.empty_hint')}</p>
           </div>
         )}
 
@@ -87,7 +90,7 @@ export default function PublicationsPage() {
                         <span className="font-medium">{t('publications.journal')}:</span> {pub.journal as string}
                       </span>
                     )}
-                    <span>Yil: {pub.year as number}</span>
+                    <span>{t('publications.year')}: {pub.year as number}</span>
                     {pub.doi && <span>DOI: {pub.doi as string}</span>}
                   </div>
                 </div>

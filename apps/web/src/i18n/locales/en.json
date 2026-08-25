@@ -34,7 +34,9 @@
     "mission": "Mission",
     "history": "History",
     "mission_text": "Our institute conducts fundamental and applied scientific research aimed at solving energy problems of the Republic of Uzbekistan.",
-    "history_text": "The institute was established within the Academy of Sciences of Uzbekistan and has achieved many important scientific milestones in the energy sector."
+    "history_text": "The institute was established within the Academy of Sciences of Uzbekistan and has achieved many important scientific milestones in the energy sector.",
+    "research_areas": "Research laboratories and areas of study",
+    "history_extra": "The institute operates under the structure approved by the Presidium of the Academy of Sciences on 27 February 2025."
   },
   "structure": {
     "title": "Institute Structure",
@@ -74,7 +76,9 @@
     "authors": "Authors",
     "journal": "Journal",
     "download": "Download",
-    "no_pubs": "No publications found"
+    "no_pubs": "No publications found",
+    "year": "Year",
+    "empty_hint": "The list of the institute’s publications is being compiled."
   },
   "contact": {
     "title": "Contact",
@@ -87,11 +91,23 @@
     "send": "Send Message",
     "success": "Your message has been sent successfully!",
     "address": "Address",
-    "working_hours": "Working Hours"
+    "working_hours": "Working Hours",
+    "info": "Contact details",
+    "reply_soon": "We will reply shortly.",
+    "send_another": "Send another message",
+    "name_placeholder": "Full name",
+    "subject_placeholder": "Subject",
+    "message_placeholder": "Your message...",
+    "err_name": "Name must be at least 2 characters",
+    "err_email": "Invalid email address",
+    "err_subject": "Please enter a subject",
+    "err_message": "Message must be at least 10 characters"
   },
   "footer": {
     "rights": "All rights reserved",
-    "developed": "Developed by"
+    "developed": "Developed by",
+    "pages": "Pages",
+    "description": "A centre for scientific research and innovation in the energy sector, working on alternative energy and energy efficiency."
   },
   "admin": {
     "login": "Login",
@@ -128,6 +144,10 @@
     "not_found": "Not found",
     "back": "Back",
     "search": "Search",
-    "language": "Language"
+    "language": "Language",
+    "academy": "Academy of Sciences of the Republic of Uzbekistan",
+    "institute_name": "Institute of Energy Problems",
+    "institute_name_line1": "Institute of Energy",
+    "institute_name_line2": "Problems"
   }
 }

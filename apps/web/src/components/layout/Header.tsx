@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Globe, Zap } from 'lucide-react';
 import clsx from 'clsx';
+import { useSettings, telHref } from '@/hooks/useSettings';
 
 const LANGS = [
   { code: 'uz', label: "O'zbekcha" },
@@ -15,6 +16,10 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const location = useLocation();
+  // Aloqa ma'lumotlari `/api/settings` dan keladi — kodda qattiq yozilmaydi.
+  const { value } = useSettings();
+  const phone = value('phone');
+  const email = value('email');
 
   const navLinks = [
     { to: '/', label: t('nav.home') },
@@ -36,14 +41,18 @@ export default function Header() {
       {/* Top bar — yengil variant (to'q blok emas) */}
       <div className="bg-primary-50 text-primary-800 text-xs py-1.5 border-b border-primary-100">
         <div className="container flex justify-between items-center">
-          <span>O'zbekiston Respublikasi Fanlar akademiyasi</span>
+          <span>{t('common.academy')}</span>
           <div className="flex items-center gap-4">
-            <a href="tel:+998712620000" className="hover:text-primary-600 transition-colors">
-              +998 71 262-00-00
-            </a>
-            <a href="mailto:info@energetika.uz" className="hover:text-primary-600 transition-colors">
-              info@energetika.uz
-            </a>
+            {phone && (
+              <a href={telHref(phone)} className="hover:text-primary-600 transition-colors">
+                {phone}
+              </a>
+            )}
+            {email && (
+              <a href={`mailto:${email}`} className="hover:text-primary-600 transition-colors">
+                {email}
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -58,9 +67,9 @@ export default function Header() {
             </div>
             <div className="hidden sm:block">
               <div className="text-sm font-bold text-primary-900 leading-tight">
-                Energetika muammolari
+                {t('common.institute_name_line1')}
               </div>
-              <div className="text-xs text-gray-500">instituti</div>
+              <div className="text-xs text-gray-500">{t('common.institute_name_line2')}</div>
             </div>
           </Link>
 

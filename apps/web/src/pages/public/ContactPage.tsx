@@ -4,23 +4,41 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { contactApi } from '@/lib/api';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
+import { useSettings, telHref } from '@/hooks/useSettings';
 
-const schema = z.object({
-  name: z.string().min(2, 'Ism kamida 2 ta harf'),
-  email: z.string().email('Email noto\'g\'ri'),
-  phone: z.string().optional(),
-  subject: z.string().min(2, 'Mavzu kiriting'),
-  message: z.string().min(10, 'Xabar kamida 10 ta belgi'),
-});
-
-type FormData = z.infer<typeof schema>;
+type FormData = {
+  name: string;
+  email: string;
+  phone?: string;
+  subject: string;
+  message: string;
+};
 
 export default function ContactPage() {
   const { t } = useTranslation();
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
+  // Aloqa ma'lumotlari `/api/settings` dan keladi — qattiq yozilgan qiymat yo'q.
+  const { value, localized } = useSettings();
+  const address = localized('address');
+  const phone = value('phone');
+  const email = value('email');
+  const workingHours = value('working_hours');
+
+  // Xato xabarlari ham tarjima qilinadi, shuning uchun sxema til bilan birga quriladi.
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(2, t('contact.err_name')),
+        email: z.string().email(t('contact.err_email')),
+        phone: z.string().optional(),
+        subject: z.string().min(2, t('contact.err_subject')),
+        message: z.string().min(10, t('contact.err_message')),
+      }),
+    [t]
+  );
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -42,7 +60,7 @@ export default function ContactPage() {
   return (
     <>
       <Helmet>
-        <title>{t('contact.title')} | Energetika instituti</title>
+        <title>{t('contact.title')} | {t('common.institute_name')}</title>
       </Helmet>
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
@@ -57,53 +75,56 @@ export default function ContactPage() {
           {/* Contact info */}
           <div className="space-y-6">
             <div>
-              <h2 className="font-semibold text-gray-900 mb-4 text-lg">{t('contact.address')}</h2>
+              <h2 className="font-semibold text-gray-900 mb-4 text-lg">{t('contact.info')}</h2>
               <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
-                    <MapPin className="h-4 w-4 text-primary-700" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-700">Manzil</div>
-                    <div className="text-sm text-gray-500 mt-0.5">
-                      Toshkent shahri, Mirzo Ulug'bek tumani
+                {address && (
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
+                      <MapPin className="h-4 w-4 text-primary-700" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">{t('contact.address')}</div>
+                      <div className="text-sm text-gray-500 mt-0.5">{address}</div>
                     </div>
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
-                    <Phone className="h-4 w-4 text-primary-700" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-700">Telefon</div>
-                    <a href="tel:+998712620000" className="text-sm text-primary-700 hover:underline mt-0.5 block">
-                      +998 71 262-00-00
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
-                    <Mail className="h-4 w-4 text-primary-700" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-700">Email</div>
-                    <a href="mailto:info@energetika.uz" className="text-sm text-primary-700 hover:underline mt-0.5 block">
-                      info@energetika.uz
-                    </a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
-                    <Clock className="h-4 w-4 text-primary-700" />
-                  </div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-700">{t('contact.working_hours')}</div>
-                    <div className="text-sm text-gray-500 mt-0.5">
-                      Du–Ju: 9:00 – 18:00<br />
-                      Sh–Ya: Dam olish
+                )}
+                {phone && (
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
+                      <Phone className="h-4 w-4 text-primary-700" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">{t('contact.phone')}</div>
+                      <a href={telHref(phone)} className="text-sm text-primary-700 hover:underline mt-0.5 block">
+                        {phone}
+                      </a>
                     </div>
                   </div>
-                </div>
+                )}
+                {email && (
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
+                      <Mail className="h-4 w-4 text-primary-700" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">{t('contact.email')}</div>
+                      <a href={`mailto:${email}`} className="text-sm text-primary-700 hover:underline mt-0.5 block">
+                        {email}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {workingHours && (
+                  <div className="flex items-start gap-3">
+                    <div className="bg-primary-100 p-2.5 rounded-lg flex-shrink-0">
+                      <Clock className="h-4 w-4 text-primary-700" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-700">{t('contact.working_hours')}</div>
+                      <div className="text-sm text-gray-500 mt-0.5">{workingHours}</div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -114,9 +135,9 @@ export default function ContactPage() {
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <CheckCircle className="h-16 w-16 text-emerald-500 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('contact.success')}</h3>
-                <p className="text-gray-500 mb-6">Tez orada javob beramiz.</p>
+                <p className="text-gray-500 mb-6">{t('contact.reply_soon')}</p>
                 <button onClick={() => setSent(false)} className="btn-secondary">
-                  Yana xabar yuborish
+                  {t('contact.send_another')}
                 </button>
               </div>
             ) : (
@@ -127,7 +148,7 @@ export default function ContactPage() {
                     <input
                       {...register('name')}
                       className="input"
-                      placeholder="Ism Familiya"
+                      placeholder={t('contact.name_placeholder')}
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
                   </div>
@@ -157,7 +178,7 @@ export default function ContactPage() {
                     <input
                       {...register('subject')}
                       className="input"
-                      placeholder="Mavzu"
+                      placeholder={t('contact.subject_placeholder')}
                     />
                     {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>}
                   </div>
@@ -168,7 +189,7 @@ export default function ContactPage() {
                     {...register('message')}
                     rows={5}
                     className="input resize-none"
-                    placeholder="Xabaringiz..."
+                    placeholder={t('contact.message_placeholder')}
                   />
                   {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
                 </div>

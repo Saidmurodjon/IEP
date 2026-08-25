@@ -42,7 +42,7 @@ export default function NewsDetailPage() {
   return (
     <>
       <Helmet>
-        <title>{getField('title')} | Energetika instituti</title>
+        <title>{getField('title')} | {t('common.institute_name')}</title>
         <meta name="description" content={getField('summary')} />
       </Helmet>
 

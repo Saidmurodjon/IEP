@@ -12,46 +12,66 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
-**Oxirgi yangilanish:** 2026-08-25
-**Branch:** `master` · **Push qilinganmi:** ✅ ha — `origin/master` = `cad0755` (6 kommit push qilindi 2026-08-25).
-CI birinchi marta muvaffaqiyatsiz bo'ladi (secret'lar + baseline hali yo'q — `docs/deploy.md`).
+**Oxirgi yangilanish:** 2026-08-26
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05-topshiriq kommiti lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **Lokal muhit to'liq ishlaydi:** `wrangler dev` (API :3000, haqiqiy Workers runtime) + `vite` (web :5173).
-  Admin login lokalda ishlaydi: `admin@iep.uz` + `.env` dagi `ADMIN_PASSWORD`, Dashboard ochiladi.
-- Auth: PBKDF2, JWT (alg tekshiruvi), rate limiting, `change-password` — hammasi lokalda tekshirilgan.
-- **04-kontent (kod) tugadi:** tuzilma rasmiy 2025 hujjatiga ko'chirildi — 17 birlik, 6 lab (3,3,4,2,2,3),
-  18 ilmiy / 29 umumiy xodim, barcha `head` null, Ilmiy kengash maslahat organi. Migratsiya + seed + frontend +
-  i18n tayyor, LOKAL test bazada (`energetika_mig`) to'liq tekshirilgan (GET /api/structure, StructurePage, LabsPage).
-- **02-dizayn tugadi:** akademik navy + oltin palitra, yengil seksiyalar, "Institut haqida"
-  seksiyasi (3 tilda), stat ikonkalari, yangilik placeholder'lari.
-  Hero va "Institut haqida" endi **haqiqiy public-domain fotolar** (AQSh DoE, Wikimedia Commons):
-  `hero-solar.jpg`, `about-wind.jpg` — manba/litsenziya `public/images/CREDITS.md` da.
-  `tsc` + `build` toza, mobil (375px) overflow yo'q, 3 til tekshirilgan.
+- **05-namoyish tayyorligi tugadi.** Aloqa ma'lumotlari endi kodda emas — `/api/settings` dan
+  keladi (`apps/web/src/hooks/useSettings.ts`, react-query, bitta so'rov). Header, Footer,
+  ContactPage shu hookdan foydalanadi. `phone` bo'sh → telefon qatori umuman ko'rinmaydi.
+- Seed'dagi manzil/pochta haqiqiy qiymatlarga almashtirildi (Do'rmon yo'li 40, energy@academy.uz);
+  `phone` va `working_hours` ataylab bo'sh.
+- Namoyish yangiliklari `packages/db/src/demo-content.ts` da (seed'dan ajratilgan, `npm run db:demo`).
+  Skript lokal bo'lmagan `DATABASE_URL` bilan xato beradi — production'ga tushmasligi uchun.
+- `npm run demo` — bitta buyruq: web build + `wrangler dev` (:3000) + `vite preview` (:5173).
+- `docs/demo.md` — namoyish qo'llanmasi (tayyorgarlik, 7 qadamlik ~5 daqiqalik ssenariy, nosozliklar).
+- **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig`, port 5433).
+  Bazada 3 ta yangilik (3 tilda), 0 ta nashr, 17 birlik.
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **Production hali eski kod bilan ishlayapti** (diagnostika bilan tasdiqlandi: login `min:6`,
-  `change-password` 404). `wrangler deploy` qilinmagan.
-- **Production login hozir buzuq holatda:** baza admini yangi PBKDF2 formatida (o'tgan sessiyada
-  migratsiya qilingan), lekin production kod hali SHA-256 kutadi → mos emas. Deploy shuni hal qiladi.
-- **Deploy bloklangan:** `wrangler` autentifikatsiya qilinmagan (`.env` da CF token ham placeholder).
-  Foydalanuvchi `wrangler login` qilishi kerak.
-- `FRONTEND_URL` production'da **allaqachon bor** (CORS orqali tasdiqlandi) — 03-ning shu qadami shart emas.
-
-- **04-kontent production'ga qo'llanmagan:** migratsiya (staffCount, isAdvisory) + seed production Neon'ga
-  yozilmagan. Rule 8 (DELETE) va production yozuv — foydalanuvchi tasdig'i kutilmoqda.
-- **DIQQAT deploy tartibi:** yangi kod staffCount/isAdvisory ustunlarini kutadi. Migratsiya production'ga
-  qo'llanmasa, deploy'dan keyin `GET /api/structure` 500 beradi. **Avval migratsiya, keyin deploy.**
-- **Demo nashrlar hali production'da** (Mirzayev/Toshmatov mualliflari) — o'chirish production DELETE, tasdiq kerak.
+- **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan.** `npm run demo`
+  API'ni `wrangler dev` da ishga tushiradi va u aynan shu faylni o'qiydi — ya'ni namoyish
+  hozircha production bazasi ustida ishlaydi va admin panel orqali qo'shilgan har bir yozuv
+  production'ga yoziladi. **Namoyishdan oldin lokal Postgres kerak.** `docs/demo.md` 1-bo'limida
+  ogohlantirish bor. Bu foydalanuvchi zimmasidagi qadam.
+- Bu mashinada Node.js o'rnatilmagan (`node`/`npm` PATH da yo'q). Tekshiruvlar vaqtinchalik
+  scratchpad'ga yuklangan Node bilan bajarildi. Foydalanuvchi Node o'rnatishi kerak.
+- Production hali eski kod bilan ishlayapti; 03-production `wrangler login` dan keyin.
+- 04-kontent production'ga qo'llanmagan (migratsiya + seed).
+- Demo nashrlar hali production'da.
 
 ### Keyingi qadam
-1. 03-production 2-bosqichi: foydalanuvchi `wrangler login` qilgach → `wrangler secret list` →
-   (seed ixtiyoriy, tavsiya: yo'q) → `wrangler deploy` → deploy'dan keyingi tekshiruvlar.
-2. 03 tugagach keyingi topshiriqlar (fayl yuklash / R2, kontakt email, SEO).
+1. 05 ni foydalanuvchi qabul qilsin (namoyish ssenariysini `docs/demo.md` bo'yicha o'zi bir marta o'tsin).
+2. Navbat bo'yicha 12 (til prefiksi).
+3. 03-production alohida — `wrangler login` dan keyin.
 
 ### Ochiq savollar
-- 03 2-bosqichda production bazasini qayta seed qilaymi? Tavsiya: **yo'q** (demo sozlamalar ustiga yozadi,
-  admin allaqachon PBKDF2). Foydalanuvchi qaroriga havola.
+- Namoyish uchun lokal Postgres o'rnatiladimi, yoki namoyish production bazasi ustida
+  o'tkaziladimi? Tavsiya: **lokal** (05-topshiriq chegarasi shuni talab qiladi).
+
+### TOPSHIRIQLAR NAVBATI
+
+Tartib qat'iy. Oldingisi qabul qilinmaguncha keyingisiga o'tilmaydi.
+Har bir topshiriq tugagach PM sessiyasi tekshiradi.
+
+| № | Topshiriq | Holat |
+|---|---|---|
+| 05 | Namoyishga tayyorlash | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 12 | Til prefiksi | ⏳ Navbatda |
+| 11 | Logotip, 404, huquqiy bandlar | ⏸ Kutmoqda |
+| 06 | Xodimlar, laboratoriyalar, hamkorlar | ⏸ Kutmoqda |
+| 07 | Fayl yuklash va tahrirlagich | ⏸ Kutmoqda |
+| 08 | Xatoliklar jurnali | ⏸ Kutmoqda |
+| 09 | Murojaatlar va Resend | ⏸ Kutmoqda |
+| 10 | Qidiruv, imkoniyatlar, xavfsizlik | ⏸ Kutmoqda |
+
+03-production alohida turadi va `wrangler login` dan keyin bajariladi.
+
+**Foydalanuvchi zimmasidagi ochiq masalalar.** 373-son qaror bo'yicha
+yuriskonsult javobi. Logotipning vektor fayli. Xodimlar ma'lumoti va rasmlari.
+Hamkorlar ro'yxati. Institut telefon raqami.
+
+---
 
 ## HOZIRDA KIM NIMA USTIDA ISHLAYAPTI
 
@@ -67,6 +87,90 @@ CI birinchi marta muvaffaqiyatsiz bo'ladi (secret'lar + baseline hali yo'q — `
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-26 · 05 — Namoyishga tayyorlash
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(demo): settings-driven contacts and demo readiness`
+
+- **Aloqa ma'lumotlari kodda emas.** Yangi `apps/web/src/hooks/useSettings.ts` (react-query,
+  `staleTime` 5 daq, bitta so'rov). `Header.tsx`, `Footer.tsx`, `ContactPage.tsx` qattiq yozilgan
+  telefon/pochta/manzildan tozalandi. Zaxira qiymat qoldirilmadi — bo'sh sozlama = qator ko'rinmaydi.
+- **Seed sozlamalari:** haqiqiy manzil (3 tilda) + `energy@academy.uz`; `phone` va `working_hours` bo'sh.
+- **`packages/db/src/demo-content.ts`** — 3 ta yangilik (3 tilda, hujjat bilan tasdiqlangan yoki
+  neytral mavzular), `npm run db:demo`. Lokal bo'lmagan `DATABASE_URL` da ataylab xato beradi.
+  Seed'dagi o'ylab topilgan "yangi laboratoriya ochildi" yangiligi lokal bazadan olib tashlandi.
+- **AboutPage** tozalandi: o'ylab topilgan raqamlar (120+ xodim, 30+ yil) va 8 ta taxminiy
+  yo'nalish o'chirildi; o'rniga rasmiy tuzilmadan kelgan 6 laboratoriya va hujjatdagi raqamlar
+  (`INSTITUTE_STAFF`, `apps/web/src/lib/structure.ts` — HomePage bilan umumiy).
+- **Aralash til tuzatildi:** AboutPage, Footer, ContactPage (label, placeholder, zod xato xabarlari),
+  PublicationsPage, Helmet sarlavhalari — hammasi i18n'ga ko'chirildi, uchala json yangilandi.
+  Footer'dagi `t('common.language') === 'Til'` hiylasi `footer.pages` bilan almashtirildi.
+- **Nashrlar bo'sh holati** chiroyliroq: punktir ramka + "ro'yxat to'ldirilmoqda" izohi. Soxta nashr yo'q.
+- **`npm run demo`** qo'shildi (build + `wrangler dev` + `vite preview`), `docs/demo.md` yozildi.
+
+**Yo'l-yo'lakay topilgan va tuzatilgan (spetsifikatsiyada yo'q edi):**
+1. `apps/web/vite.config.js` va `.d.ts` — **repoga kommit qilingan generatsiya artefakti**
+   `vite.config.ts` ni soya qilardi (Vite `.js` ni ustun ko'radi). Undagi `envDir` yo'qligi sababli
+   `VITE_API_URL` production build'ga umuman tushmasdi → `vite preview` da sayt API'ni topolmasdi.
+   Fayllar o'chirildi va `.gitignore` ga qo'shildi (CLAUDE.md 16-qoida). Bu namoyishni buzadigan xato edi.
+2. `npm run build` ildizda **hech qachon ishlamagan**: `packages/shared` va `packages/db` da
+   `tsconfig.json` yo'q edi, `tsc --noEmit` yordam matnini chiqarib xato qaytarardi.
+   Ikkalasiga tsconfig qo'shildi, `packages/db` ga `build` skripti qo'shildi.
+
+**Nima tekshirildi va qanday:**
+- `tsc --noEmit` — apps/api, apps/web toza; `npm run build` (shared → db → api dry-run → web) toza.
+- **Brauzerda (headless Chromium, lokal Postgres `energetika_mig`):**
+  7 ochiq sahifa × 3 til = 21 yuklash — ko'rinib qolgan tarjima kaliti yo'q, konsol xatosi yo'q,
+  eski qattiq aloqa ma'lumoti yo'q; 375px da 7 sahifada gorizontal overflow 0px;
+  ingliz/rus sahifalarida o'zbekcha qoldiq topilmadi.
+- **Uchidan uchiga admin ssenariysi brauzerda bajarildi:** login → Yangiliklar → "Yangi qo'shish" →
+  3 tilda to'ldirish → Saqlash → admin ro'yxatida ko'rindi → ochiq `/news` sahifasida ko'rindi.
+  Sozlamalar → `phone` = `+998 71 000-00-00` → Saqlash → header/footer/Aloqa'da 3 ta `tel:` havola
+  paydo bo'ldi → `phone` yana bo'shatildi → 0 ta `tel:` havola. Sinov yozuvi bazadan o'chirildi.
+- `npm run demo` haqiqatan ishga tushirildi: web :5173 (200), API :3000 (200), yig'ilgan bundle
+  ichida `localhost:3000` bor.
+- Grep mezonlari: `998 71 262`, `262-00-00`, `info@energetika` — hammasi bo'sh.
+
+**Nima TEKSHIRILMADI:**
+- Kontakt formasini haqiqatan yuborish (POST) — sinalmadi.
+- `npm run demo` ni lokal baza bilan uchidan uchiga — `.dev.vars` production'ga qaragani uchun
+  o'sha rejimda faqat 200-javob va bundle tekshirildi, ma'lumot production'dan keldi.
+- Production'ga hech narsa yozilmadi va deploy qilinmadi.
+
+**Muhit haqida:** bu mashinada Node.js/npm o'rnatilmagan. Barcha tekshiruvlar scratchpad'ga
+vaqtincha yuklangan Node 22 bilan bajarildi (repoga hech narsa qo'shilmadi).
+
+**Qarorlar va sabablari:**
+- Telefon uchun zaxira qiymat yo'q: noto'g'ri raqamdan ko'ra bo'sh joy afzal (topshiriq talabi).
+- `working_hours` ham bo'shatildi — tasdiqlanmagan ma'lumot o'ylab topilmaydi.
+- Namoyish kontenti seed'dan ajratildi: seed production'da ishlatilishi mumkin, demo — hech qachon.
+- AboutPage raqamlari HomePage bilan bitta `INSTITUTE_STAFF` konstantasidan — ikki joyda
+  har xil raqam ko'rinishining oldini olish uchun.
+
+---
+
+### 2026-08-25 · PM holat tekshiruvi
+
+**Kim:** Cowork sessiyasi (PM roli) · Yozuvsiz (faqat o'qish + jurnal)
+
+| Tekshiruv | Natija |
+|---|---|
+| `git log` — 6 kommit, `origin/master` = `69b6548` = lokal HEAD | ✅ push tasdiqlandi |
+| `tsc --noEmit` (api + web) | ✅ toza |
+| `seed.ts` — 17 birlik, `staffCount` yig'indisi 25 (18 ilmiy + 7 ma'muriy) | ✅ hujjatga mos |
+| `deleteMany` qamrovi — aynan 6 ta legacy `dept-*` id | ✅ xavfsiz, keng emas |
+| Migratsiyalar `0_init` + `1_add_structure_staff_fields` | ✅ mavjud |
+| Live `GET /api/structure` | ❌ **hali eski demo** — `prof. Mirzayev A.K.` ochiq saytda |
+| Live frontend `/images/CREDITS.md` | ❌ 404 (SPA fallback) — yangi build deploy qilinmagan |
+
+**Topilgan kamchiliklar:**
+1. `docs/tasks/03-production.md`, `docs/tasks/04-kontent.md` va `docs/reference/` **kommit qilinmagan**.
+   04 bajarilgan, lekin uning spetsifikatsiyasi va manba hujjati repoda yo'q — keyingi sessiya
+   `bf01d7b` nima asosida qilinganini bilolmaydi.
+2. `deploy.yml` da `deploy-web` va `deploy-api` **parallel** ishlaydi. Migratsiya yiqilsa ham
+   frontend baribir deploy bo'ladi. `deploy-web` ga `needs: deploy-api` qo'shilishi kerak.
+
+---
 
 ### 2026-08-25 · GitHub Actions deploy pipeline (sozlanmagan)
 

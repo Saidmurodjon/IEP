@@ -153,37 +153,21 @@ async function main() {
   }
   console.log(`✓ Structure units created (${units.length} ta, hujjatga muvofiq)`);
 
-  // Seed sample news
-  await prisma.news.upsert({
-    where: { slug: 'institute-opening-ceremony' },
-    update: {},
-    create: {
-      slug: 'institute-opening-ceremony',
-      titleUz: 'Institutda yangi laboratoriya ochildi',
-      titleEn: 'New Laboratory Opened at the Institute',
-      titleRu: 'В институте открылась новая лаборатория',
-      summaryUz: 'Energetika muammolari institutida zamonaviy quyosh energetikasi laboratoriyasi ochildi.',
-      summaryEn: 'A modern solar energy laboratory has been opened at the Institute of Energy Problems.',
-      summaryRu: 'В Институте проблем энергетики открылась современная лаборатория солнечной энергетики.',
-      contentUz: '<p>Bugun institutimizda zamonaviy quyosh energetikasi laboratoriyasi tantanali ravishda ochildi. Bu laboratoriya O\'zbekistonda quyosh energiyasidan foydalanishni rivojlantirishga katta hissa qo\'shadi.</p>',
-      contentEn: '<p>Today, a modern solar energy laboratory was solemnly opened at our institute. This laboratory will make a significant contribution to the development of solar energy use in Uzbekistan.</p>',
-      contentRu: '<p>Сегодня в нашем институте торжественно открылась современная лаборатория солнечной энергетики. Эта лаборатория внесет значительный вклад в развитие использования солнечной энергии в Узбекистане.</p>',
-      publishedAt: new Date(),
-    },
-  });
-  console.log('✓ Sample news created');
-
   // Seed site settings
   const settings = [
     { key: 'site_name_uz', value: 'Energetika muammolari instituti' },
     { key: 'site_name_en', value: 'Institute of Energy Problems' },
     { key: 'site_name_ru', value: 'Институт проблем энергетики' },
-    { key: 'address_uz', value: 'Toshkent shahri, Mirzo Ulug\'bek tumani' },
-    { key: 'address_en', value: 'Tashkent city, Mirzo Ulugbek district' },
-    { key: 'address_ru', value: 'г. Ташкент, Мирзо-Улугбекский район' },
-    { key: 'phone', value: '+998 71 262-00-00' },
-    { key: 'email', value: 'info@energetika.uz' },
-    { key: 'working_hours', value: 'Mon-Fri: 9:00 - 18:00' },
+    // Manzil va pochta — foydalanuvchi tomonidan tasdiqlangan haqiqiy qiymatlar.
+    { key: 'address_uz', value: 'Toshkent shahri, Mirzo Ulug\'bek tumani, Do\'rmon yo\'li ko\'chasi, 40-uy' },
+    { key: 'address_en', value: '40 Dormon Yoli Street, Mirzo Ulugbek district, Tashkent' },
+    { key: 'address_ru', value: 'г. Ташкент, Мирзо-Улугбекский район, ул. Дурмон йули, 40' },
+    { key: 'email', value: 'energy@academy.uz' },
+    // Telefon va ish vaqti hali tasdiqlanmagan — BO'SH qoladi. Frontend bo'sh
+    // qiymatda o'sha qatorni umuman ko'rsatmaydi. Aniqlangach admin panel orqali
+    // kiritiladi; bu yerga taxminiy raqam yozilmaydi.
+    { key: 'phone', value: '' },
+    { key: 'working_hours', value: '' },
   ];
 
   for (const setting of settings) {

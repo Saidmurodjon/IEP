@@ -11,3 +11,12 @@ Thumbs.db
 *.log
 coverage/
 .turbo/
+
+# tsc tomonidan generatsiya qilingan konfiguratsiya (vite.config.ts ni soya qiladi)
+apps/web/vite.config.js
+apps/web/vite.config.d.ts
+
+# Maxfiy — ochiq repoga tushmasin
+*.docx
+~$*
+docs/reference/

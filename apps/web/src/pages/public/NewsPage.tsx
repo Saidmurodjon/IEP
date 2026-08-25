@@ -28,7 +28,7 @@ export default function NewsPage() {
   return (
     <>
       <Helmet>
-        <title>{t('news.title')} | Energetika instituti</title>
+        <title>{t('news.title')} | {t('common.institute_name')}</title>
       </Helmet>
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">

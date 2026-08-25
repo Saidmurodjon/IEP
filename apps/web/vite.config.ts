@@ -22,4 +22,9 @@ export default defineConfig({
       },
     },
   },
+  // Namoyish `vite preview` da o'tkaziladi. Port ataylab 5173 — API CORS
+  // ro'yxatida aynan shu manzil bor (`apps/api/src/index.ts`).
+  preview: {
+    port: 5173,
+  },
 });

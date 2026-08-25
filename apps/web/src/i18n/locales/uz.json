@@ -34,7 +34,9 @@
     "mission": "Missiya",
     "history": "Tarix",
     "mission_text": "Institutimiz O'zbekiston Respublikasi energetika muammolarini hal etishga qaratilgan fundamental va amaliy ilmiy tadqiqotlarni amalga oshiradi.",
-    "history_text": "Institut O'zbekiston Fanlar akademiyasi tizimida tashkil etilgan bo'lib, energetika sohasida ko'plab muhim ilmiy yutuqlarga erishgan."
+    "history_text": "Institut O'zbekiston Fanlar akademiyasi tizimida tashkil etilgan bo'lib, energetika sohasida ko'plab muhim ilmiy yutuqlarga erishgan.",
+    "research_areas": "Ilmiy laboratoriyalar va tadqiqot yo'nalishlari",
+    "history_extra": "Institut Fanlar akademiyasi Prezidiumining 2025-yil 27-fevraldagi qarori bilan tasdiqlangan tuzilma asosida faoliyat yuritadi."
   },
   "structure": {
     "title": "Institut tuzilmasi",
@@ -74,7 +76,9 @@
     "authors": "Mualliflar",
     "journal": "Jurnal",
     "download": "Yuklab olish",
-    "no_pubs": "Nashrlar topilmadi"
+    "no_pubs": "Nashrlar topilmadi",
+    "year": "Yil",
+    "empty_hint": "Institut nashrlari ro'yxati to'ldirilmoqda."
   },
   "contact": {
     "title": "Aloqa",
@@ -87,11 +91,23 @@
     "send": "Yuborish",
     "success": "Xabaringiz muvaffaqiyatli yuborildi!",
     "address": "Manzil",
-    "working_hours": "Ish vaqti"
+    "working_hours": "Ish vaqti",
+    "info": "Aloqa ma'lumotlari",
+    "reply_soon": "Tez orada javob beramiz.",
+    "send_another": "Yana xabar yuborish",
+    "name_placeholder": "Ism Familiya",
+    "subject_placeholder": "Mavzu",
+    "message_placeholder": "Xabaringiz...",
+    "err_name": "Ism kamida 2 ta harf",
+    "err_email": "Elektron pochta noto'g'ri",
+    "err_subject": "Mavzu kiriting",
+    "err_message": "Xabar kamida 10 ta belgi"
   },
   "footer": {
     "rights": "Barcha huquqlar himoyalangan",
-    "developed": "Sayt ishlab chiqilgan"
+    "developed": "Sayt ishlab chiqilgan",
+    "pages": "Sahifalar",
+    "description": "Energetika sohasidagi ilmiy tadqiqotlar va innovatsiyalar markazi. Muqobil energiya va energiya samaradorligi yo'nalishida faoliyat yuritadi."
   },
   "admin": {
     "login": "Kirish",
@@ -128,6 +144,10 @@
     "not_found": "Topilmadi",
     "back": "Orqaga",
     "search": "Qidirish",
-    "language": "Til"
+    "language": "Til",
+    "academy": "O'zbekiston Respublikasi Fanlar akademiyasi",
+    "institute_name": "Energetika muammolari instituti",
+    "institute_name_line1": "Energetika muammolari",
+    "institute_name_line2": "instituti"
   }
 }

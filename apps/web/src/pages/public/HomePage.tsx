@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
+import { INSTITUTE_STAFF } from '@/lib/structure';
 import {
   ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, GraduationCap, Users, Zap,
 } from 'lucide-react';
@@ -37,16 +38,16 @@ export default function HomePage() {
   // Raqamlar rasmiy tuzilma hujjatidan (2025-02-27). Nashr soni bazadan (jonli).
   const totalPubs = pubsData?.data?.total ?? 0;
   const stats = [
-    { value: '6', label: t('home.stats_labs'), icon: Beaker },
-    { value: '18', label: t('home.stats_scientists'), icon: GraduationCap },
-    { value: '29', label: t('home.stats_staff'), icon: Users },
+    { value: String(INSTITUTE_STAFF.labs), label: t('home.stats_labs'), icon: Beaker },
+    { value: String(INSTITUTE_STAFF.scientists), label: t('home.stats_scientists'), icon: GraduationCap },
+    { value: String(INSTITUTE_STAFF.total), label: t('home.stats_staff'), icon: Users },
     { value: String(totalPubs), label: t('home.stats_publications'), icon: BookOpen },
   ];
 
   return (
     <>
       <Helmet>
-        <title>Energetika muammolari instituti</title>
+        <title>{t('common.institute_name')}</title>
         <meta name="description" content={t('home.hero_desc')} />
       </Helmet>
 
