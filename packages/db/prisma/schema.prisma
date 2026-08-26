@@ -219,3 +219,40 @@ model Document {
 
   @@map("documents")
 }
+
+/// Xatoliklar jurnali.
+///
+/// Yozuvlar `fingerprint` bo'yicha GURUHLANADI: bir xil xato takrorlansa
+/// yangi qator yaratilmaydi, `count` oshadi va `lastSeenAt` yangilanadi.
+/// Busiz bitta takrorlanuvchi xato bazani bir kechada to'ldirib qo'yadi.
+///
+/// DIQQAT: bu jadvalga parol, token, `Authorization`/`Cookie` sarlavhasi,
+/// murojaat matni yoki ulanish satri HECH QACHON tushmasligi kerak —
+/// `apps/api/src/lib/redact.ts` shuni ta'minlaydi.
+model ErrorLog {
+  id          String   @id @default(cuid())
+  /// Xato matni + zanjirning birinchi qatori + yo'ldan olingan qisqa xesh.
+  fingerprint String   @unique
+  /// `server` yoki `client`
+  source      String
+  /// `error`, `warning`, `info`
+  level       String   @default("error")
+  /// 07-topshiriqdagi xato kodi, agar bo'lsa
+  code        String?
+  message     String   @db.Text
+  stack       String?  @db.Text
+  path        String?
+  method      String?
+  statusCode  Int?
+  userAgent   String?
+  adminId     String?
+  count       Int      @default(1)
+  firstSeenAt DateTime @default(now())
+  lastSeenAt  DateTime @default(now())
+  isResolved  Boolean  @default(false)
+  note        String?  @db.Text
+
+  @@index([lastSeenAt])
+  @@index([isResolved, lastSeenAt])
+  @@map("error_logs")
+}

@@ -13,53 +13,53 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-26
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06 va 07 kommitlari lokal (`origin/master` = `69b6548`).
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06, 07 va 08 kommitlari lokal
+(`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **07-kontent boshqaruvi tugadi.** Moderator endi dasturchisiz yangilik yozadi, matn ichiga
-  rasm qo'yadi, hujjat va nashr fayllarini yuklaydi.
-- **Fayl ombori:** R2 binding `MEDIA`, `POST /api/uploads` (magic bayt tekshiruvi, hajm ikki
-  bosqichda, SVG rad etiladi), ochiq `GET /api/files/:key` uzoq keshli, `POST /api/uploads/cleanup`.
-  Binding yo'q bo'lsa `503 STORAGE_UNAVAILABLE` (fail closed).
-- **Fayl hayot sikli:** rasm almashtirilsa eski fayl R2 dan o'chadi; yozuv o'chirilsa unga
-  tegishli barcha fayllar o'chadi; matndan rasm olib tashlansa ombor o'z-o'zidan tozalanadi.
-  O'chirish faqat `media_files` da qayd etilgan kalitlar bo'yicha.
-- **Sanitizatsiya (CLAUDE.md 7-qoida bajarildi):** serverda `xss` allowlist bilan saqlashdan
-  oldin, frontendda DOMPurify bilan ko'rsatishdan oldin. `img` faqat `/api/files/` dan.
-- **Tiptap tahrirlagich** (lazy chunk, 408 KB — ochiq sahifalarga tushmaydi): qalin/qiya, H2/H3,
-  ro'yxatlar, havola, iqtibos, rasmni Cmd+V va sudrab tashlash, Word'dan nusxani tozalash.
-- **Mijoz tomonida rasm tayyorlash:** 1920 px (xodim rasmi 800), WebP 0.85, foydalanuvchiga
-  "2400 → 1920, 53 KB → 5 KB" xabari.
-- **O'zbekcha xabarlar:** yagona `useToast()`, xato kodi API dan (`{error:{code}}`), matn
-  `locales/*.json` dagi `errors.<KOD>` dan, kod xabar yonida ko'rsatiladi.
-- **Moderator qulayliklari:** slug avtomatik (`o'`/`g'` apostrofsiz), til yorliqlari
-  to'ldirilganlik belgisi bilan, "O'zbekchadan nusxa", tarjimasiz maydonlar bir marta,
-  qoralama, sana sukut bo'yicha bugun, saqlanmagan o'zgarish ogohlantirishi.
-- **Yangi bo'lim:** `Document` modeli, ochiq `/documents` va `/admin/documents`.
+- **08-xatoliklar jurnali tugadi.** Server va brauzer xatolari bazaga yoziladi, barmoq izi
+  bo'yicha guruhlanadi, `/admin/logs` da ko'riladi.
+- **Guruhlash va throttle:** bir xil xato bitta yozuvga tushadi; bazaga daqiqasiga bitta
+  yozish bajariladi, oradagi takrorlanishlar yo'qolmaydi — keyingi yozishda `count` ga
+  qo'shiladi. 11 marta yuborilgan xato → 1 yozuv, `count = 11`, 2 ta baza amali.
+- **`redact.ts` va 23 ta birlik sinovi** — loyihadagi **birinchi testlar** (vitest,
+  `npm test --workspace=apps/api`). Parol, token, `Authorization`/`Cookie`, ulanish satri
+  jurnalga tushmaydi; pochta `a***@iep.uz` shaklida niqoblanadi.
+- **Halqa himoyasi:** jurnalga yozishning o'zi xato bersa faqat `console.error` chiqadi.
+  5 ta yiqiladigan so'rovda 1 ta zaxira yozuv, stack overflow yo'q, jarayon tirik.
+- **React xato chegarasi** uch joyda: `main.tsx` (eng tashqi), `PublicLayout` va
+  `AdminLayout` ichida — sahifa yiqilsa sarlavha/menyu joyida qoladi. Admin paneldagi
+  xato ochiq sahifalarni yiqitmaydi.
+- **Brauzer xatolarini yig'ish:** `window.onerror`, `unhandledrejection`, `api.ts` da 5xx va
+  tarmoq uzilishlari (4xx qayd etilmaydi). To'plamda 5 soniyada, sahifa yopilganda
+  `sendBeacon`, seansda eng ko'p 20 ta.
+- **`POST /api/logs/client`** ochiq, lekin IP bo'yicha daqiqasiga 10 ta (11-chisi 429).
+- **Boshqaruv panelida** so'nggi 24 soatdagi hal qilinmagan xatolar soni, nol bo'lmasa qizil.
 - **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig` 5433 +
-  **miniflare R2**). Bazada 3 yangilik, 0 media, 0 hujjat, 0 xodim, 0 hamkor.
+  miniflare R2). Bazada 3 yangilik, 1 media, 0 xato yozuvi.
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **R2 bucket production'da yaratilmagan.** `wrangler r2 bucket create energetika-media`
-  bajarilishi va deploy qilinishi kerak, aks holda yuklash 503 beradi.
-- **Migratsiyalar 2, 3, 4 production'ga qo'llanmagan.** Lokal bazada qo'llandi.
-  **Deploy'dan OLDIN qo'llanishi shart.**
-- **Egasiz fayllarni tozalash cron sozlanmagan** — `POST /api/uploads/cleanup` hozircha qo'lda.
-- **`npm audit` 19 ta zaiflik** (14 high, 1 critical) — hammasi mavjud build vositalarining
-  tranzitiv bog'liqliklari (vite, wrangler, prisma, concurrently, miniflare/sharp), 07 da
-  qo'shilgan paketlardan emas. Alohida topshiriq sifatida ko'rilishi kerak.
+- **R2 bucket production'da yaratilmagan** va **migratsiyalar 2–5 production'ga qo'llanmagan.**
+  Deploy'dan OLDIN ikkalasi ham bajarilishi shart.
+- **Throttle va rate limit izolyat xotirasida** — Workers'da har bir izolyat o'zinikini
+  saqlaydi. Aniq kafolat uchun KV yoki Durable Object kerak (auth rate limit bilan bir xil
+  cheklov, CLAUDE.md 5-jadval, 4-band).
+- **Tozalash cron sozlanmagan** — `POST /api/logs/cleanup` va `POST /api/uploads/cleanup`
+  hozircha qo'lda. Kodda `TODO` bor.
+- **Testlar faqat `redact.ts` ni qamraydi**, CI yo'q (CLAUDE.md 10-muammo, qisman).
+- **`npm audit` 19 ta zaiflik** — build vositalarining tranzitiv bog'liqliklari.
 - **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan** (`docs/demo.md`).
-- Haqiqiy 404 status kodi yo'q; sayt xaritasi yo'q; bu mashinada Node.js o'rnatilmagan.
-- Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda (`docs/kerakli-malumotlar.md`).
+- Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda
+  (`docs/kerakli-malumotlar.md`).
 
 ### Keyingi qadam
-1. 07 ni PM tekshirsin.
-2. Navbat bo'yicha 08 (xatoliklar jurnali).
-3. Production'ga chiqishdan oldin: R2 bucket + migratsiyalar 2–4.
+1. 08 ni PM tekshirsin.
+2. Navbat bo'yicha 09 (murojaatlar va Resend).
+3. Production'ga chiqishdan oldin: R2 bucket + migratsiyalar 2–5.
 
 ### Ochiq savollar
-- Egasiz fayllarni tozalash cron'i qachon sozlanadi (Cloudflare Cron Trigger)?
-- Laboratoriya tavsiflari institut tomonidan tasdiqlanadimi?
+- Throttle/rate limit uchun KV yoki Durable Object qachon ulanadi?
+- Cron trigger (jurnal va fayl tozalash) qachon sozlanadi?
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -73,8 +73,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 11 | Logotip, 404, huquqiy bandlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 06 | Xodimlar, laboratoriyalar, hamkorlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 07 | Fayl yuklash va tahrirlagich | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 08 | Xatoliklar jurnali | ⏳ Navbatda |
-| 09 | Murojaatlar va Resend | ⏸ Kutmoqda |
+| 08 | Xatoliklar jurnali | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 09 | Murojaatlar va Resend | ⏳ Navbatda |
 | 10 | Qidiruv, imkoniyatlar, xavfsizlik | ⏸ Kutmoqda |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
@@ -98,6 +98,72 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-26 · 08 — Xatoliklarni qayd etish tizimi
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(observability): error logging with grouping and redaction`
+
+**Baza.** `ErrorLog` modeli, `fingerprint` unikal indeks bilan, migratsiya `5_add_error_logs`.
+
+**Server.** `lib/redact.ts` (maxfiy kalitlar, `Bearer`/JWT, ulanish satri, pochta niqoblash,
+so'rov tanasi butunlay tushiriladi), `lib/error-log.ts` (FNV-1a barmoq izi, guruhlash,
+throttle + kutayotgan hisoblagich, qator chegarasi, TTL tozalash), `routes/logs.ts`
+(ro'yxat/filtr/sahifalash, bitta yozuv, PATCH, DELETE, ochiq `POST /client` rate limit bilan,
+`POST /cleanup`). `index.ts` da `app.onError` — jurnalga yozish `waitUntil()` ichida, javob
+kutmaydi. Alohida qayd etiladigan hodisalar: login rate limit (`RATE_LIMITED`), yaroqsiz
+token (`INVALID_TOKEN`), sozlama yo'qligi (`CONFIG_MISSING`), R2 xatolari.
+
+**Frontend.** `lib/client-logger.ts` (global tutuvchilar, 5 soniyalik to'plam, `sendBeacon`,
+seansda 20 ta chegara, o'z endpointini qayd etmaydi), `components/ErrorBoundary.tsx`
+(uchta joyda: `main.tsx`, `PublicLayout`, `AdminLayout`), `pages/admin/AdminLogsPage.tsx`
+(filtrlar, ochiladigan tafsilot, hal qilingan belgisi, izoh, tozalash), boshqaruv panelida
+24 soatlik hal qilinmagan xatolar ko'rsatkichi.
+
+**Nima tekshirildi va qanday:**
+- `tsc --noEmit` (api + web), `npm run build`, `wrangler deploy --dry-run` — toza.
+  i18n: uchala faylda 263 tadan kalit, farq yo'q.
+- **Birlik sinovlari: 23/23 o'tdi** (`redact.test.ts`). Sinovlar yozilgan zahoti **haqiqiy
+  xato topdi**: `DATABASE_URL` kaliti maxfiy deb tanilmayotgan edi, chunki kalit nomini
+  normallashtirish ikki joyda har xil edi (biri `_` ni olib tashlardi, ikkinchisi yo'q).
+- **Guruhlash (curl):** bir xil xato 10 marta → 1 yozuv, `count = 1` (throttle);
+  61 soniyadan keyin 11-chi yuborishda `count = 11` — ya'ni bazaga 2 ta yozish amali
+  bajarildi, lekin takrorlanishlar yo'qolmadi.
+- **Rate limit:** 12 ta so'rovdan 9 tasi 202, qolgani **429**.
+- **Maxfiy ma'lumot:** parol, JWT, ulanish satri va foydalanuvchi nomi bilan xato
+  yuborildi → jurnalda `SuperMaxfiy123`, `SIGNATURE`, `DbParol`, `neondb_owner`,
+  `eyJhbGciOiJIUzI1NiJ9` **yo'q**; pochta `a***@iep.uz` shaklida; to'liq pochta yo'q.
+- **Halqa himoyasi:** baza mavjud bo'lmagan holatda 5 ta yiqiladigan so'rov →
+  `[error-log] recordError` faqat **1 marta**, stack overflow yo'q, server javob beryapti.
+- **Brauzerda:** `window.onerror` va `unhandledrejection` orqali tashlangan xatolar
+  `/admin/logs` da ko'rindi; manba filtri ishladi; hal qilingan deb belgilash va izoh
+  saqlandi; boshqaruv panelida ko'rsatkich chiqdi.
+- **Xato chegarasi:** `/api/news` javobi buzilgan holatda sahifa **oq qolmadi** —
+  o'zbekcha xato sahifasi, yangilash tugmasi va hodisa raqami chiqdi, **sarlavha va footer
+  joyida qoldi**; ingliz va rus tillarida ham tarjima qilingan; admin paneldagi xato ochiq
+  sahifani yiqitmadi.
+
+**Nima TEKSHIRILMADI:**
+- Throttle/rate limitning bir nechta Workers izolyati orasidagi xatti-harakati (lokal
+  harness bitta jarayon).
+- TTL tozalash (30/90 kun) haqiqiy muddat bilan — mantiq o'qib chiqildi, `cleanup`
+  endpointi ishga tushirildi va 0 qaytardi.
+- 5000 qatorlik chegaradan oshganda eski yozuvlarning o'chirilishi.
+- Production'ga hech narsa yozilmadi va deploy qilinmadi.
+
+**Qarorlar va sabablari:**
+- **Throttle + kutayotgan hisoblagich.** Topshiriqda ikkita talab bor edi: "10 marta
+  takrorlanganda `count` 10 ga teng" va "bir daqiqada bitta yozish". Ular faqat shu yo'l
+  bilan birga bajariladi: takrorlanish xotirada to'planadi va keyingi ruxsat etilgan
+  yozishda `count` ga qo'shiladi. Aks holda yo baza urib ketardi, yo hisob yo'qolardi.
+- **Barmoq izida raqamlar va identifikatorlar `#` ga almashtiriladi** — aks holda
+  `id=abc` va `id=xyz` alohida yozuvlarga bo'linib ketardi.
+- **Xato chegarasi layout ICHIDA.** Avval marshrut darajasida edi va xato chiqqanda
+  sarlavha ham yo'qolardi; endi faqat sahifa qismi almashadi, foydalanuvchi boshqa
+  bo'limga o'ta oladi.
+- **`sendBeacon` faqat sahifa yopilayotganda** — oddiy holatda `fetch` ishlatiladi,
+  chunki `sendBeacon` javobni ko'rsatmaydi va rate limit natijasini bilib bo'lmaydi.
+
+---
 
 ### 2026-08-26 · 07 — Fayl yuklash, matn tahrirlagich va moderator qulayligi
 
@@ -256,128 +322,6 @@ Kodda `TODO: institut tasdiqlashi kerak` izohi.
   ishdan ketgan xodim yozuvi o'chirilmasligi kerak.
 - Lenta uzluksizligi CSS `translateX(-50%)` bilan: ro'yxat ikki marta chizilgani uchun
   yarim yo'lda boshlang'ich holat takrorlanadi, sakrash ko'rinmaydi.
-
----
-
-### 2026-08-26 · 11 — Logotip, 404 sahifasi va huquqiy bandlar
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(brand): institute logo, 404 page and legal notices`
-
-**A. Logotip.** `docs/reference/logo-original.jpg` dan (407×410 JPEG) besh fayl tayyorlandi:
-`logo-emblem.png`, `logo-full.png`, `og-image.png` (1200×630, navy fon), `favicon-32.png`,
-`apple-touch-icon.png`. Oq fon flood-fill bilan olib tashlandi — faqat CHETDAN ulangan oq soha,
-emblema ichidagi oq halqa joyida. JPEG shovqini tufayli chegarada 3 pikselli yumshoq alfa
-o'tishi qilindi (birinchi urinishda to'q fonda qora nuqtalar chiqqandi).
-Sarlavhada **faqat emblema** (yozuvli variant emas — nom yonida matn sifatida turadi va tilga
-qarab o'zgaradi). Footerda to'liq logotip, lekin **oq maydonchada**: logotip yozuvining bir qismi
-to'q ko'k, footer foni ham to'q — aks holda ko'rinmasdi. `index.html` da favicon va og meta
-almashtirildi, `favicon.svg` o'chirildi. **Palitra o'zgartirilmadi** (A3 talabi).
-
-**B. 404.** `NotFoundPage` to'ldirildi: `noindex, follow`, qidiruv maydoni (o'chirilgan holda,
-10-topshiriq uchun `TODO`), Bosh sahifa / Institut haqida / Yangiliklar / Aloqa havolalari,
-admin havolasi yo'q. `AdminNotFoundPage` — admin ichidagi noma'lum manzil uchun alohida sahifa,
-`noindex, nofollow` va boshqaruv paneliga qaytish havolasi. i18n kalitlari `notFound` bo'limida
-(12-topshiriqdagi vaqtinchalik `notfound` kalitlari olib tashlandi).
-
-**C. Huquqiy.** Footerda foydalanish sharti (3 tilda, `footer.usage_terms`) va sayt oxirgi
-yangilangan sanasi. Sana `GET /api/settings` javobiga qo'shilgan `lastUpdatedAt` dan keladi —
-News/Publication/StructureUnit/SiteSetting `updatedAt` maksimumi, alohida so'rovsiz.
-Yangilikka `sourceName`/`sourceUrl` + migratsiya `2_add_news_source`; API zod sxemasi, ro'yxat
-`select`i va admin forma yangilandi (formada 373-son qarorning 4-bandi haqida eslatma).
-Yangilik sahifasida manba faqat to'ldirilgan bo'lsa ko'rinadi, havola `rel="noopener noreferrer nofollow"`.
-Sana formati: `src/lib/date.ts` — `dd.MM.yyyy`, `date-fns` ning `uz` (lotin), `enUS`, `ru`
-sozlamalari ulandi. Oldin `NewsDetailPage` da `dd MMMM yyyy` bo'lgani uchun inglizcha oy nomi chiqardi.
-
-**Nima tekshirildi va qanday:**
-- `tsc --noEmit` (api + web) toza; `npm run build` toza. Migratsiya lokal bazaga `migrate deploy`
-  bilan qo'llandi, `prisma generate` qayta ishga tushirildi.
-- **Brauzerda (headless Chromium, lokal baza):**
-  - 3 tilda bosh sahifa: sarlavha `logo-emblem.png`, footer `logo-full.png` — ikkalasi ham
-    yuklandi (`naturalWidth > 0`); en/ru sarlavhada o'zbekcha logo yozuvi takrorlanmadi;
-    footerda foydalanish sharti va sana `26.08.2026`; konsol xatosi va 4xx so'rov yo'q.
-  - `/favicon-32.png`, `/apple-touch-icon.png`, `/images/og-image.png`, ikkala logotip — 200.
-  - 404 uch tilda: `robots=noindex, follow`, sarlavha+footer joyida, qidiruv maydoni bor,
-    to'rtta bo'lim havolasi til prefiksi bilan, admin havolasi yo'q; havola bosilib tekshirildi.
-  - Admin 404: `/admin/mavjud-emas` → 404 sahifasi, `noindex, nofollow`, qaytish havolasi ishladi.
-  - Admin panelda manba maydonlari bilan yangilik qo'shildi → `/uz/news/manba-sinovi` da
-    "Manba: UzA" va havola ko'rindi; manbasiz yangilikda blok chiqmadi. Sinov yozuvi o'chirildi.
-  - Sanalar uchala tilda `26.08.2026`; oy nomi bilan sana yo'q (bitta "February" mosligi —
-    yangilik MATNI ichidagi qaror sanasi, format emas, tekshirib ko'rildi).
-  - Mobil 375px: bosh sahifa va 404 — gorizontal overflow 0px.
-
-**Nima TEKSHIRILMADI:**
-- Haqiqiy `404` HTTP status kodi (Pages `_redirects` hammasini `200` qiladi) — SEO topshirig'i.
-- Ijtimoiy tarmoqda ulashish (og rasm) — faqat fayl mavjudligi va meta teglar tekshirildi.
-- Favicon haqiqiy brauzer yorlig'ida — headless rejimda ko'rinmaydi, faqat 200 javob tekshirildi.
-- Production'ga hech narsa yozilmadi; **migratsiya production'ga qo'llanmadi**.
-
-**Qarorlar va sabablari:**
-- Footerda to'liq logotip oq maydonchada — spetsifikatsiya "footerda to'liq logotip" deydi, lekin
-  yozuvi to'q ko'k va to'q footerda ko'rinmasdi; oq maydoncha logotipni asl ko'rinishida saqlaydi.
-- `lastUpdatedAt` alohida endpoint emas, `/api/settings` javobiga qo'shildi — footer allaqachon
-  shu so'rovni qiladi, ikkinchi so'rov keraksiz.
-- Sana raqamli (`dd.MM.yyyy`) bo'lgani uchun til sozlamasi natijani o'zgartirmaydi, lekin
-  `date-fns` locale'lari baribir ulandi — kelajakda uzun format kerak bo'lsa tayyor tursin.
-
----
-
-### 2026-08-26 · 12 — Manzillarga til prefiksi
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `refactor(i18n): language prefixed routes with hreflang`
-
-- **`src/lib/routes.ts`** (yangi) — `SUPPORTED_LANGS`, `PUBLIC_ROUTES` (ochiq sahifalarning
-  yagona ro'yxati), `splitLangPrefix`, `localizePath`, `matchesPublicRoute`, `detectPreferredLang`.
-- **`App.tsx`** — ochiq marshrutlar `/:lang` ostiga olindi. `LanguageGuard` prefiksni tekshiradi
-  va `i18next` ni manzilga moslaydi; `UnprefixedRoute` prefikssiz manzilni `PUBLIC_ROUTES` bo'yicha
-  taniydi (tanilsa `/uz/...`, tanilmasa 404). Admin bloki qo'lga tegilmadi.
-- **`LocalizedLink` + `LocalizedNavLink`** (yangi) va `useLocalizedPath`/`useCurrentLang` hooklari.
-  Header, Footer, HomePage, NewsPage, NewsDetailPage, NotFoundPage — hammasi ko'chirildi.
-- **Til almashtirgich** endi `i18n.changeLanguage` chaqirmaydi, `navigate()` bilan prefiksni
-  almashtiradi va joriy yo'l, `search`, `hash` saqlanadi.
-- **`SeoHead`** (yangi) — 8 ta ochiq sahifadagi alohida `Helmet` bloklari o'rniga. `html lang`,
-  `canonical`, `hreflang` × 3 + `x-default`. Asosiy manzil `site_url` sozlamasidan;
-  seed'ga va admin Sozlamalar sahifasiga qo'shildi.
-- **`NotFoundPage`** (yangi, sodda) — 11-topshiriqda brend ko'rinishi beriladi.
-- **CLAUDE.md 15-qoida** qo'shildi (ochiq qismda faqat `LocalizedLink`). Shu sababli 4.4 dagi
-  qoidalar 15–18 → **16–19** ga surildi; oldingi jurnal yozuvlaridagi "16-qoida" endi 17.
-
-**Nima tekshirildi va qanday:**
-- `tsc --noEmit` (api, web) toza; `npm run build` toza.
-- **Brauzerda (headless Chromium, lokal baza):**
-  - `/` → brauzer `en` bo'lsa `/en`, `ru` bo'lsa `/ru`, `fr` bo'lsa `/uz`; xotirada `ru` bo'lsa `/ru`.
-  - `/uz/news`, `/ru/news`, `/en/news` — h1 mos tilda, `html lang` mos, canonical + 4 ta alternate.
-  - `/xx/news`, `/uzbekistan`, `/uz/qwerty` → **404**, bosh sahifaga yo'naltirilmadi.
-  - `/news`, `/about`, `/contact`, `/news/:slug` → `/uz/...` ga yo'naltirildi.
-  - Ichki sahifada (`/uz/news/rasmiy-veb-sayt-ishga-tushdi`) ruschaga o'tildi →
-    `/ru/news/rasmiy-veb-sayt-ishga-tushdi`, sahifa saqlandi.
-  - `/en/about` yangilandi — til va manzil saqlandi. Xotirada `uz` bo'lsa ham `/ru/laboratories`
-    havolasi ruscha ochildi (ulashilgan havola sinovi).
-  - 8 sahifa × 3 til = **24 yuklash**: canonical, 4 ta alternate, `html lang` — hammasi to'g'ri,
-    konsol xatosi yo'q.
-  - **Admin buzilmagan:** `/admin/login` → login → yangilik qo'shish (3 tilda) → admin ro'yxatida →
-    `/uz/news` da ko'rindi → kartochka havolasi `/uz/news/<slug>`, ruschada `/ru/news/<slug>`.
-    Sinov yozuvi bazadan o'chirildi.
-- **grep:** `to="/` — ochiq qismda faqat `LocalizedLink`, prefikssiz qolgani yo'q; qolgan
-  oddiy `Link`/`Navigate` faqat `/admin/...` (Footer'dagi admin havolasi, DashboardPage,
-  AdminLayout, App.tsx). `navigate(` — faqat admin va til almashtirgich.
-
-**Nima TEKSHIRILMADI:**
-- Haqiqiy HTTP 302 — SPA ichida yo'naltirish klient tomonida. Cloudflare Pages uchun
-  `_redirects` qoidalari yozilmadi (SEO topshirig'iga qoldi).
-- Sayt xaritasi hosil qilinmadi (topshiriq chegarasidan tashqarida).
-- Production'ga hech narsa yozilmadi va deploy qilinmadi.
-
-**Qarorlar va sabablari:**
-- Prefikssiz `/news` va noto'g'ri `/xx/news` ni ajratish uchun `PUBLIC_ROUTES` ro'yxati
-  ishlatildi: aks holda `/news` "til = news" deb tushunilib 404 berardi.
-- `LanguageGuard` `i18n.changeLanguage` ni render paytida chaqiradi (resurslar bundle ichida,
-  so'rov ketmaydi) — `useEffect` da qilinsa birinchi kadr eski tilda chizilardi.
-- `PublicLayout` `LanguageGuard` dan yuqorida turadi, shunda 404 sahifasi ham sarlavha va
-  footer bilan ko'rinadi.
-
-**Boshqa:** oldingi sessiyalardan qolgan `.github/workflows/deploy.yml` o'chirilishi tiklandi —
-`docs/deploy.md` va `docs/ROADMAP.md` hamon shu faylga tayanadi, o'chirish sababi hech qayerda
-qayd etilmagan edi. `docs/tasks/*.md` va `CLAUDE.md` o'zgarishi ham shu kommitga kiritildi.
 
 ---
 

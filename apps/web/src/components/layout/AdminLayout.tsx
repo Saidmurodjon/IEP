@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Newspaper, BookOpen, Building2,
   Settings, MessageSquare, LogOut, Zap, Menu, X,
-  Users, Handshake, FileText,
+  Users, Handshake, FileText, Bug,
 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
 import { useAuthStore } from '@/store/auth';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const navItems = [
   { to: '/admin/dashboard', icon: LayoutDashboard, key: 'dashboard' },
@@ -18,6 +19,7 @@ const navItems = [
   { to: '/admin/partners', icon: Handshake, key: 'partners' },
   { to: '/admin/documents', icon: FileText, key: 'documents' },
   { to: '/admin/messages', icon: MessageSquare, key: 'messages' },
+  { to: '/admin/logs', icon: Bug, key: 'logs' },
   { to: '/admin/settings', icon: Settings, key: 'settings' },
 ];
 
@@ -112,7 +114,10 @@ export default function AdminLayout() {
         </div>
 
         <div className="flex-1 overflow-auto">
-          <Outlet />
+          {/* Sahifa yiqilsa yon menyu joyida qoladi */}
+          <ErrorBoundary scope="admin">
+            <Outlet />
+          </ErrorBoundary>
         </div>
       </div>
     </div>

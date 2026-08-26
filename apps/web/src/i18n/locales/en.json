@@ -153,7 +153,9 @@
     "copy_from_uz": "Copy from Uzbek",
     "filled": "filled",
     "empty_tab": "empty",
-    "unsaved_warning": "You have unsaved changes. Leave the page?"
+    "unsaved_warning": "You have unsaved changes. Leave the page?",
+    "logs": "Error log",
+    "unresolved_errors": "Unresolved errors"
   },
   "common": {
     "loading": "Loading...",
@@ -272,5 +274,40 @@
     "download": "Download",
     "number": "Document number",
     "date": "Date"
+  },
+  "logs": {
+    "source": "Source",
+    "level": "Level",
+    "status": "Status",
+    "all": "All",
+    "server": "Server",
+    "client": "Browser",
+    "level_error": "Error",
+    "level_warning": "Warning",
+    "level_info": "Info",
+    "resolved": "Resolved",
+    "unresolved": "Unresolved",
+    "from": "From",
+    "to": "To",
+    "first_seen": "First",
+    "last_seen": "Last",
+    "stack": "Stack trace",
+    "note": "Note",
+    "note_placeholder": "Technical note",
+    "mark_resolved": "Mark as resolved",
+    "mark_unresolved": "Mark as unresolved",
+    "save_note": "Save note",
+    "cleanup": "Clean up old entries",
+    "cleaned": "{{count}} old entries deleted.",
+    "empty": "No errors recorded.",
+    "empty_hint": "That is a good sign. Errors will show up here when they happen."
+  },
+  "errorBoundary": {
+    "title": "Something went wrong while displaying this page",
+    "text": "This is a fault on our side. Try reloading the page — that usually helps.",
+    "reload": "Reload page",
+    "home": "Back to home page",
+    "dashboard": "Back to dashboard",
+    "incident": "Incident ID"
   }
 }

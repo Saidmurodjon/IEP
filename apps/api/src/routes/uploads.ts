@@ -5,6 +5,7 @@ import { getStorage, buildKey, StorageUnavailableError } from '../lib/storage';
 import {
   detectType, documentExtension, FORMAT_LABELS, LIMITS, type UploadKind,
 } from '../lib/file-types';
+import { logEvent } from '../lib/error-log';
 import type { AppContext } from '../index';
 
 export const uploadsRouter = new Hono<AppContext>();
@@ -21,6 +22,11 @@ uploadsRouter.post('/', requireAuth, async (c) => {
   } catch (err) {
     if (err instanceof StorageUnavailableError) {
       console.error('Upload rejected: R2 binding MEDIA is missing');
+      logEvent(c, {
+        source: 'server', level: 'error', code: 'STORAGE_UNAVAILABLE',
+        message: 'R2 binding MEDIA is not configured',
+        path: new URL(c.req.url).pathname, method: c.req.method, statusCode: 503,
+      });
       return fail(c, 'STORAGE_UNAVAILABLE', 'Media storage is not configured');
     }
     throw err;
@@ -88,6 +94,11 @@ uploadsRouter.post('/', requireAuth, async (c) => {
     });
   } catch (err) {
     console.error('R2 put failed:', err instanceof Error ? err.message : err);
+    logEvent(c, {
+      source: 'server', level: 'error', code: 'UPLOAD_FAILED',
+      message: `R2 put failed: ${err instanceof Error ? err.message : 'unknown'}`,
+      path: new URL(c.req.url).pathname, method: c.req.method, statusCode: 500,
+    });
     return fail(c, 'UPLOAD_FAILED', 'Storage write failed');
   }
 

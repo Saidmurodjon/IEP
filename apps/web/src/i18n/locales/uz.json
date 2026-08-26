@@ -153,7 +153,9 @@
     "copy_from_uz": "O'zbekchadan nusxa ko'chirish",
     "filled": "to'ldirilgan",
     "empty_tab": "bo'sh",
-    "unsaved_warning": "Saqlanmagan o'zgarishlar bor. Sahifadan chiqasizmi?"
+    "unsaved_warning": "Saqlanmagan o'zgarishlar bor. Sahifadan chiqasizmi?",
+    "logs": "Xatoliklar jurnali",
+    "unresolved_errors": "Hal qilinmagan xatolar"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -272,5 +274,40 @@
     "download": "Yuklab olish",
     "number": "Hujjat raqami",
     "date": "Sanasi"
+  },
+  "logs": {
+    "source": "Manbai",
+    "level": "Daraja",
+    "status": "Holati",
+    "all": "Barchasi",
+    "server": "Server",
+    "client": "Brauzer",
+    "level_error": "Xato",
+    "level_warning": "Ogohlantirish",
+    "level_info": "Ma'lumot",
+    "resolved": "Hal qilingan",
+    "unresolved": "Hal qilinmagan",
+    "from": "Sanadan",
+    "to": "Sanagacha",
+    "first_seen": "Birinchi",
+    "last_seen": "Oxirgi",
+    "stack": "Chaqiruvlar zanjiri",
+    "note": "Izoh",
+    "note_placeholder": "Texnik xodimning izohi",
+    "mark_resolved": "Hal qilingan deb belgilash",
+    "mark_unresolved": "Hal qilinmagan deb belgilash",
+    "save_note": "Izohni saqlash",
+    "cleanup": "Eski yozuvlarni tozalash",
+    "cleaned": "{{count}} ta eski yozuv o'chirildi.",
+    "empty": "Xatoliklar qayd etilmagan.",
+    "empty_hint": "Bu yaxshi belgi. Xato yuz bersa, u shu yerda ko'rinadi."
+  },
+  "errorBoundary": {
+    "title": "Sahifani ko'rsatishda xatolik yuz berdi",
+    "text": "Bu bizning tarafimizdagi nosozlik. Sahifani yangilab ko'ring — ko'p hollarda shu yetarli bo'ladi.",
+    "reload": "Sahifani yangilash",
+    "home": "Bosh sahifaga qaytish",
+    "dashboard": "Boshqaruv paneliga qaytish",
+    "incident": "Hodisa raqami"
   }
 }

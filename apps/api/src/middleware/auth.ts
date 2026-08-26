@@ -2,6 +2,7 @@ import type { Context, Next } from 'hono';
 import type { AppContext } from '../index';
 import { ConfigError, getJwtSecret } from '../lib/env';
 import { verifyToken } from '../lib/jwt';
+import { logEvent } from '../lib/error-log';
 
 export async function requireAuth(c: Context<AppContext>, next: Next) {
   // Secret yo'qligi — server konfiguratsiyasidagi xato, foydalanuvchi aybi emas.
@@ -12,6 +13,16 @@ export async function requireAuth(c: Context<AppContext>, next: Next) {
   } catch (err) {
     if (err instanceof ConfigError) {
       console.error(`Auth konfiguratsiya xatosi: ${err.message}`);
+      // Sozlama yo'qligi alohida qayd etiladi — bu deploy xatosi.
+      logEvent(c, {
+        source: 'server',
+        level: 'error',
+        code: 'CONFIG_MISSING',
+        message: `Auth configuration error: ${err.message}`,
+        path: new URL(c.req.url).pathname,
+        method: c.req.method,
+        statusCode: 500,
+      });
       return c.json({ error: 'Server configuration error' }, 500);
     }
     throw err;
@@ -32,6 +43,18 @@ export async function requireAuth(c: Context<AppContext>, next: Next) {
     c.set('adminId', adminId);
     c.set('email', email);
   } catch {
+    // Xavfsizlik hodisasi: yaroqsiz token bilan murojaat.
+    // Tokenning O'ZI jurnalga tushmaydi — faqat hodisa fakti.
+    logEvent(c, {
+      source: 'server',
+      level: 'warning',
+      code: 'INVALID_TOKEN',
+      message: 'Request with invalid or expired token',
+      path: new URL(c.req.url).pathname,
+      method: c.req.method,
+      statusCode: 401,
+      userAgent: c.req.header('User-Agent') ?? null,
+    });
     return c.json({ error: 'Invalid or expired token' }, 401);
   }
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { reportClientError } from '@/lib/client-logger';
 
 // Chaqiruvlar allaqachon `/api/...` bilan boshlanadi, shuning uchun bu yerda
 // faqat origin turadi. Bo'sh qiymat — same-origin (vite proxy) rejimi.
@@ -27,6 +28,21 @@ api.interceptors.response.use(
     // foydalanuvchi xato xabarini umuman ko'rmaydi.
     const url: string = err.config?.url ?? '';
     const isLoginRequest = url.includes('/api/auth/login');
+
+    // 5xx va tarmoq uzilishlari jurnalga tushadi. 4xx qayd ETILMAYDI —
+    // ular odatda foydalanuvchi xatosi (noto'g'ri parol, bo'sh maydon).
+    const status: number | undefined = err.response?.status;
+    if (status === undefined || status >= 500) {
+      reportClientError({
+        message: status === undefined
+          ? `Network error: ${err.message}`
+          : `API ${status}: ${err.message}`,
+        code: status === undefined ? 'NETWORK_ERROR' : 'SERVER_ERROR',
+        statusCode: status,
+        path: url,
+        level: 'error',
+      });
+    }
 
     if (
       err.response?.status === 401 &&
@@ -124,6 +140,18 @@ export const documentsApi = {
   create: (data: unknown) => api.post('/api/documents', data),
   update: (id: string, data: unknown) => api.put(`/api/documents/${id}`, data),
   delete: (id: string) => api.delete(`/api/documents/${id}`),
+};
+
+export const logsApi = {
+  list: (params: {
+    page?: number; limit?: number; source?: string; level?: string;
+    resolved?: string; from?: string; to?: string;
+  } = {}) => api.get('/api/logs', { params }),
+  get: (id: string) => api.get(`/api/logs/${id}`),
+  update: (id: string, data: { isResolved?: boolean; note?: string }) =>
+    api.patch(`/api/logs/${id}`, data),
+  delete: (id: string) => api.delete(`/api/logs/${id}`),
+  cleanup: () => api.post('/api/logs/cleanup'),
 };
 
 export const settingsApi = {

@@ -55,7 +55,9 @@ apps/
   api/          Hono API
     src/routes/         auth, news, publications, structure, settings, contact, employees,
                         partners, documents, uploads, files
-    src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media
+    src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media,
+                        redact, error-log
+    src/lib/__tests__/  vitest birlik sinovlari (`npm test --workspace=apps/api`)
     src/middleware/     requireAuth
     src/lib/            db, jwt
 packages/
@@ -76,7 +78,11 @@ packages/
 4. **Har bir yozuv (POST/PUT/PATCH/DELETE) endpoint'i `requireAuth` bilan himoyalansin.** Faqat quyidagilar ochiq:
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
-   `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`.
+   `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`,
+   `POST /api/logs/client`.
+   **`POST /api/logs/client` nega ochiq:** JavaScript xatosi tizimga kirmagan foydalanuvchida
+   ham yuz beradi, shuning uchun uni `requireAuth` bilan yopib bo'lmaydi. Buning evaziga
+   cheklovlar qattiq: IP bo'yicha daqiqasiga 10 ta, matn uzunligi cheklangan, `zValidator`.
 5. **Kiruvchi ma'lumot doim zod bilan tekshirilsin** (`zValidator`). Validatsiyasiz `c.req.json()` ishlatmang.
 6. **Xato xabarlari ichki tafsilotni oshkor qilmasin.** Login uchun doim `Invalid credentials` — "email topilmadi" demang.
 7. ✅ **HTML kontent sanitizatsiyasi bajarildi.** Server saqlashdan oldin tozalaydi
@@ -108,16 +114,20 @@ packages/
     qabul qilinmaydi. Yangi format qo'shsangiz imzosini ham yozing.
 17. **Fayl o'chirish faqat `media_files` jadvalida qayd etilgan kalitlar bo'yicha.** Ombor
     bo'ylab ommaviy o'chirish (`list()` + `delete`) hech qachon qilinmaydi.
-18. **Admin paneldagi barcha xabarlar `useToast()` orqali.** Xato kodi API dan keladi,
+18. **Jurnalga yoziladigan har qanday ma'lumot `lib/redact.ts` dan o'tkazilsin.** Parol,
+    token, `Authorization`/`Cookie`, murojaat matni, telefon va ulanish satri hech qachon
+    yozilmaydi; pochta niqoblanadi. Yangi maxfiy maydon qo'shsangiz — `redact.test.ts` ga
+    unga mos sinov ham yozing.
+19. **Admin paneldagi barcha xabarlar `useToast()` orqali.** Xato kodi API dan keladi,
     o'zbekcha matn `locales/*.json` dagi `errors.<KOD>` dan olinadi.
 
 
 ### 4.4 Umumiy
 
-19. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
-20. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
-21. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
-22. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+20. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
+21. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
+22. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
+23. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 
 ---
 
@@ -136,7 +146,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 7 | SSR/prerender va sitemap yo'q — SEO nolga teng | 🟠 Ochiq |
 | 8 | ~~Bazada faqat demo ma'lumot~~ — tuzilma rasmiy 2025 hujjatiga ko'chirildi (kod tayyor, lokal test bazada tasdiqlangan). Production seed foydalanuvchi tasdig'ini kutmoqda; demo nashrlar hali qolgan | 🟠 Qisman |
 | 9 | ~~Cloudflare Pages GitHub'ga ulanmagan~~ — GitHub Actions workflow yozildi (`.github/workflows/deploy.yml`), sozlash: `docs/deploy.md`. Secret'lar + baseline foydalanuvchi tomonidan kutilmoqda | 🟠 Qisman |
-| 10 | Test yo'q, CI yo'q | 🟡 Ochiq |
+| 10 | Test yo'q, CI yo'q — `redact.ts` uchun 23 ta vitest sinovi yozildi, qolgan modullar hali qamrab olinmagan, CI yo'q | 🟠 Qisman |
 | 11 | ~~`apps/api/src/lib/db.ts` — `PrismaNeon` HTTP drayveri bilan noto'g'ri ishlatilgan~~ — `PrismaNeonHTTP` ga o'tkazildi, haqiqiy Neon bilan tekshirildi | ✅ Tuzatildi |
 
 Muammoni tuzatganingizda shu jadvalni ham yangilang (🔴 → ✅).
@@ -167,6 +177,7 @@ cd apps/web && npm run build            # VITE_API_URL Pages dashboard'da
 Ishni tugadi deb hisoblashdan oldin:
 
 1. `npx tsc --noEmit` — apps/api va apps/web da xato yo'q.
+1a. `npm test --workspace=apps/api` — birlik sinovlari o'tadi.
 2. `cd apps/api && npm run build` (`wrangler deploy --dry-run`) — Workers uchun bundle yig'iladi.
 3. Login yoki auth'ga tegilgan bo'lsa — **haqiqiy HTTP so'rov bilan** tekshiring, faqat kodni o'qib "to'g'ri ko'rinadi" demang.
 4. Frontend o'zgargan bo'lsa — `npm run dev` da sahifani ochib ko'ring.

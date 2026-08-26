@@ -6,6 +6,7 @@ import { DUMMY_PASSWORD_HASH, hashPassword, verifyPassword } from '@energetika/s
 import { signToken } from '../lib/jwt';
 import { ConfigError, getJwtSecret } from '../lib/env';
 import { requireAuth } from '../middleware/auth';
+import { logEvent } from '../lib/error-log';
 import type { AppContext } from '../index';
 
 export const authRouter = new Hono<AppContext>();
@@ -102,6 +103,17 @@ authRouter.post('/login', zValidator('json', loginSchema), async (c) => {
 
   pruneExpired(now);
   if (isRateLimited(key, now)) {
+    // Xavfsizlik hodisasi: login urinishlari chegaradan oshdi.
+    logEvent(c, {
+      source: 'server',
+      level: 'warning',
+      code: 'RATE_LIMITED',
+      message: 'Login rate limit exceeded',
+      path: new URL(c.req.url).pathname,
+      method: c.req.method,
+      statusCode: 429,
+      userAgent: c.req.header('User-Agent') ?? null,
+    });
     return c.json({ error: 'Too many login attempts. Please try again later.' }, 429);
   }
 

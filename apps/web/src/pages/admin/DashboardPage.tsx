@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
+import { logsApi } from '@/lib/api';
 import { newsApi, pubsApi, contactApi } from '@/lib/api';
-import { Newspaper, BookOpen, MessageSquare, TrendingUp } from 'lucide-react';
+import { Newspaper, BookOpen, MessageSquare, TrendingUp, Bug } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth';
 import { formatDate } from '@/lib/date';
@@ -14,18 +15,33 @@ export default function DashboardPage() {
   const { data: newsData } = useQuery({ queryKey: ['admin-news'], queryFn: () => newsApi.list(1, 5) });
   const { data: pubsData } = useQuery({ queryKey: ['admin-pubs'], queryFn: () => pubsApi.list(1, 1) });
   const { data: msgsData } = useQuery({ queryKey: ['admin-msgs'], queryFn: () => contactApi.list(1) });
+  // So'nggi 24 soatdagi hal qilinmagan xatolar — API ro'yxat bilan birga qaytaradi.
+  const { data: logsData } = useQuery({
+    queryKey: ['admin-logs-badge'],
+    queryFn: () => logsApi.list({ limit: 1, resolved: 'false' }),
+  });
 
   const totalNews = newsData?.data?.total ?? 0;
   const totalPubs = pubsData?.data?.total ?? 0;
   const totalMsgs = msgsData?.data?.total ?? 0;
   const recentNews = newsData?.data?.data ?? [];
   const unreadMsgs = (msgsData?.data?.data ?? []).filter((m: { read: boolean }) => !m.read).length;
+  const unresolvedErrors: number = logsData?.data?.unresolvedLastDay ?? 0;
 
   const stats = [
     { label: t('admin.total_news'), value: totalNews, icon: Newspaper, to: '/admin/news', color: 'text-blue-600 bg-blue-50' },
     { label: t('admin.total_pubs'), value: totalPubs, icon: BookOpen, to: '/admin/publications', color: 'text-emerald-600 bg-emerald-50' },
     { label: t('admin.total_msgs'), value: totalMsgs, icon: MessageSquare, to: '/admin/messages', color: 'text-orange-600 bg-orange-50' },
     { label: t('admin.unread_msgs'), value: unreadMsgs, icon: TrendingUp, to: '/admin/messages', color: 'text-purple-600 bg-purple-50' },
+    {
+      label: t('admin.unresolved_errors'),
+      value: unresolvedErrors,
+      icon: Bug,
+      to: '/admin/logs',
+      // Nol bo'lmasa ko'zga tashlanadigan rangda.
+      color: unresolvedErrors > 0 ? 'text-red-600 bg-red-50' : 'text-gray-400 bg-gray-50',
+      highlight: unresolvedErrors > 0,
+    },
   ];
 
   return (
@@ -38,9 +54,13 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map(({ label, value, icon: Icon, to, color }) => (
-            <Link key={to + label} to={to} className="card p-5 hover:shadow-md transition-shadow">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          {stats.map(({ label, value, icon: Icon, to, color, highlight }) => (
+            <Link
+              key={to + label}
+              to={to}
+              className={`card p-5 hover:shadow-md transition-shadow ${highlight ? 'ring-2 ring-red-200' : ''}`}
+            >
               <div className="flex items-center justify-between mb-3">
                 <div className={`p-2 rounded-lg ${color}`}>
                   <Icon className="h-5 w-5" />

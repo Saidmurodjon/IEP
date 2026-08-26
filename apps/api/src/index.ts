@@ -14,6 +14,9 @@ import { partnersRouter } from './routes/partners';
 import { uploadsRouter } from './routes/uploads';
 import { filesRouter } from './routes/files';
 import { documentsRouter } from './routes/documents';
+import { logsRouter } from './routes/logs';
+import { recordError } from './lib/error-log';
+import { redactStack } from './lib/redact';
 import type { PrismaClient } from '@prisma/client';
 
 export interface Env {
@@ -65,11 +68,47 @@ app.route('/api/partners', partnersRouter);
 app.route('/api/documents', documentsRouter);
 app.route('/api/uploads', uploadsRouter);
 app.route('/api/files', filesRouter);
+app.route('/api/logs', logsRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
+
+/**
+ * Umumiy xato ushlagich.
+ *
+ * Har bir ushlangan xato jurnalga yoziladi, foydalanuvchiga esa faqat
+ * `SERVER_ERROR` kodi qaytariladi — ichki tafsilot oshkor qilinmaydi
+ * (CLAUDE.md 6-qoida).
+ *
+ * Jurnalga yozish `waitUntil()` ichida, fonda bajariladi: so'rovga javob
+ * kutib turmaydi. `waitUntil` mavjud bo'lmagan muhitda (lokal harness)
+ * oddiy `void` bilan ishga tushiriladi.
+ */
 app.onError((err, c) => {
   console.error(err);
-  return c.json({ error: 'Internal server error' }, 500);
+
+  const write = recordError(c.get('db'), {
+    source: 'server',
+    level: 'error',
+    message: err instanceof Error ? err.message : String(err),
+    stack: err instanceof Error ? redactStack(err.stack) : null,
+    path: new URL(c.req.url).pathname,
+    method: c.req.method,
+    statusCode: 500,
+    userAgent: c.req.header('User-Agent') ?? null,
+    adminId: c.get('adminId') ?? null,
+  });
+
+  try {
+    c.executionCtx.waitUntil(write);
+  } catch {
+    // `executionCtx` yo'q muhitda (masalan lokal harness) — fonda qoldiramiz.
+    void write;
+  }
+
+  return c.json(
+    { error: { code: 'SERVER_ERROR', message: 'Internal server error' } },
+    500
+  );
 });
 
 export default app;
