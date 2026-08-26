@@ -1,6 +1,7 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import LocalizedLink from '@/components/LocalizedLink';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { newsApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -32,28 +33,25 @@ export default function NewsDetailPage() {
     return (
       <div className="container py-20 text-center">
         <p className="text-gray-500">{t('common.not_found')}</p>
-        <Link to="/news" className="btn-primary mt-4 inline-flex items-center gap-2">
+        <LocalizedLink to="/news" className="btn-primary mt-4 inline-flex items-center gap-2">
           <ArrowLeft className="h-4 w-4" /> {t('common.back')}
-        </Link>
+        </LocalizedLink>
       </div>
     );
   }
 
   return (
     <>
-      <Helmet>
-        <title>{getField('title')} | {t('common.institute_name')}</title>
-        <meta name="description" content={getField('summary')} />
-      </Helmet>
+      <SeoHead title={getField('title')} description={getField('summary')} />
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-10">
         <div className="container">
-          <Link
+          <LocalizedLink
             to="/news"
             className="flex items-center gap-1 text-primary-200 hover:text-white text-sm mb-4 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> {t('nav.news')}
-          </Link>
+          </LocalizedLink>
           <h1 className="text-2xl font-bold max-w-3xl">{getField('title')}</h1>
           <time className="flex items-center gap-1 text-primary-200 text-sm mt-3">
             <Calendar className="h-4 w-4" />

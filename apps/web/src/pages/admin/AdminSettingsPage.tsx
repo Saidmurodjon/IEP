@@ -10,6 +10,7 @@ const SETTING_KEYS = [
   { key: 'site_name_uz', label: 'Sayt nomi (UZ)', group: 'general' },
   { key: 'site_name_en', label: 'Sayt nomi (EN)', group: 'general' },
   { key: 'site_name_ru', label: 'Sayt nomi (RU)', group: 'general' },
+  { key: 'site_url', label: 'Sayt manzili (canonical/hreflang uchun)', group: 'general' },
   { key: 'address_uz', label: 'Manzil (UZ)', group: 'contact' },
   { key: 'address_en', label: 'Manzil (EN)', group: 'contact' },
   { key: 'address_ru', label: 'Manzil (RU)', group: 'contact' },

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import LocalizedLink from '@/components/LocalizedLink';
 import { useState } from 'react';
 import { newsApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -27,9 +27,7 @@ export default function NewsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('news.title')} | {t('common.institute_name')}</title>
-      </Helmet>
+      <SeoHead title={t('news.title')} />
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
         <div className="container">
@@ -67,12 +65,12 @@ export default function NewsPage() {
                 <p className="text-sm text-gray-500 line-clamp-2 mb-4">
                   {getField(item, 'summary')}
                 </p>
-                <Link
+                <LocalizedLink
                   to={`/news/${item.slug}`}
                   className="text-sm text-primary-700 hover:text-primary-900 font-medium flex items-center gap-1"
                 >
                   {t('news.read_more')} <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
+                </LocalizedLink>
               </div>
             </article>
           ))}

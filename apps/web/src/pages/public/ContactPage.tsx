@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -59,9 +59,7 @@ export default function ContactPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('contact.title')} | {t('common.institute_name')}</title>
-      </Helmet>
+      <SeoHead title={t('contact.title')} />
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
         <div className="container">

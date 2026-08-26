@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { Target, History, Beaker, Users, GraduationCap } from 'lucide-react';
 import { structureApi } from '@/lib/api';
@@ -19,9 +19,7 @@ export default function AboutPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('about.title')} | {t('common.institute_name')}</title>
-      </Helmet>
+      <SeoHead title={t('about.title')} />
 
       {/* Page hero */}
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">

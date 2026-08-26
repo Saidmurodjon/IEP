@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { structureApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -30,9 +30,7 @@ export default function LabsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('labs.title')} | {t('common.institute_name')}</title>
-      </Helmet>
+      <SeoHead title={t('labs.title')} />
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
         <div className="container">

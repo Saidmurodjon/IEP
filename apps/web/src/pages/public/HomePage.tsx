@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
+import LocalizedLink from '@/components/LocalizedLink';
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { INSTITUTE_STAFF } from '@/lib/structure';
 import {
@@ -46,10 +46,7 @@ export default function HomePage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('common.institute_name')}</title>
-        <meta name="description" content={t('home.hero_desc')} />
-      </Helmet>
+      <SeoHead description={t('home.hero_desc')} />
 
       {/* Hero — rasm + qoplama (yagona to'q seksiya) */}
       <section className="relative text-white overflow-hidden">
@@ -73,13 +70,13 @@ export default function HomePage() {
               {t('home.hero_desc')}
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link to="/about" className="btn bg-white text-primary-900 hover:bg-primary-50 font-semibold px-6 py-3">
+              <LocalizedLink to="/about" className="btn bg-white text-primary-900 hover:bg-primary-50 font-semibold px-6 py-3">
                 {t('home.learn_more')}
                 <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
-              <Link to="/contact" className="btn border border-white/50 text-white hover:bg-white/10 px-6 py-3">
+              </LocalizedLink>
+              <LocalizedLink to="/contact" className="btn border border-white/50 text-white hover:bg-white/10 px-6 py-3">
                 {t('nav.contact')}
-              </Link>
+              </LocalizedLink>
             </div>
           </div>
         </div>
@@ -113,10 +110,10 @@ export default function HomePage() {
               </h2>
               <p className="text-gray-600 leading-relaxed mb-4">{t('home.about_p1')}</p>
               <p className="text-gray-600 leading-relaxed mb-6">{t('home.about_p2')}</p>
-              <Link to="/about" className="btn-primary px-6 py-3">
+              <LocalizedLink to="/about" className="btn-primary px-6 py-3">
                 {t('home.about_more')}
                 <ArrowRight className="h-4 w-4 ml-2" />
-              </Link>
+              </LocalizedLink>
             </div>
             <div className="relative">
               <img
@@ -138,12 +135,12 @@ export default function HomePage() {
               <h2 className="text-2xl font-bold text-primary-900">{t('home.news_title')}</h2>
               <div className="h-1 w-12 bg-accent-500 rounded mt-2" />
             </div>
-            <Link
+            <LocalizedLink
               to="/news"
               className="flex items-center gap-1 text-sm text-primary-700 hover:text-primary-900 font-medium"
             >
               {t('home.view_all')} <ChevronRight className="h-4 w-4" />
-            </Link>
+            </LocalizedLink>
           </div>
 
           {news.length === 0 ? (
@@ -174,12 +171,12 @@ export default function HomePage() {
                     <p className="text-sm text-gray-500 line-clamp-2 mb-4">
                       {getSummary(item)}
                     </p>
-                    <Link
+                    <LocalizedLink
                       to={`/news/${item.slug}`}
                       className="mt-auto text-sm text-primary-700 hover:text-primary-900 font-medium flex items-center gap-1"
                     >
                       {t('news.read_more')} <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
+                    </LocalizedLink>
                   </div>
                 </article>
               ))}
@@ -196,12 +193,12 @@ export default function HomePage() {
               <h2 className="text-2xl font-bold text-primary-900">{t('home.publications_title')}</h2>
               <div className="h-1 w-12 bg-accent-500 rounded mt-2" />
             </div>
-            <Link
+            <LocalizedLink
               to="/publications"
               className="flex items-center gap-1 text-sm text-primary-700 hover:text-primary-900 font-medium"
             >
               {t('home.view_all')} <ChevronRight className="h-4 w-4" />
-            </Link>
+            </LocalizedLink>
           </div>
 
           <div className="space-y-3">
@@ -232,9 +229,9 @@ export default function HomePage() {
           <p className="text-primary-700 mb-8 max-w-xl mx-auto">
             {t('home.contact_desc')}
           </p>
-          <Link to="/contact" className="btn bg-primary-800 text-white hover:bg-primary-900 px-8 py-3 font-semibold">
+          <LocalizedLink to="/contact" className="btn bg-primary-800 text-white hover:bg-primary-900 px-8 py-3 font-semibold">
             {t('nav.contact')} <ArrowRight className="h-4 w-4 ml-2" />
-          </Link>
+          </LocalizedLink>
         </div>
       </section>
     </>

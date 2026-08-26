@@ -13,41 +13,47 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-26
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05-topshiriq kommiti lokal (`origin/master` = `69b6548`).
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05 va 12 kommitlari lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **05-namoyish tayyorligi tugadi.** Aloqa ma'lumotlari endi kodda emas — `/api/settings` dan
-  keladi (`apps/web/src/hooks/useSettings.ts`, react-query, bitta so'rov). Header, Footer,
-  ContactPage shu hookdan foydalanadi. `phone` bo'sh → telefon qatori umuman ko'rinmaydi.
-- Seed'dagi manzil/pochta haqiqiy qiymatlarga almashtirildi (Do'rmon yo'li 40, energy@academy.uz);
-  `phone` va `working_hours` ataylab bo'sh.
-- Namoyish yangiliklari `packages/db/src/demo-content.ts` da (seed'dan ajratilgan, `npm run db:demo`).
-  Skript lokal bo'lmagan `DATABASE_URL` bilan xato beradi — production'ga tushmasligi uchun.
-- `npm run demo` — bitta buyruq: web build + `wrangler dev` (:3000) + `vite preview` (:5173).
-- `docs/demo.md` — namoyish qo'llanmasi (tayyorgarlik, 7 qadamlik ~5 daqiqalik ssenariy, nosozliklar).
+- **12-til prefiksi tugadi.** Ochiq manzillar endi `/uz/…`, `/en/…`, `/ru/…`. `/` foydalanuvchi
+  tiliga qarab yo'naltiriladi (xotira → brauzer tili → uz). Prefikssiz manzil (`/news`)
+  `/uz/news` ga o'tadi; noto'g'ri prefiks (`/xx/news`) va noma'lum manzil (`/uzbekistan`) — 404.
+  Admin marshrutlari (`/admin/...`) o'zgarmadi.
+- Til manzildan olinadi (`useCurrentLang`), `localStorage` faqat `/` ni yo'naltirish uchun.
+  Til almashtirilganda foydalanuvchi joriy sahifada qoladi.
+- **`LocalizedLink` / `LocalizedNavLink`** — ochiq qismdagi barcha ichki havolalar shular orqali.
+  Yangi qoida: CLAUDE.md 4.3, 15-band. (Diqqat: 4.4 dagi qoidalar 15–18 → 16–19 ga surildi.)
+- `SeoHead` — har bir ochiq sahifada `html lang`, `canonical`, uchta `hreflang` + `x-default`.
+  Asosiy manzil `site_url` sozlamasidan (admin panelda tahrirlanadi), kodda emas.
+- `src/lib/routes.ts` — `PUBLIC_ROUTES` ochiq sahifalarning yagona ro'yxati (sayt xaritasi uchun tayyorgarlik).
+- **05-namoyish tayyorligi** ham o'z kuchida: aloqa ma'lumotlari `/api/settings` dan,
+  `npm run demo`, `docs/demo.md`.
 - **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig`, port 5433).
   Bazada 3 ta yangilik (3 tilda), 0 ta nashr, 17 birlik.
 
 ### Nima hali ishlamaydi / bajarilmagan
 - **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan.** `npm run demo`
-  API'ni `wrangler dev` da ishga tushiradi va u aynan shu faylni o'qiydi — ya'ni namoyish
-  hozircha production bazasi ustida ishlaydi va admin panel orqali qo'shilgan har bir yozuv
-  production'ga yoziladi. **Namoyishdan oldin lokal Postgres kerak.** `docs/demo.md` 1-bo'limida
-  ogohlantirish bor. Bu foydalanuvchi zimmasidagi qadam.
+  API'ni `wrangler dev` da ishga tushiradi va aynan shu faylni o'qiydi — namoyish hozircha
+  production bazasi ustida ishlaydi. Namoyishdan oldin lokal Postgres kerak (`docs/demo.md` 1-bo'lim).
 - Bu mashinada Node.js o'rnatilmagan (`node`/`npm` PATH da yo'q). Tekshiruvlar vaqtinchalik
-  scratchpad'ga yuklangan Node bilan bajarildi. Foydalanuvchi Node o'rnatishi kerak.
-- Production hali eski kod bilan ishlayapti; 03-production `wrangler login` dan keyin.
-- 04-kontent production'ga qo'llanmagan (migratsiya + seed).
-- Demo nashrlar hali production'da.
+  scratchpad'ga yuklangan Node 22 bilan bajarildi.
+- **Server tomonida yo'naltirish yo'q.** `/` → `/uz` hozir SPA ichida bajariladi. Haqiqiy 302
+  va prefikssiz manzillar uchun host darajasidagi qoida (Cloudflare Pages `_redirects`)
+  SEO topshirig'ida qo'shilishi kerak.
+- Sayt xaritasi (`sitemap.xml`) hali yo'q — faqat tayyorgarlik qilindi.
+- Production hali eski kod bilan; 03-production `wrangler login` dan keyin.
+- 04-kontent production'ga qo'llanmagan; demo nashrlar hali production'da.
 
 ### Keyingi qadam
-1. 05 ni foydalanuvchi qabul qilsin (namoyish ssenariysini `docs/demo.md` bo'yicha o'zi bir marta o'tsin).
-2. Navbat bo'yicha 12 (til prefiksi).
-3. 03-production alohida — `wrangler login` dan keyin.
+1. 12 ni PM tekshirsin.
+2. Navbat bo'yicha 11 (logotip, 404, huquqiy bandlar) — 404 sahifasining brend ko'rinishi
+   shu yerda to'ldiriladi (hozir sodda variant bor).
 
 ### Ochiq savollar
-- Namoyish uchun lokal Postgres o'rnatiladimi, yoki namoyish production bazasi ustida
-  o'tkaziladimi? Tavsiya: **lokal** (05-topshiriq chegarasi shuni talab qiladi).
+- Namoyish lokal bazada o'tkaziladimi? Tavsiya: **ha**.
+- `site_url` hozir `https://energetika-institute.pages.dev`. Domen (`iep.uz`) ulangach
+  admin paneldan o'zgartiriladi.
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -57,8 +63,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | № | Topshiriq | Holat |
 |---|---|---|
 | 05 | Namoyishga tayyorlash | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 12 | Til prefiksi | ⏳ Navbatda |
-| 11 | Logotip, 404, huquqiy bandlar | ⏸ Kutmoqda |
+| 12 | Til prefiksi | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 11 | Logotip, 404, huquqiy bandlar | ⏳ Navbatda |
 | 06 | Xodimlar, laboratoriyalar, hamkorlar | ⏸ Kutmoqda |
 | 07 | Fayl yuklash va tahrirlagich | ⏸ Kutmoqda |
 | 08 | Xatoliklar jurnali | ⏸ Kutmoqda |
@@ -87,6 +93,66 @@ Hamkorlar ro'yxati. Institut telefon raqami.
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-26 · 12 — Manzillarga til prefiksi
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `refactor(i18n): language prefixed routes with hreflang`
+
+- **`src/lib/routes.ts`** (yangi) — `SUPPORTED_LANGS`, `PUBLIC_ROUTES` (ochiq sahifalarning
+  yagona ro'yxati), `splitLangPrefix`, `localizePath`, `matchesPublicRoute`, `detectPreferredLang`.
+- **`App.tsx`** — ochiq marshrutlar `/:lang` ostiga olindi. `LanguageGuard` prefiksni tekshiradi
+  va `i18next` ni manzilga moslaydi; `UnprefixedRoute` prefikssiz manzilni `PUBLIC_ROUTES` bo'yicha
+  taniydi (tanilsa `/uz/...`, tanilmasa 404). Admin bloki qo'lga tegilmadi.
+- **`LocalizedLink` + `LocalizedNavLink`** (yangi) va `useLocalizedPath`/`useCurrentLang` hooklari.
+  Header, Footer, HomePage, NewsPage, NewsDetailPage, NotFoundPage — hammasi ko'chirildi.
+- **Til almashtirgich** endi `i18n.changeLanguage` chaqirmaydi, `navigate()` bilan prefiksni
+  almashtiradi va joriy yo'l, `search`, `hash` saqlanadi.
+- **`SeoHead`** (yangi) — 8 ta ochiq sahifadagi alohida `Helmet` bloklari o'rniga. `html lang`,
+  `canonical`, `hreflang` × 3 + `x-default`. Asosiy manzil `site_url` sozlamasidan;
+  seed'ga va admin Sozlamalar sahifasiga qo'shildi.
+- **`NotFoundPage`** (yangi, sodda) — 11-topshiriqda brend ko'rinishi beriladi.
+- **CLAUDE.md 15-qoida** qo'shildi (ochiq qismda faqat `LocalizedLink`). Shu sababli 4.4 dagi
+  qoidalar 15–18 → **16–19** ga surildi; oldingi jurnal yozuvlaridagi "16-qoida" endi 17.
+
+**Nima tekshirildi va qanday:**
+- `tsc --noEmit` (api, web) toza; `npm run build` toza.
+- **Brauzerda (headless Chromium, lokal baza):**
+  - `/` → brauzer `en` bo'lsa `/en`, `ru` bo'lsa `/ru`, `fr` bo'lsa `/uz`; xotirada `ru` bo'lsa `/ru`.
+  - `/uz/news`, `/ru/news`, `/en/news` — h1 mos tilda, `html lang` mos, canonical + 4 ta alternate.
+  - `/xx/news`, `/uzbekistan`, `/uz/qwerty` → **404**, bosh sahifaga yo'naltirilmadi.
+  - `/news`, `/about`, `/contact`, `/news/:slug` → `/uz/...` ga yo'naltirildi.
+  - Ichki sahifada (`/uz/news/rasmiy-veb-sayt-ishga-tushdi`) ruschaga o'tildi →
+    `/ru/news/rasmiy-veb-sayt-ishga-tushdi`, sahifa saqlandi.
+  - `/en/about` yangilandi — til va manzil saqlandi. Xotirada `uz` bo'lsa ham `/ru/laboratories`
+    havolasi ruscha ochildi (ulashilgan havola sinovi).
+  - 8 sahifa × 3 til = **24 yuklash**: canonical, 4 ta alternate, `html lang` — hammasi to'g'ri,
+    konsol xatosi yo'q.
+  - **Admin buzilmagan:** `/admin/login` → login → yangilik qo'shish (3 tilda) → admin ro'yxatida →
+    `/uz/news` da ko'rindi → kartochka havolasi `/uz/news/<slug>`, ruschada `/ru/news/<slug>`.
+    Sinov yozuvi bazadan o'chirildi.
+- **grep:** `to="/` — ochiq qismda faqat `LocalizedLink`, prefikssiz qolgani yo'q; qolgan
+  oddiy `Link`/`Navigate` faqat `/admin/...` (Footer'dagi admin havolasi, DashboardPage,
+  AdminLayout, App.tsx). `navigate(` — faqat admin va til almashtirgich.
+
+**Nima TEKSHIRILMADI:**
+- Haqiqiy HTTP 302 — SPA ichida yo'naltirish klient tomonida. Cloudflare Pages uchun
+  `_redirects` qoidalari yozilmadi (SEO topshirig'iga qoldi).
+- Sayt xaritasi hosil qilinmadi (topshiriq chegarasidan tashqarida).
+- Production'ga hech narsa yozilmadi va deploy qilinmadi.
+
+**Qarorlar va sabablari:**
+- Prefikssiz `/news` va noto'g'ri `/xx/news` ni ajratish uchun `PUBLIC_ROUTES` ro'yxati
+  ishlatildi: aks holda `/news` "til = news" deb tushunilib 404 berardi.
+- `LanguageGuard` `i18n.changeLanguage` ni render paytida chaqiradi (resurslar bundle ichida,
+  so'rov ketmaydi) — `useEffect` da qilinsa birinchi kadr eski tilda chizilardi.
+- `PublicLayout` `LanguageGuard` dan yuqorida turadi, shunda 404 sahifasi ham sarlavha va
+  footer bilan ko'rinadi.
+
+**Boshqa:** oldingi sessiyalardan qolgan `.github/workflows/deploy.yml` o'chirilishi tiklandi —
+`docs/deploy.md` va `docs/ROADMAP.md` hamon shu faylga tayanadi, o'chirish sababi hech qayerda
+qayd etilmagan edi. `docs/tasks/*.md` va `CLAUDE.md` o'zgarishi ham shu kommitga kiritildi.
+
+---
 
 ### 2026-08-26 · 05 — Namoyishga tayyorlash
 
@@ -272,95 +338,4 @@ demo ma'lumot muammosi, dizayn topshirig'iga kirmaydi.
 
 ---
 
-### 2026-08-25 · 03-production 1-bosqich (diagnostika) — TO'XTATILDI
-
-**Kim:** Claude Code (Opus 5) · Yozuvsiz (faqat o'qish + bloklangan)
-
-- `wrangler whoami` → autentifikatsiya yo'q; `.env` da CF token placeholder → secret list / seed / deploy
-  bajarib bo'lmaydi. Foydalanuvchi `wrangler login` qilishi kerak.
-- Live API: `GET /` va barcha ochiq GET → 200. Login (`admin@energetika.uz`/`Admin123!`) → 401.
-- **Production'da eski kod:** login validatsiya `min:6` (yangi 8), `change-password` → 404. Deploy qilinmagan.
-- `wrangler deploy --dry-run` (01-ning tekshirilmagan mezoni) → ✅ bundle yig'iladi (macOS arm64).
-- **`FRONTEND_URL` production'da allaqachon bor** (CORS `pages.dev` origin'iga to'g'ri javob).
-- Baza faqat o'qildi: admin `admin@iep.uz` + PBKDF2; seed 2-bosqichda 9 ta sozlama ustiga yozadi +
-  1 demo yangilik qo'shadi → shuning uchun seed'ni o'tkazib yuborish tavsiya qilindi.
-- **1-bosqich hisoboti berildi, 2-bosqich (deploy) foydalanuvchi tasdig'i + `wrangler login` kutmoqda.**
-
----
-
-### 2026-08-25 · PM tekshiruvi — 01-topshiriq qabul qilindi
-
-**Kim:** Cowork sessiyasi (PM roli)
-
-Qabul mezonlari bo'yicha tekshirildi:
-
-| Tekshiruv | Natija |
-|---|---|
-| `tsc --noEmit` (api + web) | ✅ toza |
-| `grep dev-secret` | ✅ qoldiq yo'q |
-| `grep bcrypt` | ✅ faqat izohda eslatma |
-| PBKDF2 format, salt, iteratsiya | ✅ `pbkdf2$sha256$210000$...`, 16 bayt salt |
-| Noto'g'ri parol / bcrypt hash / buzuq format | ✅ rad etiladi, throw qilmaydi |
-| Dummy hash (enumeration himoyasi) | ✅ hech qanday parolni qabul qilmaydi |
-| JWT: buzilgan imzo, boshqa secret, muddat | ✅ rad etiladi |
-| JWT `alg=none` hujumi | ✅ bloklanadi |
-| Seed'da hard-code parol | ✅ yo'q, `ADMIN_PASSWORD` majburiy |
-
-Kriptografiya testi alohida yozilib ishga tushirildi: **16/16 pass**.
-
-**Tekshirilmagan:** `wrangler deploy --dry-run` — sandbox Linux, `workerd` binari macOS uchun o'rnatilgan.
-Buni Mac'da tasdiqlash kerak.
-
----
-
-### 2026-08-25 · 01-admin-login bajarildi
-
-**Kim:** Claude Code (Opus 5) · **Kommitlar:** `df8e7db`, `b6ed9b2`
-
-`df8e7db` — `fix(auth): replace broken bcrypt check with PBKDF2 and remove JWT secret fallback`
-
-- `packages/shared/src/password.ts` (yangi) — PBKDF2-HMAC-SHA256, 210 000 iteratsiya,
-  16-baytli tasodifiy salt, timing-safe taqqoslash, `DUMMY_PASSWORD_HASH`.
-  Format: `pbkdf2$sha256$<iter>$<saltB64>$<hashB64>`.
-- `apps/api/src/lib/env.ts` (yangi) — `getJwtSecret()`, `ConfigError`. Secret yo'q yoki
-  32 belgidan qisqa bo'lsa `throw`. Default qiymat **yo'q**.
-- `apps/api/src/routes/auth.ts` — login qayta yozildi: enumeration himoyasi (dummy hash),
-  rate limiting (`Map`, 15 daq / 5 urinish), `change-password` endpoint'i qo'shildi.
-- `apps/api/src/lib/jwt.ts` — UTF-8 xavfsiz base64url, `alg` tekshiruvi (alg confusion himoyasi).
-- `apps/api/src/middleware/auth.ts` — `verifyToken` ga o'tkazildi; `next()` ataylab `try` dan
-  tashqarida (keyingi handler xatosi 401 ga aylanmasligi uchun); config xatosi → 500.
-- `packages/db/src/seed.ts` — `ADMIN_PASSWORD` majburiy, hard-code parol olib tashlandi.
-- `apps/api/package.json` — `bcryptjs`, `jsonwebtoken` va ularning tiplari olib tashlandi.
-
-`b6ed9b2` — `fix(api,web): make local development actually run`
-
-Spetsifikatsiyada yo'q edi, lokal ishga tushirishda topildi:
-
-- **`apps/api/src/lib/db.ts` — production'ni yiqitadigan xato.** `PrismaNeon` WebSocket `Pool`
-  uchun `PoolConfig` kutadi, kod esa unga HTTP drayverini (`neon()`) uzatardi →
-  "No database host or connection string was set". Hozirgi Worker eski bundle bilan
-  ishlagani uchun sayt tirik edi, lekin **keyingi deploy API'ni sindirar edi**.
-  `PrismaNeonHTTP(databaseUrl, {})` ga o'tkazildi, haqiqiy Neon bilan `wrangler dev` ostida
-  tekshirildi (news/publications/structure/settings → 200).
-- `apps/web/vite.config.ts` — `envDir` ildizga yo'naltirildi (`.env` loyiha ildizida, Vite esa
-  faqat `apps/web/` dan qidirardi → `VITE_API_URL` hech qachon o'qilmasdi).
-- `apps/web/src/lib/api.ts` — `VITE_API_URL` fallback'i `'/api'` dan `''` ga (chaqiruvlar
-  allaqachon `/api/...` bilan boshlanadi → `/api/api/news` 404 bo'lardi).
-- `.gitignore` — `.dev.vars` qo'shildi.
-
----
-
-### 2026-08-25 · Loyiha tahlili va qoidalar
-
-**Kim:** Cowork sessiyasi (PM roli)
-
-- Loyiha holati tahlil qilindi (live API probing + GitHub manbasi).
-- Topilgan asosiy muammo: admin panel to'liq yozilgan, lekin login **hech qachon ishlamagan** —
-  seed bcrypt yozadi, `auth.ts` bcrypt'ni tekshira olmay shartsiz `false` qaytaradi.
-- `CLAUDE.md` yozildi — loyiha qoidalari, ma'lum muammolar jadvali, majburiy tekshiruv ro'yxati.
-- `docs/tasks/01-admin-login.md` — login tuzatish spetsifikatsiyasi (13 ta qabul mezoni).
-- `docs/tasks/02-dizayn.md` — rang palitrasi (akademik navy + oltin) va rasmlar spetsifikatsiyasi.
-- Claude Code CLI Mac'ga o'rnatildi (v2.1.245).
-
-**Qaror:** parol hashlash uchun PBKDF2 tanlandi (bcryptjs Workers'da sekin va bundle'ni kattalashtiradi).
-**Qaror:** rang yo'nalishi — akademik navy `#1a3a5f` + oltin `#c8973f`; rasmlar hozircha SVG placeholder.
+> Bundan oldingi yozuvlar arxivga ko'chirildi: [`docs/journal-archive/2026-08.md`](journal-archive/2026-08.md)

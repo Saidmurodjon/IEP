@@ -149,5 +149,10 @@
     "institute_name": "Energetika muammolari instituti",
     "institute_name_line1": "Energetika muammolari",
     "institute_name_line2": "instituti"
+  },
+  "notfound": {
+    "title": "Sahifa topilmadi",
+    "text": "Siz so'ragan sahifa mavjud emas yoki manzil noto'g'ri yozilgan.",
+    "home": "Bosh sahifaga qaytish"
   }
 }

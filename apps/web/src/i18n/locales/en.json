@@ -149,5 +149,10 @@
     "institute_name": "Institute of Energy Problems",
     "institute_name_line1": "Institute of Energy",
     "institute_name_line2": "Problems"
+  },
+  "notfound": {
+    "title": "Page not found",
+    "text": "The page you requested does not exist, or the address was mistyped.",
+    "home": "Back to home page"
   }
 }

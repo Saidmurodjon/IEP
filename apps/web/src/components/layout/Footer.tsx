@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import LocalizedLink from '@/components/LocalizedLink';
 import { useTranslation } from 'react-i18next';
 import { MapPin, Phone, Mail, Clock, Zap } from 'lucide-react';
 import { useSettings, telHref } from '@/hooks/useSettings';
@@ -48,12 +49,12 @@ export default function Footer() {
                 { to: '/contact', label: t('nav.contact') },
               ].map((link) => (
                 <li key={link.to}>
-                  <Link
+                  <LocalizedLink
                     to={link.to}
                     className="text-sm text-gray-400 hover:text-white transition-colors"
                   >
                     {link.label}
-                  </Link>
+                  </LocalizedLink>
                 </li>
               ))}
             </ul>
@@ -103,6 +104,7 @@ export default function Footer() {
           <p className="text-xs text-gray-500">
             © {year} {t('common.institute_name')}. {t('footer.rights')}.
           </p>
+          {/* Admin — ATAYLAB til prefiksisiz: admin marshrutlari o'zgarmaydi. */}
           <Link
             to="/admin"
             className="text-xs text-gray-600 hover:text-gray-400 transition-colors"

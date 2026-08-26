@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { pubsApi } from '@/lib/api';
@@ -29,9 +29,7 @@ export default function PublicationsPage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('publications.title')} | {t('common.institute_name')}</title>
-      </Helmet>
+      <SeoHead title={t('publications.title')} />
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
         <div className="container">

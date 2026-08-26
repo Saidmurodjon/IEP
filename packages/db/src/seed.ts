@@ -158,6 +158,9 @@ async function main() {
     { key: 'site_name_uz', value: 'Energetika muammolari instituti' },
     { key: 'site_name_en', value: 'Institute of Energy Problems' },
     { key: 'site_name_ru', value: 'Институт проблем энергетики' },
+    // canonical / hreflang havolalari uchun asosiy manzil. Domen ulangach
+    // (iep.uz) admin paneldan o'zgartiriladi — kodga yozilmaydi.
+    { key: 'site_url', value: 'https://energetika-institute.pages.dev' },
     // Manzil va pochta — foydalanuvchi tomonidan tasdiqlangan haqiqiy qiymatlar.
     { key: 'address_uz', value: 'Toshkent shahri, Mirzo Ulug\'bek tumani, Do\'rmon yo\'li ko\'chasi, 40-uy' },
     { key: 'address_en', value: '40 Dormon Yoli Street, Mirzo Ulugbek district, Tashkent' },

@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Helmet } from 'react-helmet-async';
+import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
@@ -117,9 +117,7 @@ export default function StructurePage() {
 
   return (
     <>
-      <Helmet>
-        <title>{t('structure.title')} | {t('common.institute_name')}</title>
-      </Helmet>
+      <SeoHead title={t('structure.title')} />
 
       <div className="bg-gradient-to-r from-primary-900 to-primary-800 text-white py-12">
         <div className="container">

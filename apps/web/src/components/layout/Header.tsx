@@ -1,9 +1,12 @@
 import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Globe, Zap } from 'lucide-react';
 import clsx from 'clsx';
 import { useSettings, telHref } from '@/hooks/useSettings';
+import LocalizedLink, { LocalizedNavLink } from '@/components/LocalizedLink';
+import { splitLangPrefix } from '@/lib/routes';
+import { useCurrentLang } from '@/hooks/useLocalizedPath';
 
 const LANGS = [
   { code: 'uz', label: "O'zbekcha" },
@@ -12,10 +15,13 @@ const LANGS = [
 ];
 
 export default function Header() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  // Ko'rsatiladigan til manzildan olinadi — `i18n.language` bilan farq qilmasin.
+  const currentLang = useCurrentLang();
   // Aloqa ma'lumotlari `/api/settings` dan keladi — kodda qattiq yozilmaydi.
   const { value } = useSettings();
   const phone = value('phone');
@@ -31,8 +37,13 @@ export default function Header() {
     { to: '/contact', label: t('nav.contact') },
   ];
 
+  // Til almashtirilganda foydalanuvchi JORIY sahifada qoladi — faqat prefiks
+  // o'zgaradi. `i18next` ni bevosita o'zgartirmaymiz: manzil asosiy manba,
+  // `LanguageGuard` uni marshrutdan o'qib sinxronlaydi.
   const changeLang = (code: string) => {
-    i18n.changeLanguage(code);
+    const { rest } = splitLangPrefix(location.pathname);
+    const suffix = rest === '/' ? '' : rest;
+    navigate(`/${code}${suffix}${location.search}${location.hash}`);
     setLangOpen(false);
   };
 
@@ -61,7 +72,7 @@ export default function Header() {
       <div className="container">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
+          <LocalizedLink to="/" className="flex items-center gap-2 flex-shrink-0">
             <div className="bg-primary-700 text-white p-2 rounded-lg">
               <Zap className="h-5 w-5" />
             </div>
@@ -71,12 +82,12 @@ export default function Header() {
               </div>
               <div className="text-xs text-gray-500">{t('common.institute_name_line2')}</div>
             </div>
-          </Link>
+          </LocalizedLink>
 
           {/* Desktop nav */}
           <nav className="hidden lg:flex items-center gap-0.5">
             {navLinks.map((link) => (
-              <NavLink
+              <LocalizedNavLink
                 key={link.to}
                 to={link.to}
                 end={link.to === '/'}
@@ -90,7 +101,7 @@ export default function Header() {
                 }
               >
                 {link.label}
-              </NavLink>
+              </LocalizedNavLink>
             ))}
           </nav>
 
@@ -103,7 +114,7 @@ export default function Header() {
                 className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-primary-700 hover:bg-gray-50 rounded-md transition-colors"
               >
                 <Globe className="h-4 w-4" />
-                <span className="hidden sm:block uppercase">{i18n.language.substring(0, 2)}</span>
+                <span className="hidden sm:block uppercase">{currentLang}</span>
               </button>
               {langOpen && (
                 <div className="absolute right-0 mt-1 w-40 bg-white rounded-lg shadow-lg border border-gray-100 py-1 z-50">
@@ -113,7 +124,7 @@ export default function Header() {
                       onClick={() => changeLang(lang.code)}
                       className={clsx(
                         'w-full text-left px-4 py-2 text-sm transition-colors',
-                        i18n.language === lang.code
+                        currentLang === lang.code
                           ? 'bg-primary-50 text-primary-700 font-medium'
                           : 'text-gray-700 hover:bg-gray-50'
                       )}
@@ -139,7 +150,7 @@ export default function Header() {
         {menuOpen && (
           <div className="lg:hidden border-t border-gray-100 py-3 space-y-1">
             {navLinks.map((link) => (
-              <NavLink
+              <LocalizedNavLink
                 key={link.to}
                 to={link.to}
                 end={link.to === '/'}
@@ -154,7 +165,7 @@ export default function Header() {
                 }
               >
                 {link.label}
-              </NavLink>
+              </LocalizedNavLink>
             ))}
           </div>
         )}

@@ -88,13 +88,20 @@ packages/
 12. **Matnlar hard-code qilinmasin** — `useTranslation()` va `locales/*.json`. Yangi matn qo'shsangiz, **uchala** json'ni ham yangilang.
 13. **Yangi admin sahifasi `ProtectedRoute` ichida bo'lsin** (`App.tsx`).
 14. **Tailwind utility class'lari** ishlatiladi; alohida CSS fayl yaratmang.
+15. **Ochiq sahifalardagi barcha ichki havolalar `LocalizedLink` (yoki `LocalizedNavLink`) orqali yozilsin.**
+    `react-router-dom` dan olingan oddiy `Link`/`NavLink` ochiq qismda ishlatilmaydi — u til
+    prefiksini yo'qotadi. `to` prefikssiz beriladi (`to="/news"`), prefiksni komponent qo'yadi.
+    Dastur ichida yo'naltirish kerak bo'lsa, `useLocalizedPath()` bilan manzil tayyorlanadi.
+    Admin marshrutlari (`/admin/...`) prefikssiz qoladi va oddiy `Link` bilan yoziladi.
+    Yangi ochiq sahifa qo'shilganda u avval `src/lib/routes.ts` dagi `PUBLIC_ROUTES` ro'yxatiga
+    yoziladi, keyin `App.tsx` ga.
 
 ### 4.4 Umumiy
 
-15. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
-16. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
-17. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
-18. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+16. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
+17. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
+18. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
+19. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 
 ---
 
@@ -160,6 +167,69 @@ Ishni tugadi deb hisoblashdan oldin:
 - Production'ga (`wrangler deploy`) so'ramasdan deploy qilmang.
 - Katta refactor'ni o'z bilganingizcha boshlamang — avval reja taklif qiling.
 - Ishlab turgan funksiyani "yaxshilash" uchun sindirmang.
+
+---
+
+## 8a. Samarali ishlash
+
+Kontekst cheklangan resurs. Uni tejab ishlatgan sessiya uzoqroq ishlaydi va
+kamroq xato qiladi. Quyidagilar majburiy.
+
+### 8a.1 O'qishda
+
+**Butun faylni o'qimang.** Avval `grep` bilan kerakli joyni toping, keyin
+faqat o'sha qismni o'qing. `apps/web/src/pages` dagi fayllar yuzlab qatordan
+iborat, ularning to'liq mazmuni deyarli hech qachon kerak emas.
+
+**Bir marta o'qigan faylni qayta o'qimang.** Tahrirlagandan keyin natijani
+tekshirish uchun qayta o'qish shart emas, chunki tahrir muvaffaqiyatsiz
+bo'lsa xato qaytadi.
+
+**Katta chiqishlarni cheklang.** `git log`, `ls`, `npm run build` natijalarini
+`head` yoki `tail` bilan qisqartiring.
+
+**Topshiriq faylini bir marta o'qing** va undan ish rejasini tuzing. Har bir
+qadamda qayta ochmang.
+
+### 8a.2 Yozishda
+
+**Kichik va aniq tahrirlar qiling.** Butun faylni qayta yozish o'rniga faqat
+o'zgargan qismni almashtiring.
+
+**Bir vaqtda bitta masalani hal qiling.** Yo'l-yo'lakay ko'zga tashlangan
+boshqa kamchilikni darhol tuzatmang, uni jurnalga yozib qo'ying.
+
+**Takroriy kod yozmang.** Bir xil mantiq ikkinchi marta kerak bo'lsa, uni
+umumiy funksiyaga chiqaring. Uchinchi marta yozilayotgan bo'lsa, bu xato.
+
+### 8a.3 Javob berishda
+
+**Uzun tushuntirish yozmang.** Nima qilganingizni ikki uch jumlada ayting.
+Kod nusxasini javobga ko'chirmang, fayl nomi va qator raqami yetarli.
+
+**Bajarilgan ishni qayta sanab bermang.** Foydalanuvchi jarayonni kuzatib
+turadi.
+
+### 8a.4 Qachon to'xtash kerak
+
+Uch marta urinib xato tuzatilmasa, davom etmang. To'xtang, nima
+sinaganingizni va nima natija berganini yozing, foydalanuvchidan so'rang.
+
+Topshiriqda yozilmagan katta o'zgarish kerak bo'lib qolsa, o'z bilganingizcha
+boshlamang. Avval taklif qiling.
+
+### 8a.5 Kod sifati
+
+Tezlik sifat hisobiga bo'lmasin. Quyidagilar hech qanday holatda
+o'tkazib yuborilmaydi.
+
+Kiruvchi ma'lumot tekshiruvi. Xato holatlarini qayta ishlash.
+`tsc` va `build` toza bo'lishi. Topshiriqdagi qabul mezonlarini haqiqatan
+bajarib ko'rish.
+
+Vaqt yetmasa, ishning **hajmini** qisqartiring, sifatini emas. Yarim
+bajarilgan lekin to'g'ri ishlaydigan qism, to'liq lekin tekshirilmagan
+ishdan yaxshiroq.
 
 ---
 
