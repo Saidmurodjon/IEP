@@ -62,7 +62,8 @@
     "subtitle": "From Institute Life",
     "read_more": "Read More",
     "published": "Published",
-    "no_news": "No news found"
+    "no_news": "No news found",
+    "source": "Source"
   },
   "publications": {
     "title": "Publications",
@@ -107,7 +108,9 @@
     "rights": "All rights reserved",
     "developed": "Developed by",
     "pages": "Pages",
-    "description": "A centre for scientific research and innovation in the energy sector, working on alternative energy and energy efficiency."
+    "description": "A centre for scientific research and innovation in the energy sector, working on alternative energy and energy efficiency.",
+    "usage_terms": "When using the information materials of this website, a link to the website must be given as the source.",
+    "last_updated": "Site last updated"
   },
   "admin": {
     "login": "Login",
@@ -150,9 +153,13 @@
     "institute_name_line1": "Institute of Energy",
     "institute_name_line2": "Problems"
   },
-  "notfound": {
+  "notFound": {
     "title": "Page not found",
-    "text": "The page you requested does not exist, or the address was mistyped.",
-    "home": "Back to home page"
+    "text": "This page does not exist. It may have been moved, or the link is out of date.",
+    "search_placeholder": "Search the site...",
+    "search_soon": "Search will be available soon.",
+    "sections": "Main sections",
+    "admin_text": "There is no such page in the admin panel.",
+    "admin_back": "Back to dashboard"
   }
 }

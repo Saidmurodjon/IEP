@@ -62,7 +62,8 @@
     "subtitle": "Institut hayotidan",
     "read_more": "To'liq o'qish",
     "published": "Chop etilgan",
-    "no_news": "Yangiliklar topilmadi"
+    "no_news": "Yangiliklar topilmadi",
+    "source": "Manba"
   },
   "publications": {
     "title": "Nashrlar",
@@ -107,7 +108,9 @@
     "rights": "Barcha huquqlar himoyalangan",
     "developed": "Sayt ishlab chiqilgan",
     "pages": "Sahifalar",
-    "description": "Energetika sohasidagi ilmiy tadqiqotlar va innovatsiyalar markazi. Muqobil energiya va energiya samaradorligi yo'nalishida faoliyat yuritadi."
+    "description": "Energetika sohasidagi ilmiy tadqiqotlar va innovatsiyalar markazi. Muqobil energiya va energiya samaradorligi yo'nalishida faoliyat yuritadi.",
+    "usage_terms": "Saytning axborot materiallaridan foydalanilganda manba sifatida saytga havola ko'rsatilishi shart.",
+    "last_updated": "Sayt oxirgi yangilangan sana"
   },
   "admin": {
     "login": "Kirish",
@@ -150,9 +153,13 @@
     "institute_name_line1": "Energetika muammolari",
     "institute_name_line2": "instituti"
   },
-  "notfound": {
+  "notFound": {
     "title": "Sahifa topilmadi",
-    "text": "Siz so'ragan sahifa mavjud emas yoki manzil noto'g'ri yozilgan.",
-    "home": "Bosh sahifaga qaytish"
+    "text": "Bunday sahifa mavjud emas. Balki u ko'chirilgan yoki havola eskirgan.",
+    "search_placeholder": "Sayt bo'ylab qidirish...",
+    "search_soon": "Qidiruv tez orada ishga tushadi.",
+    "sections": "Asosiy bo'limlar",
+    "admin_text": "Boshqaruv panelida bunday sahifa yo'q.",
+    "admin_back": "Boshqaruv paneliga qaytish"
   }
 }

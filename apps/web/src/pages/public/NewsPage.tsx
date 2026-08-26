@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { newsApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Calendar, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 
 export default function NewsPage() {
@@ -57,7 +57,7 @@ export default function NewsPage() {
               <div className="p-5 flex-1 flex flex-col">
                 <time className="text-xs text-gray-400 flex items-center gap-1 mb-2">
                   <Calendar className="h-3 w-3" />
-                  {format(new Date(item.publishedAt), 'dd.MM.yyyy')}
+                  {formatDate(item.publishedAt)}
                 </time>
                 <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 flex-1">
                   {getField(item, 'title')}

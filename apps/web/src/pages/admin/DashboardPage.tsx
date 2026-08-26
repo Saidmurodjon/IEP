@@ -5,7 +5,7 @@ import { newsApi, pubsApi, contactApi } from '@/lib/api';
 import { Newspaper, BookOpen, MessageSquare, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/store/auth';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/date';
 
 export default function DashboardPage() {
   const { t } = useTranslation();
@@ -67,7 +67,7 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-800 truncate">{item.titleUz}</p>
                   <p className="text-xs text-gray-400">
-                    {format(new Date(item.publishedAt), 'dd.MM.yyyy')}
+                    {formatDate(item.publishedAt)}
                   </p>
                 </div>
               </div>

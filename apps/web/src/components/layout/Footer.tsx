@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom';
 import LocalizedLink from '@/components/LocalizedLink';
 import { useTranslation } from 'react-i18next';
-import { MapPin, Phone, Mail, Clock, Zap } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { useSettings, telHref } from '@/hooks/useSettings';
+import { formatDate } from '@/lib/date';
 
 export default function Footer() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
   // Aloqa ma'lumotlari `/api/settings` dan keladi — qattiq yozilgan qiymat yo'q.
-  const { value, localized } = useSettings();
+  const { value, localized, lastUpdatedAt } = useSettings();
   const address = localized('address');
   const phone = value('phone');
   const email = value('email');
@@ -20,9 +21,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Logo & description */}
           <div className="lg:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary-600 text-white p-2 rounded-lg">
-                <Zap className="h-5 w-5" />
+            <div className="flex items-center gap-3 mb-4">
+              {/*
+                Footerda to'liq logotip (emblema + yozuv). Logotip yozuvining
+                bir qismi to'q ko'k, footer foni ham to'q — shuning uchun
+                logotip oq maydonchada turadi, aks holda yozuv ko'rinmaydi.
+              */}
+              <div className="bg-white rounded-lg p-2 flex-shrink-0">
+                <img
+                  src="/images/logo-full.png"
+                  alt={t('common.institute_name')}
+                  width={72}
+                  height={72}
+                  className="h-16 w-16 object-contain"
+                />
               </div>
               <div>
                 <div className="text-white font-bold">{t('common.institute_name')}</div>
@@ -96,6 +108,23 @@ export default function Footer() {
               )}
             </ul>
           </div>
+        </div>
+      </div>
+
+      {/*
+        VM ning 2021-yil 15-iyundagi 373-son qarori talablari:
+        materiallardan foydalanish sharti va axborotning yangilanish sanasi.
+      */}
+      <div className="border-t border-primary-800/70">
+        <div className="container py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <p className="text-xs text-gray-500 leading-relaxed max-w-2xl">
+            {t('footer.usage_terms')}
+          </p>
+          {lastUpdatedAt && (
+            <p className="text-xs text-gray-500 flex-shrink-0">
+              {t('footer.last_updated')}: <time dateTime={lastUpdatedAt}>{formatDate(lastUpdatedAt)}</time>
+            </p>
+          )}
         </div>
       </div>
 

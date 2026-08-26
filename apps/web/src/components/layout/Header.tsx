@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Menu, X, Globe, Zap } from 'lucide-react';
+import { Menu, X, Globe } from 'lucide-react';
 import clsx from 'clsx';
 import { useSettings, telHref } from '@/hooks/useSettings';
 import LocalizedLink, { LocalizedNavLink } from '@/components/LocalizedLink';
@@ -73,9 +73,20 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <LocalizedLink to="/" className="flex items-center gap-2 flex-shrink-0">
-            <div className="bg-primary-700 text-white p-2 rounded-lg">
-              <Zap className="h-5 w-5" />
-            </div>
+            {/*
+              Sarlavhada FAQAT emblema — yozuvli variant emas. Institut nomi
+              yonida matn sifatida turadi va tilga qarab o'zgaradi, yozuvli
+              logotip qo'yilsa ingliz/rus tilida o'zbekcha yozuv takrorlanardi.
+              Fon neytral (oq) — logotip ranglari bilan urishmasin.
+            */}
+            <img
+              src="/images/logo-emblem.png"
+              alt=""
+              aria-hidden="true"
+              width={40}
+              height={40}
+              className="h-9 w-9 sm:h-10 sm:w-10 object-contain flex-shrink-0"
+            />
             <div className="hidden sm:block">
               <div className="text-sm font-bold text-primary-900 leading-tight">
                 {t('common.institute_name_line1')}

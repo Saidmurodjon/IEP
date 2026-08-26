@@ -26,6 +26,7 @@ const AdminPublicationsPage = lazy(() => import('@/pages/admin/AdminPublications
 const AdminStructurePage = lazy(() => import('@/pages/admin/AdminStructurePage'));
 const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
 const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
+const AdminNotFoundPage = lazy(() => import('@/pages/admin/AdminNotFoundPage'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
@@ -109,6 +110,8 @@ export default function App() {
           <Route path="structure" element={<AdminStructurePage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
           <Route path="messages" element={<AdminMessagesPage />} />
+          {/* Admin ichidagi noma'lum manzil — ochiq saytnikidan alohida sahifa */}
+          <Route path="*" element={<AdminNotFoundPage />} />
         </Route>
 
         {/*

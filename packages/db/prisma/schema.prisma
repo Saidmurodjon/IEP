@@ -32,6 +32,10 @@ model News {
   contentEn   String   @db.Text
   contentRu   String   @db.Text
   imageUrl    String?
+  // 373-son qaror, 4-band: boshqa manbadan olingan axborot faqat manba
+  // ko'rsatilgan holda joylashtiriladi.
+  sourceName  String?
+  sourceUrl   String?
   publishedAt DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

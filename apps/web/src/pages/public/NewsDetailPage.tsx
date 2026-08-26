@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { newsApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Calendar, ArrowLeft } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 
 export default function NewsDetailPage() {
@@ -40,6 +40,9 @@ export default function NewsDetailPage() {
     );
   }
 
+  const sourceName = (item as Record<string, string>).sourceName ?? '';
+  const sourceUrl = (item as Record<string, string>).sourceUrl ?? '';
+
   return (
     <>
       <SeoHead title={getField('title')} description={getField('summary')} />
@@ -55,7 +58,7 @@ export default function NewsDetailPage() {
           <h1 className="text-2xl font-bold max-w-3xl">{getField('title')}</h1>
           <time className="flex items-center gap-1 text-primary-200 text-sm mt-3">
             <Calendar className="h-4 w-4" />
-            {format(new Date((item as Record<string, string>).publishedAt), 'dd MMMM yyyy')}
+            {formatDate((item as Record<string, string>).publishedAt)}
           </time>
         </div>
       </div>
@@ -76,6 +79,28 @@ export default function NewsDetailPage() {
             className="prose-content"
             dangerouslySetInnerHTML={{ __html: getField('content') }}
           />
+
+          {/*
+            373-son qarorning 4-bandi: boshqa manbadan olingan axborot faqat
+            manba ko'rsatilgan holda joylashtiriladi.
+          */}
+          {sourceName && (
+            <div className="mt-10 pt-5 border-t border-gray-100 text-sm text-gray-500">
+              <span className="font-medium text-gray-700">{t('news.source')}:</span>{' '}
+              {sourceUrl ? (
+                <a
+                  href={sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  className="text-primary-700 hover:underline"
+                >
+                  {sourceName}
+                </a>
+              ) : (
+                sourceName
+              )}
+            </div>
+          )}
         </div>
       </div>
     </>

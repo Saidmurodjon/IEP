@@ -7,7 +7,7 @@ import {
   ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, GraduationCap, Users, Zap,
 } from 'lucide-react';
 import { newsApi, pubsApi } from '@/lib/api';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 
 export default function HomePage() {
@@ -163,7 +163,7 @@ export default function HomePage() {
                   <div className="p-5 flex flex-col flex-1">
                     <time className="text-xs text-gray-400 flex items-center gap-1 mb-2">
                       <Calendar className="h-3 w-3" />
-                      {format(new Date(item.publishedAt), 'dd.MM.yyyy')}
+                      {formatDate(item.publishedAt)}
                     </time>
                     <h3 className="font-semibold text-primary-900 mb-2 line-clamp-2">
                       {getTitle(item)}

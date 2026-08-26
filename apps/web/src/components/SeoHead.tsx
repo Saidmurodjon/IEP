@@ -10,6 +10,8 @@ interface Props {
   title?: string;
   /** `<meta name="description">` uchun matn. */
   description?: string;
+  /** Sahifa qidiruv tizimlarida indekslanmasin (masalan 404). */
+  noindex?: boolean;
 }
 
 /**
@@ -19,7 +21,7 @@ interface Props {
  * Asosiy manzil sozlamalardan (`site_url`) olinadi — kodga yozilmaydi.
  * Sozlama bo'sh bo'lsa, brauzerdagi joriy origin ishlatiladi.
  */
-export default function SeoHead({ title, description }: Props) {
+export default function SeoHead({ title, description, noindex }: Props) {
   const { t } = useTranslation();
   const lang = useCurrentLang();
   const { pathname } = useLocation();
@@ -40,11 +42,22 @@ export default function SeoHead({ title, description }: Props) {
     <Helmet htmlAttributes={{ lang }}>
       <title>{fullTitle}</title>
       {description ? <meta name="description" content={description} /> : null}
+      {noindex ? <meta name="robots" content="noindex, follow" /> : null}
       <link rel="canonical" href={urlFor(lang)} />
       {SUPPORTED_LANGS.map((code) => (
         <link key={code} rel="alternate" hrefLang={code} href={urlFor(code)} />
       ))}
       <link rel="alternate" hrefLang="x-default" href={urlFor(DEFAULT_LANG)} />
+
+      {/* Ijtimoiy tarmoqlar — rasm to'liq manzil bilan berilishi shart */}
+      <meta property="og:type" content="website" />
+      <meta property="og:site_name" content={siteName} />
+      <meta property="og:title" content={fullTitle} />
+      {description ? <meta property="og:description" content={description} /> : null}
+      <meta property="og:url" content={urlFor(lang)} />
+      <meta property="og:image" content={`${base}/images/og-image.png`} />
+      <meta property="og:locale" content={lang} />
+      <meta name="twitter:card" content="summary_large_image" />
     </Helmet>
   );
 }

@@ -25,6 +25,13 @@ export function useSettings() {
 
   const settings: SiteSettings = data?.data?.data ?? {};
 
+  /**
+   * Ochiq kontentning eng so'nggi o'zgarish vaqti (ISO). 373-son qarorning
+   * 6-bandi — axborot sanasi ko'rsatilishi kerak. API sozlamalar bilan
+   * birga qaytaradi, alohida so'rov yo'q.
+   */
+  const lastUpdatedAt: string | null = data?.data?.lastUpdatedAt ?? null;
+
   /** Bitta kalit qiymati; yo'q bo'lsa bo'sh satr. */
   const value = (key: string): string => (settings[key] ?? '').trim();
 
@@ -35,7 +42,7 @@ export function useSettings() {
    */
   const localized = (key: string): string => value(`${key}_${lang}`) || value(`${key}_uz`);
 
-  return { settings, isLoading, value, localized };
+  return { settings, isLoading, value, localized, lastUpdatedAt };
 }
 
 /** `tel:` havolasi uchun raqamdan bo'shliq va tinish belgilarini olib tashlaydi. */

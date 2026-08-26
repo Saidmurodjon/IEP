@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contactApi } from '@/lib/api';
 import { Trash2, Mail, MailOpen, Phone } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDateTime } from '@/lib/date';
 import clsx from 'clsx';
 
 interface Msg {
@@ -62,7 +62,7 @@ export default function AdminMessagesPage() {
                     }
                     <span className="font-semibold text-gray-900">{msg.name}</span>
                     <span className="text-xs text-gray-400">
-                      {format(new Date(msg.createdAt), 'dd.MM.yyyy HH:mm')}
+                      {formatDateTime(msg.createdAt)}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-sm text-gray-500">

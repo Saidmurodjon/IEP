@@ -13,47 +13,47 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-26
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05 va 12 kommitlari lokal (`origin/master` = `69b6548`).
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12 va 11 kommitlari lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **12-til prefiksi tugadi.** Ochiq manzillar endi `/uz/…`, `/en/…`, `/ru/…`. `/` foydalanuvchi
-  tiliga qarab yo'naltiriladi (xotira → brauzer tili → uz). Prefikssiz manzil (`/news`)
-  `/uz/news` ga o'tadi; noto'g'ri prefiks (`/xx/news`) va noma'lum manzil (`/uzbekistan`) — 404.
-  Admin marshrutlari (`/admin/...`) o'zgarmadi.
-- Til manzildan olinadi (`useCurrentLang`), `localStorage` faqat `/` ni yo'naltirish uchun.
-  Til almashtirilganda foydalanuvchi joriy sahifada qoladi.
-- **`LocalizedLink` / `LocalizedNavLink`** — ochiq qismdagi barcha ichki havolalar shular orqali.
-  Yangi qoida: CLAUDE.md 4.3, 15-band. (Diqqat: 4.4 dagi qoidalar 15–18 → 16–19 ga surildi.)
-- `SeoHead` — har bir ochiq sahifada `html lang`, `canonical`, uchta `hreflang` + `x-default`.
-  Asosiy manzil `site_url` sozlamasidan (admin panelda tahrirlanadi), kodda emas.
-- `src/lib/routes.ts` — `PUBLIC_ROUTES` ochiq sahifalarning yagona ro'yxati (sayt xaritasi uchun tayyorgarlik).
-- **05-namoyish tayyorligi** ham o'z kuchida: aloqa ma'lumotlari `/api/settings` dan,
-  `npm run demo`, `docs/demo.md`.
-- **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig`, port 5433).
+- **11-brend/404/huquqiy tugadi.** Institut logotipi saytda: sarlavhada emblema
+  (`logo-emblem.png`), footerda to'liq logotip oq maydonchada (`logo-full.png`),
+  favicon 32 va apple-touch-icon 180, ijtimoiy tarmoq rasmi 1200×630. Sayt palitrasi
+  o'zgartirilmadi — logotip o'z ranglarida.
+- **404 sahifasi to'liq:** sarlavha va footer bilan, uch tilda, `noindex, follow`,
+  qidiruv maydoni joyi (10-topshiriq uchun `TODO`), asosiy bo'limlarga havolalar,
+  admin havolasi yo'q. Admin panel uchun alohida `AdminNotFoundPage`.
+- **Huquqiy bandlar (VM 373-son qarori):** footerda materiallardan foydalanish sharti
+  (3 tilda) va sayt oxirgi yangilangan sanasi; yangilikda `sourceName`/`sourceUrl`
+  (migratsiya `2_add_news_source`), admin formada 4-band eslatmasi bilan.
+- **Sana formati** hamma joyda `26.08.2026` (`src/lib/date.ts`, `date-fns` uz/en/ru sozlamalari).
+- **12-til prefiksi** o'z kuchida: `/uz/…`, `/en/…`, `/ru/…`, `LocalizedLink`, canonical + hreflang.
+- **05-namoyish tayyorligi** o'z kuchida: aloqa ma'lumotlari `/api/settings` dan, `npm run demo`.
+- **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig`, 5433).
   Bazada 3 ta yangilik (3 tilda), 0 ta nashr, 17 birlik.
 
 ### Nima hali ishlamaydi / bajarilmagan
+- **Logotip sifati past.** Manba `docs/reference/logo-original.jpg` — 407×410, JPEG, 25 KB,
+  shaffof fonsiz. Undan olingan PNG'lar ham shuncha sifatda. **Foydalanuvchidan vektor fayl
+  (SVG/AI/EPS) yoki kamida 1000px shaffof PNG kerak** — batafsil `apps/web/public/images/CREDITS.md`.
+- **Haqiqiy 404 holat kodi yo'q.** Cloudflare Pages `_redirects` da hamma manzil `200` bilan
+  `index.html` ga boradi. Foydalanuvchiga ko'rinadigan qism to'g'ri, lekin qidiruv roboti uchun
+  status `200`. To'liq yechim SSR/prerender bilan — SEO topshirig'ida. Kodda `TODO` qoldirildi.
 - **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan.** `npm run demo`
-  API'ni `wrangler dev` da ishga tushiradi va aynan shu faylni o'qiydi — namoyish hozircha
-  production bazasi ustida ishlaydi. Namoyishdan oldin lokal Postgres kerak (`docs/demo.md` 1-bo'lim).
-- Bu mashinada Node.js o'rnatilmagan (`node`/`npm` PATH da yo'q). Tekshiruvlar vaqtinchalik
-  scratchpad'ga yuklangan Node 22 bilan bajarildi.
-- **Server tomonida yo'naltirish yo'q.** `/` → `/uz` hozir SPA ichida bajariladi. Haqiqiy 302
-  va prefikssiz manzillar uchun host darajasidagi qoida (Cloudflare Pages `_redirects`)
-  SEO topshirig'ida qo'shilishi kerak.
-- Sayt xaritasi (`sitemap.xml`) hali yo'q — faqat tayyorgarlik qilindi.
-- Production hali eski kod bilan; 03-production `wrangler login` dan keyin.
-- 04-kontent production'ga qo'llanmagan; demo nashrlar hali production'da.
+  shuni o'qiydi — namoyishdan oldin lokal Postgres kerak (`docs/demo.md` 1-bo'lim).
+- **Migratsiya `2_add_news_source` production'ga qo'llanmagan.** Lokal bazada qo'llandi.
+  Deploy'dan OLDIN production'ga qo'llanishi shart, aks holda `GET /api/news` 500 beradi.
+- Bu mashinada Node.js o'rnatilmagan; tekshiruvlar scratchpad'dagi Node 22 bilan bajarildi.
+- Sayt xaritasi yo'q; 03-production `wrangler login` dan keyin; 04-kontent production'ga qo'llanmagan.
 
 ### Keyingi qadam
-1. 12 ni PM tekshirsin.
-2. Navbat bo'yicha 11 (logotip, 404, huquqiy bandlar) — 404 sahifasining brend ko'rinishi
-   shu yerda to'ldiriladi (hozir sodda variant bor).
+1. 11 ni PM tekshirsin.
+2. Navbat bo'yicha 06 (xodimlar, laboratoriyalar, hamkorlar).
 
 ### Ochiq savollar
+- Logotipning vektor fayli va institut brend qo'llanmasi bormi? (Foydalanuvchi zimmasida.)
 - Namoyish lokal bazada o'tkaziladimi? Tavsiya: **ha**.
-- `site_url` hozir `https://energetika-institute.pages.dev`. Domen (`iep.uz`) ulangach
-  admin paneldan o'zgartiriladi.
+- `site_url` hozir `https://energetika-institute.pages.dev`; domen ulangach admin paneldan o'zgaradi.
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -64,8 +64,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 |---|---|---|
 | 05 | Namoyishga tayyorlash | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 12 | Til prefiksi | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 11 | Logotip, 404, huquqiy bandlar | ⏳ Navbatda |
-| 06 | Xodimlar, laboratoriyalar, hamkorlar | ⏸ Kutmoqda |
+| 11 | Logotip, 404, huquqiy bandlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 06 | Xodimlar, laboratoriyalar, hamkorlar | ⏳ Navbatda |
 | 07 | Fayl yuklash va tahrirlagich | ⏸ Kutmoqda |
 | 08 | Xatoliklar jurnali | ⏸ Kutmoqda |
 | 09 | Murojaatlar va Resend | ⏸ Kutmoqda |
@@ -74,7 +74,7 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
 
 **Foydalanuvchi zimmasidagi ochiq masalalar.** 373-son qaror bo'yicha
-yuriskonsult javobi. Logotipning vektor fayli. Xodimlar ma'lumoti va rasmlari.
+yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof PNG** va brend qo'llanmasi. Xodimlar ma'lumoti va rasmlari.
 Hamkorlar ro'yxati. Institut telefon raqami.
 
 ---
@@ -93,6 +93,68 @@ Hamkorlar ro'yxati. Institut telefon raqami.
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-26 · 11 — Logotip, 404 sahifasi va huquqiy bandlar
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(brand): institute logo, 404 page and legal notices`
+
+**A. Logotip.** `docs/reference/logo-original.jpg` dan (407×410 JPEG) besh fayl tayyorlandi:
+`logo-emblem.png`, `logo-full.png`, `og-image.png` (1200×630, navy fon), `favicon-32.png`,
+`apple-touch-icon.png`. Oq fon flood-fill bilan olib tashlandi — faqat CHETDAN ulangan oq soha,
+emblema ichidagi oq halqa joyida. JPEG shovqini tufayli chegarada 3 pikselli yumshoq alfa
+o'tishi qilindi (birinchi urinishda to'q fonda qora nuqtalar chiqqandi).
+Sarlavhada **faqat emblema** (yozuvli variant emas — nom yonida matn sifatida turadi va tilga
+qarab o'zgaradi). Footerda to'liq logotip, lekin **oq maydonchada**: logotip yozuvining bir qismi
+to'q ko'k, footer foni ham to'q — aks holda ko'rinmasdi. `index.html` da favicon va og meta
+almashtirildi, `favicon.svg` o'chirildi. **Palitra o'zgartirilmadi** (A3 talabi).
+
+**B. 404.** `NotFoundPage` to'ldirildi: `noindex, follow`, qidiruv maydoni (o'chirilgan holda,
+10-topshiriq uchun `TODO`), Bosh sahifa / Institut haqida / Yangiliklar / Aloqa havolalari,
+admin havolasi yo'q. `AdminNotFoundPage` — admin ichidagi noma'lum manzil uchun alohida sahifa,
+`noindex, nofollow` va boshqaruv paneliga qaytish havolasi. i18n kalitlari `notFound` bo'limida
+(12-topshiriqdagi vaqtinchalik `notfound` kalitlari olib tashlandi).
+
+**C. Huquqiy.** Footerda foydalanish sharti (3 tilda, `footer.usage_terms`) va sayt oxirgi
+yangilangan sanasi. Sana `GET /api/settings` javobiga qo'shilgan `lastUpdatedAt` dan keladi —
+News/Publication/StructureUnit/SiteSetting `updatedAt` maksimumi, alohida so'rovsiz.
+Yangilikka `sourceName`/`sourceUrl` + migratsiya `2_add_news_source`; API zod sxemasi, ro'yxat
+`select`i va admin forma yangilandi (formada 373-son qarorning 4-bandi haqida eslatma).
+Yangilik sahifasida manba faqat to'ldirilgan bo'lsa ko'rinadi, havola `rel="noopener noreferrer nofollow"`.
+Sana formati: `src/lib/date.ts` — `dd.MM.yyyy`, `date-fns` ning `uz` (lotin), `enUS`, `ru`
+sozlamalari ulandi. Oldin `NewsDetailPage` da `dd MMMM yyyy` bo'lgani uchun inglizcha oy nomi chiqardi.
+
+**Nima tekshirildi va qanday:**
+- `tsc --noEmit` (api + web) toza; `npm run build` toza. Migratsiya lokal bazaga `migrate deploy`
+  bilan qo'llandi, `prisma generate` qayta ishga tushirildi.
+- **Brauzerda (headless Chromium, lokal baza):**
+  - 3 tilda bosh sahifa: sarlavha `logo-emblem.png`, footer `logo-full.png` — ikkalasi ham
+    yuklandi (`naturalWidth > 0`); en/ru sarlavhada o'zbekcha logo yozuvi takrorlanmadi;
+    footerda foydalanish sharti va sana `26.08.2026`; konsol xatosi va 4xx so'rov yo'q.
+  - `/favicon-32.png`, `/apple-touch-icon.png`, `/images/og-image.png`, ikkala logotip — 200.
+  - 404 uch tilda: `robots=noindex, follow`, sarlavha+footer joyida, qidiruv maydoni bor,
+    to'rtta bo'lim havolasi til prefiksi bilan, admin havolasi yo'q; havola bosilib tekshirildi.
+  - Admin 404: `/admin/mavjud-emas` → 404 sahifasi, `noindex, nofollow`, qaytish havolasi ishladi.
+  - Admin panelda manba maydonlari bilan yangilik qo'shildi → `/uz/news/manba-sinovi` da
+    "Manba: UzA" va havola ko'rindi; manbasiz yangilikda blok chiqmadi. Sinov yozuvi o'chirildi.
+  - Sanalar uchala tilda `26.08.2026`; oy nomi bilan sana yo'q (bitta "February" mosligi —
+    yangilik MATNI ichidagi qaror sanasi, format emas, tekshirib ko'rildi).
+  - Mobil 375px: bosh sahifa va 404 — gorizontal overflow 0px.
+
+**Nima TEKSHIRILMADI:**
+- Haqiqiy `404` HTTP status kodi (Pages `_redirects` hammasini `200` qiladi) — SEO topshirig'i.
+- Ijtimoiy tarmoqda ulashish (og rasm) — faqat fayl mavjudligi va meta teglar tekshirildi.
+- Favicon haqiqiy brauzer yorlig'ida — headless rejimda ko'rinmaydi, faqat 200 javob tekshirildi.
+- Production'ga hech narsa yozilmadi; **migratsiya production'ga qo'llanmadi**.
+
+**Qarorlar va sabablari:**
+- Footerda to'liq logotip oq maydonchada — spetsifikatsiya "footerda to'liq logotip" deydi, lekin
+  yozuvi to'q ko'k va to'q footerda ko'rinmasdi; oq maydoncha logotipni asl ko'rinishida saqlaydi.
+- `lastUpdatedAt` alohida endpoint emas, `/api/settings` javobiga qo'shildi — footer allaqachon
+  shu so'rovni qiladi, ikkinchi so'rov keraksiz.
+- Sana raqamli (`dd.MM.yyyy`) bo'lgani uchun til sozlamasi natijani o'zgartirmaydi, lekin
+  `date-fns` locale'lari baribir ulandi — kelajakda uzun format kerak bo'lsa tayyor tursin.
+
+---
 
 ### 2026-08-26 · 12 — Manzillarga til prefiksi
 

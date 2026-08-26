@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { newsApi } from '@/lib/api';
 import { Plus, Pencil, Trash2, X, Calendar } from 'lucide-react';
-import { format } from 'date-fns';
+import { formatDate } from '@/lib/date';
 import clsx from 'clsx';
 
 const schema = z.object({
@@ -16,6 +16,8 @@ const schema = z.object({
   summaryUz: z.string().min(1), summaryEn: z.string().min(1), summaryRu: z.string().min(1),
   contentUz: z.string().min(1), contentEn: z.string().min(1), contentRu: z.string().min(1),
   imageUrl: z.string().optional(),
+  sourceName: z.string().optional(),
+  sourceUrl: z.string().optional(),
 });
 type FormData = z.infer<typeof schema>;
 
@@ -165,6 +167,40 @@ export default function AdminNewsPage() {
                   <input {...register('imageUrl')} className="input" placeholder="https://..." />
                 </div>
 
+                {/*
+                  373-son qarorning 4-bandi: boshqa manbadan olingan axborot
+                  faqat manba ko'rsatilgan holda joylashtiriladi.
+                */}
+                <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 space-y-3">
+                  <p className="text-xs text-amber-900 leading-relaxed">
+                    <span className="font-semibold">Diqqat.</span> Agar material boshqa manbadan
+                    olingan bo'lsa, manbani ko'rsatish <span className="font-semibold">majburiy</span>
+                    {' '}(Vazirlar Mahkamasining 2021-yil 15-iyundagi 373-son qarori, 4-band).
+                    Institutning o'z materiali bo'lsa, bu maydonlar bo'sh qoladi.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="label">Manba nomi</label>
+                      <input
+                        {...register('sourceName')}
+                        className="input"
+                        placeholder="Masalan: UzA"
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Manba havolasi</label>
+                      <input
+                        {...register('sourceUrl')}
+                        className="input"
+                        placeholder="https://..."
+                      />
+                      {errors.sourceUrl && (
+                        <p className="text-red-500 text-xs mt-1">{errors.sourceUrl.message}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex gap-3 pt-2">
                   <button
                     type="submit"
@@ -205,7 +241,7 @@ export default function AdminNewsPage() {
                     <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
-                        {format(new Date(item.publishedAt), 'dd.MM.yyyy')}
+                        {formatDate(item.publishedAt)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right">
