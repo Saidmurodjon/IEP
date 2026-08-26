@@ -6,7 +6,9 @@
     "labs": "Scientific Laboratories",
     "news": "News",
     "publications": "Publications",
-    "contact": "Contact"
+    "contact": "Contact",
+    "management": "Management",
+    "employees": "Staff"
   },
   "home": {
     "hero_title": "Academy of Sciences of the Republic of Uzbekistan",
@@ -139,7 +141,9 @@
     "total_news": "Total News",
     "total_pubs": "Total Publications",
     "total_msgs": "Messages",
-    "unread_msgs": "Unread"
+    "unread_msgs": "Unread",
+    "employees": "Staff",
+    "partners": "Partners"
   },
   "common": {
     "loading": "Loading...",
@@ -161,5 +165,37 @@
     "sections": "Main sections",
     "admin_text": "There is no such page in the admin panel.",
     "admin_back": "Back to dashboard"
+  },
+  "management": {
+    "title": "Institute management",
+    "subtitle": "Management team and reception hours",
+    "empty": "Management information is being compiled.",
+    "empty_hint": "It will be published once provided by the institute."
+  },
+  "employees": {
+    "title": "Institute staff",
+    "subtitle": "Research and administrative staff",
+    "empty": "The staff list is being compiled.",
+    "empty_hint": "It will be published once provided by the institute.",
+    "no_unit": "Other units",
+    "count": "staff"
+  },
+  "employee": {
+    "head": "Head of laboratory",
+    "office": "Room",
+    "reception": "Reception hours",
+    "research_area": "Research area",
+    "photo_alt": "photo"
+  },
+  "partners": {
+    "title": "Partners",
+    "subtitle": "Organisations the institute works with"
+  },
+  "lab": {
+    "not_found": "Laboratory not found",
+    "direction": "Area of work",
+    "staff_list": "Laboratory staff",
+    "staff_empty": "The staff list is being compiled.",
+    "back": "Back to laboratories"
   }
 }

@@ -55,7 +55,9 @@ export default function Footer() {
               {[
                 { to: '/', label: t('nav.home') },
                 { to: '/about', label: t('nav.about') },
+                { to: '/management', label: t('nav.management') },
                 { to: '/structure', label: t('nav.structure') },
+                { to: '/employees', label: t('nav.employees') },
                 { to: '/news', label: t('nav.news') },
                 { to: '/publications', label: t('nav.publications') },
                 { to: '/contact', label: t('nav.contact') },

@@ -76,6 +76,23 @@ export const structureApi = {
 };
 
 // --- Settings ---
+export const employeesApi = {
+  list: (unitId?: string, includeInactive = false) =>
+    api.get('/api/employees', { params: { unitId, includeInactive: includeInactive || undefined } }),
+  get: (id: string) => api.get(`/api/employees/${id}`),
+  create: (data: unknown) => api.post('/api/employees', data),
+  update: (id: string, data: unknown) => api.put(`/api/employees/${id}`, data),
+  delete: (id: string) => api.delete(`/api/employees/${id}`),
+};
+
+export const partnersApi = {
+  list: (includeInactive = false) =>
+    api.get('/api/partners', { params: { includeInactive: includeInactive || undefined } }),
+  create: (data: unknown) => api.post('/api/partners', data),
+  update: (id: string, data: unknown) => api.put(`/api/partners/${id}`, data),
+  delete: (id: string) => api.delete(`/api/partners/${id}`),
+};
+
 export const settingsApi = {
   all: () => api.get('/api/settings'),
   bulkUpdate: (data: Record<string, string>) => api.post('/api/settings/bulk', data),

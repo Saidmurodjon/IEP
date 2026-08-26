@@ -6,6 +6,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Users, Beaker } from 'lucide-react';
 import type { Lang } from '@energetika/shared';
 import { flattenLabs, type Unit } from '@/lib/structure';
+import LocalizedLink from '@/components/LocalizedLink';
 
 export default function LabsPage() {
   const { t, i18n } = useTranslation();
@@ -51,7 +52,11 @@ export default function LabsPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {labs.map((lab) => (
-            <div key={lab.id} className="card p-6 hover:shadow-md transition-shadow">
+            <LocalizedLink
+              key={lab.id}
+              to={`/laboratories/${lab.id}`}
+              className="card p-6 hover:shadow-md hover:border-primary-200 transition-all block"
+            >
               <div className="bg-emerald-100 text-emerald-700 p-3 rounded-xl w-12 h-12 flex items-center justify-center mb-4">
                 <Beaker className="h-6 w-6" />
               </div>
@@ -65,7 +70,7 @@ export default function LabsPage() {
                   <span>{lab.staffCount} {t('labs.staff')}</span>
                 </div>
               )}
-            </div>
+            </LocalizedLink>
           ))}
         </div>
       </div>

@@ -59,3 +59,40 @@
   .prose-content a { @apply text-primary-700 underline hover:text-primary-900; }
   .prose-content blockquote { @apply border-l-4 border-primary-300 pl-4 italic text-gray-600 my-4; }
 }
+
+/*
+  Hamkorlar lentasi — tashqi kutubxonasiz, faqat CSS (CLAUDE.md 14-qoida).
+  Logotiplar ro'yxati ikki marta chizilgani uchun lenta yarmiga (-50%)
+  siljitilganda boshlang'ich holatga qaytadi va harakat uzluksiz ko'rinadi.
+*/
+@keyframes partner-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.partner-track {
+  display: flex;
+  width: max-content;
+  animation: partner-scroll 40s linear infinite;
+}
+
+.partner-marquee:hover .partner-track,
+.partner-marquee:focus-within .partner-track {
+  animation-play-state: paused;
+}
+
+/*
+  Harakatni kamaytirish so'ralgan bo'lsa — animatsiya umuman yo'q va
+  logotiplar oddiy setka bo'lib joylashadi.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .partner-track {
+    animation: none;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .partner-track > [data-partner-clone='true'] {
+    display: none;
+  }
+}

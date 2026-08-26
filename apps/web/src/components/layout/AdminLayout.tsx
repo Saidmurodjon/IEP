@@ -2,7 +2,8 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Newspaper, BookOpen, Building2,
-  Settings, MessageSquare, LogOut, Zap, Menu, X
+  Settings, MessageSquare, LogOut, Zap, Menu, X,
+  Users, Handshake,
 } from 'lucide-react';
 import { useState } from 'react';
 import clsx from 'clsx';
@@ -13,6 +14,8 @@ const navItems = [
   { to: '/admin/news', icon: Newspaper, key: 'news' },
   { to: '/admin/publications', icon: BookOpen, key: 'publications' },
   { to: '/admin/structure', icon: Building2, key: 'structure' },
+  { to: '/admin/employees', icon: Users, key: 'employees' },
+  { to: '/admin/partners', icon: Handshake, key: 'partners' },
   { to: '/admin/messages', icon: MessageSquare, key: 'messages' },
   { to: '/admin/settings', icon: Settings, key: 'settings' },
 ];

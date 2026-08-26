@@ -6,7 +6,9 @@
     "labs": "Ilmiy laboratoriyalar",
     "news": "Yangiliklar",
     "publications": "Nashrlar",
-    "contact": "Aloqa"
+    "contact": "Aloqa",
+    "management": "Rahbariyat",
+    "employees": "Xodimlar"
   },
   "home": {
     "hero_title": "O'zbekiston Respublikasi Fanlar akademiyasi",
@@ -139,7 +141,9 @@
     "total_news": "Jami yangiliklar",
     "total_pubs": "Jami nashrlar",
     "total_msgs": "Xabarlar",
-    "unread_msgs": "O'qilmagan"
+    "unread_msgs": "O'qilmagan",
+    "employees": "Xodimlar",
+    "partners": "Hamkorlar"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -161,5 +165,37 @@
     "sections": "Asosiy bo'limlar",
     "admin_text": "Boshqaruv panelida bunday sahifa yo'q.",
     "admin_back": "Boshqaruv paneliga qaytish"
+  },
+  "management": {
+    "title": "Institut rahbariyati",
+    "subtitle": "Rahbariyat tarkibi va qabul kunlari",
+    "empty": "Rahbariyat ma'lumotlari to'ldirilmoqda.",
+    "empty_hint": "Ma'lumot institut tomonidan taqdim etilgach joylashtiriladi."
+  },
+  "employees": {
+    "title": "Institut xodimlari",
+    "subtitle": "Ilmiy va ma'muriy xodimlar",
+    "empty": "Xodimlar ro'yxati to'ldirilmoqda.",
+    "empty_hint": "Ma'lumot institut tomonidan taqdim etilgach joylashtiriladi.",
+    "no_unit": "Boshqa bo'linmalar",
+    "count": "xodim"
+  },
+  "employee": {
+    "head": "Laboratoriya mudiri",
+    "office": "Xona",
+    "reception": "Qabul kunlari",
+    "research_area": "Ilmiy yo'nalish",
+    "photo_alt": "surati"
+  },
+  "partners": {
+    "title": "Hamkorlar",
+    "subtitle": "Institut hamkorlik qiladigan tashkilotlar"
+  },
+  "lab": {
+    "not_found": "Laboratoriya topilmadi",
+    "direction": "Faoliyat yo'nalishi",
+    "staff_list": "Laboratoriya xodimlari",
+    "staff_empty": "Xodimlar ro'yxati to'ldirilmoqda.",
+    "back": "Laboratoriyalarga qaytish"
   }
 }

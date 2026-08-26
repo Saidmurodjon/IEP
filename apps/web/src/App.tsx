@@ -12,6 +12,9 @@ const HomePage = lazy(() => import('@/pages/public/HomePage'));
 const AboutPage = lazy(() => import('@/pages/public/AboutPage'));
 const StructurePage = lazy(() => import('@/pages/public/StructurePage'));
 const LabsPage = lazy(() => import('@/pages/public/LabsPage'));
+const LabDetailPage = lazy(() => import('@/pages/public/LabDetailPage'));
+const ManagementPage = lazy(() => import('@/pages/public/ManagementPage'));
+const EmployeesPage = lazy(() => import('@/pages/public/EmployeesPage'));
 const NewsPage = lazy(() => import('@/pages/public/NewsPage'));
 const NewsDetailPage = lazy(() => import('@/pages/public/NewsDetailPage'));
 const PublicationsPage = lazy(() => import('@/pages/public/PublicationsPage'));
@@ -26,6 +29,8 @@ const AdminPublicationsPage = lazy(() => import('@/pages/admin/AdminPublications
 const AdminStructurePage = lazy(() => import('@/pages/admin/AdminStructurePage'));
 const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
 const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
+const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'));
+const AdminPartnersPage = lazy(() => import('@/pages/admin/AdminPartnersPage'));
 const AdminNotFoundPage = lazy(() => import('@/pages/admin/AdminNotFoundPage'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -109,6 +114,8 @@ export default function App() {
           <Route path="publications" element={<AdminPublicationsPage />} />
           <Route path="structure" element={<AdminStructurePage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="employees" element={<AdminEmployeesPage />} />
+          <Route path="partners" element={<AdminPartnersPage />} />
           <Route path="messages" element={<AdminMessagesPage />} />
           {/* Admin ichidagi noma'lum manzil — ochiq saytnikidan alohida sahifa */}
           <Route path="*" element={<AdminNotFoundPage />} />
@@ -123,7 +130,10 @@ export default function App() {
             <Route index element={<HomePage />} />
             <Route path="about" element={<AboutPage />} />
             <Route path="structure" element={<StructurePage />} />
+            <Route path="management" element={<ManagementPage />} />
+            <Route path="employees" element={<EmployeesPage />} />
             <Route path="laboratories" element={<LabsPage />} />
+            <Route path="laboratories/:id" element={<LabDetailPage />} />
             <Route path="news" element={<NewsPage />} />
             <Route path="news/:slug" element={<NewsDetailPage />} />
             <Route path="publications" element={<PublicationsPage />} />

@@ -9,6 +9,8 @@ import { publicationsRouter } from './routes/publications';
 import { structureRouter } from './routes/structure';
 import { settingsRouter } from './routes/settings';
 import { contactRouter } from './routes/contact';
+import { employeesRouter } from './routes/employees';
+import { partnersRouter } from './routes/partners';
 import type { PrismaClient } from '@prisma/client';
 
 export interface Env {
@@ -49,6 +51,8 @@ app.route('/api/publications', publicationsRouter);
 app.route('/api/structure', structureRouter);
 app.route('/api/settings', settingsRouter);
 app.route('/api/contact', contactRouter);
+app.route('/api/employees', employeesRouter);
+app.route('/api/partners', partnersRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
 app.onError((err, c) => {

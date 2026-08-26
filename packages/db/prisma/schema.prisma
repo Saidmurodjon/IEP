@@ -78,10 +78,78 @@ model StructureUnit {
   parentId      String?
   parent        StructureUnit?  @relation("StructureHierarchy", fields: [parentId], references: [id])
   children      StructureUnit[] @relation("StructureHierarchy")
+  employees     Employee[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
   @@map("structure_units")
+}
+
+/// Institut xodimi. Ism uchala tilda ALOHIDA saqlanadi — ruscha variant
+/// kirill yozuvida bo'ladi va uni avtomatik hosil qilib bo'lmaydi.
+///
+/// DIQQAT: saytda faqat XIZMAT telefoni va XIZMAT pochtasi e'lon qilinadi.
+/// Shaxsiy mobil raqam yoki shaxsiy pochta bu yerga yozilmaydi.
+model Employee {
+  id                String   @id @default(cuid())
+  fullNameUz        String
+  fullNameEn        String
+  fullNameRu        String
+  positionUz        String
+  positionEn        String
+  positionRu        String
+  // Ilmiy daraja (f.-m.f.n., PhD va h.k.) — bo'lmasligi mumkin
+  degreeUz          String?
+  degreeEn          String?
+  degreeRu          String?
+  // Ilmiy unvon (dotsent, professor) — bo'lmasligi mumkin
+  titleUz           String?
+  titleEn           String?
+  titleRu           String?
+  email             String?
+  phone             String?
+  photoUrl          String?
+  orcid             String?
+  scopusId          String?
+  researchAreaUz    String?
+  researchAreaEn    String?
+  researchAreaRu    String?
+  officeRoom        String?
+  // Qabul jadvali erkin matn: muassasada u buyruq bilan belgilanadi va
+  // shakli o'zgarib turishi mumkin, shuning uchun tuzilmali saqlanmaydi.
+  receptionHoursUz  String?
+  receptionHoursEn  String?
+  receptionHoursRu  String?
+  isManagement      Boolean  @default(false)
+  isUnitHead        Boolean  @default(false)
+  // Bo'linma o'chirilsa xodim o'chmaydi — bog'lanish uziladi.
+  unitId            String?
+  unit              StructureUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  order             Int      @default(0)
+  // Ishdan ketgan xodim O'CHIRILMAYDI, faqat `false` qilinadi.
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([unitId])
+  @@map("employees")
+}
+
+/// Hamkor tashkilot. Logotip — tashkilotning savdo belgisi, shuning uchun
+/// faqat institut taqdim etgan ro'yxat bo'yicha to'ldiriladi.
+model Partner {
+  id         String   @id @default(cuid())
+  nameUz     String
+  nameEn     String
+  nameRu     String
+  logoUrl    String
+  websiteUrl String?
+  order      Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@map("partners")
 }
 
 model SiteSetting {

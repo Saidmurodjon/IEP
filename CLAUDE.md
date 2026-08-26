@@ -46,12 +46,14 @@ Faqat Web Crypto API (`crypto.subtle`) va Workers qo'llab-quvvatlaydigan kutubxo
 ```
 apps/
   web/          React + Vite frontend
-    src/pages/public/   Ochiq sahifalar (Home, About, Structure, Labs, News, Publications, Contact)
-    src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Settings, Messages)
+    src/pages/public/   Ochiq sahifalar (Home, About, Management, Structure, Labs, LabDetail,
+                        Employees, News, Publications, Contact, NotFound)
+    src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Employees,
+                        Partners, Settings, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API
-    src/routes/         auth, news, publications, structure, settings, contact
+    src/routes/         auth, news, publications, structure, settings, contact, employees, partners
     src/middleware/     requireAuth
     src/lib/            db, jwt
 packages/
@@ -71,7 +73,8 @@ packages/
 3. **Secret'lar hech qachon repoga tushmasin.** `.env` `.gitignore` da. Workers secret'lari faqat `wrangler secret put` orqali.
 4. **Har bir yozuv (POST/PUT/PATCH/DELETE) endpoint'i `requireAuth` bilan himoyalansin.** Faqat quyidagilar ochiq:
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
-   `GET /api/structure`, `GET /api/settings`, `POST /api/contact`.
+   `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
+   `GET /api/partners`, `POST /api/contact`.
 5. **Kiruvchi ma'lumot doim zod bilan tekshirilsin** (`zValidator`). Validatsiyasiz `c.req.json()` ishlatmang.
 6. **Xato xabarlari ichki tafsilotni oshkor qilmasin.** Login uchun doim `Invalid credentials` — "email topilmadi" demang.
 7. **HTML kontent** (`contentUz` va h.k.) frontendda `dangerouslySetInnerHTML` bilan chiqariladi — uni ko'rsatishdan oldin sanitizatsiya qiling.

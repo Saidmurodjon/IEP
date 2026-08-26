@@ -13,47 +13,46 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-26
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12 va 11 kommitlari lokal (`origin/master` = `69b6548`).
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11 va 06 kommitlari lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **11-brend/404/huquqiy tugadi.** Institut logotipi saytda: sarlavhada emblema
-  (`logo-emblem.png`), footerda to'liq logotip oq maydonchada (`logo-full.png`),
-  favicon 32 va apple-touch-icon 180, ijtimoiy tarmoq rasmi 1200×630. Sayt palitrasi
-  o'zgartirilmadi — logotip o'z ranglarida.
-- **404 sahifasi to'liq:** sarlavha va footer bilan, uch tilda, `noindex, follow`,
-  qidiruv maydoni joyi (10-topshiriq uchun `TODO`), asosiy bo'limlarga havolalar,
-  admin havolasi yo'q. Admin panel uchun alohida `AdminNotFoundPage`.
-- **Huquqiy bandlar (VM 373-son qarori):** footerda materiallardan foydalanish sharti
-  (3 tilda) va sayt oxirgi yangilangan sanasi; yangilikda `sourceName`/`sourceUrl`
-  (migratsiya `2_add_news_source`), admin formada 4-band eslatmasi bilan.
-- **Sana formati** hamma joyda `26.08.2026` (`src/lib/date.ts`, `date-fns` uz/en/ru sozlamalari).
-- **12-til prefiksi** o'z kuchida: `/uz/…`, `/en/…`, `/ru/…`, `LocalizedLink`, canonical + hreflang.
-- **05-namoyish tayyorligi** o'z kuchida: aloqa ma'lumotlari `/api/settings` dan, `npm run demo`.
+- **06-xodimlar/hamkorlar tugadi (kod).** Ikkita yangi model (`Employee`, `Partner`),
+  migratsiya `3_add_employees_partners`, ikkita API marshruti (`/api/employees`, `/api/partners` —
+  `GET` ochiq, yozuv `requireAuth`), uchta ochiq sahifa (`/management`, `/employees`,
+  `/laboratories/:id`), hamkorlar lentasi va ikkita admin bo'limi.
+- Laboratoriya kartochkalari endi batafsil sahifaga olib boradi; mudir (`isUnitHead`)
+  birinchi va kengaytirilgan kartochkada, qabul kunlari alohida ajratilgan.
+- **Laboratoriya tavsiflari to'ldirildi** — VM qarorida belgilangan yo'nalishlardan olingan,
+  har biri ustida `TODO: institut tasdiqlashi kerak` izohi (`packages/db/src/seed.ts`).
+- Hamkorlar lentasi — tashqi kutubxonasiz, faqat CSS; hover'da to'xtaydi,
+  `prefers-reduced-motion` da setka bo'ladi.
+- **11-brend/404/huquqiy**, **12-til prefiksi**, **05-namoyish** — hammasi o'z kuchida.
 - **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig`, 5433).
-  Bazada 3 ta yangilik (3 tilda), 0 ta nashr, 17 birlik.
+  Bazada 3 ta yangilik, 17 tuzilma birligi, **0 xodim, 0 hamkor, 0 nashr**.
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **Logotip sifati past.** Manba `docs/reference/logo-original.jpg` — 407×410, JPEG, 25 KB,
-  shaffof fonsiz. Undan olingan PNG'lar ham shuncha sifatda. **Foydalanuvchidan vektor fayl
-  (SVG/AI/EPS) yoki kamida 1000px shaffof PNG kerak** — batafsil `apps/web/public/images/CREDITS.md`.
-- **Haqiqiy 404 holat kodi yo'q.** Cloudflare Pages `_redirects` da hamma manzil `200` bilan
-  `index.html` ga boradi. Foydalanuvchiga ko'rinadigan qism to'g'ri, lekin qidiruv roboti uchun
-  status `200`. To'liq yechim SSR/prerender bilan — SEO topshirig'ida. Kodda `TODO` qoldirildi.
-- **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan.** `npm run demo`
-  shuni o'qiydi — namoyishdan oldin lokal Postgres kerak (`docs/demo.md` 1-bo'lim).
-- **Migratsiya `2_add_news_source` production'ga qo'llanmagan.** Lokal bazada qo'llandi.
-  Deploy'dan OLDIN production'ga qo'llanishi shart, aks holda `GET /api/news` 500 beradi.
-- Bu mashinada Node.js o'rnatilmagan; tekshiruvlar scratchpad'dagi Node 22 bilan bajarildi.
-- Sayt xaritasi yo'q; 03-production `wrangler login` dan keyin; 04-kontent production'ga qo'llanmagan.
+- **Yangi bo'limlar BO'SH** — bu ataylab. Xodimlar, rahbariyat va hamkorlar ro'yxati
+  institutdan kelishi kerak. Kerakli ma'lumotlar ro'yxati: **`docs/kerakli-malumotlar.md`**.
+- **Fayl yuklash yo'q** — xodim rasmi va hamkor logotipi hozir qo'lda URL sifatida kiritiladi
+  (`public/images/partners/`). R2 orqali yuklash — CLAUDE.md 5-muammo, 07-topshiriq.
+- **Migratsiyalar `2_add_news_source` va `3_add_employees_partners` production'ga qo'llanmagan.**
+  Lokal bazada qo'llandi. **Deploy'dan OLDIN qo'llanishi shart**, aks holda
+  `GET /api/news` va `GET /api/employees` 500 beradi.
+- **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan** — `npm run demo`
+  shuni o'qiydi (`docs/demo.md` 1-bo'lim).
+- Haqiqiy 404 status kodi yo'q; sayt xaritasi yo'q; bu mashinada Node.js o'rnatilmagan.
+- 03-production `wrangler login` dan keyin; 04-kontent production'ga qo'llanmagan.
 
 ### Keyingi qadam
-1. 11 ni PM tekshirsin.
-2. Navbat bo'yicha 06 (xodimlar, laboratoriyalar, hamkorlar).
+1. 06 ni PM tekshirsin.
+2. Foydalanuvchi `docs/kerakli-malumotlar.md` bo'yicha ma'lumot bersin — kelgach admin
+   panel orqali kiritiladi, kodga tegilmaydi.
+3. Navbat bo'yicha 07 (fayl yuklash va tahrirlagich) — xodim rasmi va hamkor logotipi
+   uchun ham shu kerak.
 
 ### Ochiq savollar
-- Logotipning vektor fayli va institut brend qo'llanmasi bormi? (Foydalanuvchi zimmasida.)
+- Laboratoriya tavsiflari institut tomonidan tasdiqlanadimi yoki o'z matni beriladimi?
 - Namoyish lokal bazada o'tkaziladimi? Tavsiya: **ha**.
-- `site_url` hozir `https://energetika-institute.pages.dev`; domen ulangach admin paneldan o'zgaradi.
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -65,17 +64,16 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 05 | Namoyishga tayyorlash | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 12 | Til prefiksi | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 11 | Logotip, 404, huquqiy bandlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 06 | Xodimlar, laboratoriyalar, hamkorlar | ⏳ Navbatda |
-| 07 | Fayl yuklash va tahrirlagich | ⏸ Kutmoqda |
+| 06 | Xodimlar, laboratoriyalar, hamkorlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 07 | Fayl yuklash va tahrirlagich | ⏳ Navbatda |
 | 08 | Xatoliklar jurnali | ⏸ Kutmoqda |
 | 09 | Murojaatlar va Resend | ⏸ Kutmoqda |
 | 10 | Qidiruv, imkoniyatlar, xavfsizlik | ⏸ Kutmoqda |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
 
-**Foydalanuvchi zimmasidagi ochiq masalalar.** 373-son qaror bo'yicha
-yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof PNG** va brend qo'llanmasi. Xodimlar ma'lumoti va rasmlari.
-Hamkorlar ro'yxati. Institut telefon raqami.
+**Foydalanuvchi zimmasidagi ochiq masalalar** (batafsil: `docs/kerakli-malumotlar.md`). 373-son qaror bo'yicha
+yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof PNG** va brend qo'llanmasi. Xodimlar ma'lumoti va rasmlari. Hamkorlar ro'yxati. Institut telefon raqami.
 
 ---
 
@@ -93,6 +91,85 @@ Hamkorlar ro'yxati. Institut telefon raqami.
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-26 · 06 — Laboratoriya sahifalari, xodimlar reyestri va hamkorlar
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(content): employee registry, lab pages and partners carousel`
+
+**Baza.** `Employee` (uch tilda ism/lavozim/daraja/unvon/ilmiy yo'nalish/qabul vaqtlari, xizmat
+telefoni va pochtasi, ORCID, Scopus, xona, `isManagement`, `isUnitHead`, `unitId`, `order`,
+`isActive`) va `Partner`. `StructureUnit` ga teskari bog'lanish, `onDelete: SetNull` — bo'linma
+o'chirilsa xodim o'chmaydi. Migratsiya `3_add_employees_partners` (qo'lda yozilgan SQL, `db push` emas).
+
+**API.** `routes/employees.ts` (`GET /` `unitId` filtri va `includeInactive` bilan, `GET /:id`;
+yozuv `requireAuth`), `routes/partners.ts`. Ochiq saytda faqat `isActive` yozuvlar. Hammasi
+`zValidator` bilan. `index.ts` ga ulandi, `lib/api.ts` ga `employeesApi`/`partnersApi`.
+CLAUDE.md 4-qoidasidagi ochiq endpointlar ro'yxati va 3-bo'limdagi tuzilma yangilandi.
+
+**Sahifalar.** `/management` (rahbariyat, `order` bo'yicha, kengaytirilgan kartochkalar),
+`/employees` (rahbariyat birinchi guruh, keyin laboratoriyalar, oxirida biriktirilmaganlar),
+`/laboratories/:id` (nom, xodimlar soni, faoliyat yo'nalishi, mudir birinchi va kengaytirilgan
+kartochkada). Uchalasi `PUBLIC_ROUTES` ga va `/:lang` ostiga qo'shildi, havolalar `LocalizedLink`.
+Umumiy `EmployeeCard` (compact/extended), `EmptyState`, `lib/employee.ts` (uch tilli maydon,
+bosh harflar, ORCID/Scopus havolalari). Menyuga "Rahbariyat" va "Xodimlar" qo'shildi.
+
+**Hamkorlar lentasi.** `PartnersStrip` + `index.css` dagi `partner-scroll` keyframes.
+Tashqi kutubxona YO'Q. Ro'yxat ikki marta chiziladi va lenta `-50%` ga siljiydi — shuning uchun
+harakat uzluksiz. Hover/focus'da `animation-play-state: paused`. `prefers-reduced-motion` da
+animatsiya o'chadi, `flex-wrap: wrap` bilan setka bo'ladi va nusxalar `display:none`.
+
+**Admin.** `/admin/employees` (jadval, modal forma, til tablari, laboratoriyaga biriktirish,
+tartib, `isActive` toggle — ishdan ketgan xodim o'chirilmaydi) va `/admin/partners`.
+Telefon/pochta maydonlari yonida **shaxsiy ma'lumotlar ogohlantirishi**: faqat xizmat
+raqami/pochtasi, xodimning roziligi kerak. Hamkorlar sahifasida logotip savdo belgisi ekani
+haqida ogohlantirish. `AdminLayout` menyusiga ikkalasi qo'shildi.
+
+**Laboratoriya tavsiflari.** 6 ta laboratoriya uchun 2–3 jumlali tavsif, uch tilda.
+**O'ylab topilmagan** — har biri VM qarorida belgilangan yo'nalishlardan
+(`docs/tasks/04-kontent.md`, 3-bo'lim) olib yozilgan; aniq loyiha, natija, grant va sana yo'q.
+Kodda `TODO: institut tasdiqlashi kerak` izohi.
+
+**Nima tekshirildi va qanday:**
+- `tsc --noEmit` (api + web) toza, `npm run build` toza. Migratsiya lokal bazaga `migrate deploy`,
+  `prisma generate` qayta ishga tushirildi, seed bilan tavsiflar yozildi.
+- `GET /api/employees` va `GET /api/partners` — 200; `POST` auth'siz — **401** (ikkalasi ham).
+- i18n kalit parity skript bilan tekshirildi: uchala faylda **165 tadan**, farq yo'q.
+- **Brauzerda (headless Chromium, lokal baza):**
+  - 3 ta yangi sahifa × 3 til: h1 mos tilda, ko'rinib qolgan tarjima kaliti yo'q, konsol xatosi yo'q.
+  - Menyuda "Rahbariyat" va "Xodimlar" uchala tilda.
+  - LabsPage'dagi 6 kartochka `/uz/laboratories/<id>` ga olib bordi; batafsil sahifada tavsif
+    ko'rindi; ruschaga o'tilganda sahifada qolib, tavsif ruschaga o'zgardi.
+  - **Admin'da xodim qo'shish boshidan oxirigacha:** login → `/admin/employees` → forma
+    (3 tilda ism/lavozim, qabul kunlari, xizmat telefoni/pochtasi, xona, ORCID,
+    laboratoriyaga biriktirish, `isUnitHead`) → saqlash → admin ro'yxatida → ochiq
+    `/uz/laboratories/lab-renewable` sahifasida "Laboratoriya mudiri" belgisi bilan birinchi
+    o'rinda, qabul kunlari ajratilgan blokda; `/uz/employees` da laboratoriya guruhi ostida;
+    rasmsiz kartochkada bosh harflar doirasi. `isManagement` belgilangach `/management` da chiqdi.
+  - **Bo'sh maydon tekshiruvi:** telefon va xona o'chirilgach, o'sha qatorlar umuman ko'rinmadi,
+    chiziqcha yoki bo'sh joy qolmadi.
+  - **Hamkorlar lentasi:** hamkor qo'shilgach bo'lim paydo bo'ldi, 2 ta `<img>` (ro'yxat ikki marta),
+    `animationName = partner-scroll 40s`; hover'da `animationPlayState = paused`;
+    `reducedMotion: reduce` kontekstida `animationName = none`, `flexWrap = wrap`, nusxa yashirilgan.
+  - **Bo'sh ro'yxatda** bosh sahifada hamkorlar bo'limi umuman chizilmadi.
+  - Mobil 375px: 4 sahifada gorizontal overflow 0px.
+  - Sinov xodimi va sinov hamkori tekshiruvdan keyin bazadan o'chirildi (0 xodim, 0 hamkor).
+- **Ikki marta sinov skriptining o'zida xato bo'ldi** (maydon indeksi va katta-kichik harf
+  regexi) — ilovada emas; aniq selektor bilan qayta tekshirilgach hammasi to'g'ri chiqdi.
+
+**Nima TEKSHIRILMADI:**
+- Ko'p xodimli holat (10+ kartochka) — bazada hozircha ma'lumot yo'q, 1 ta sinov yozuvi bilan sinaldi.
+- Fayl yuklash yo'q: rasm va logotip URL sifatida kiritiladi (07-topshiriq).
+- Production'ga hech narsa yozilmadi va deploy qilinmadi.
+
+**Qarorlar va sabablari:**
+- Soxta ism/tashkilot/logotip **qo'shilmadi** — barcha yangi bo'limlar bo'sh holatda chiqadi.
+  Kerakli ma'lumotlar ro'yxati `docs/kerakli-malumotlar.md` da.
+- Xodim `isActive = false` bo'lganda ochiq saytda ko'rinmaydi, admin panelda qoladi —
+  ishdan ketgan xodim yozuvi o'chirilmasligi kerak.
+- Lenta uzluksizligi CSS `translateX(-50%)` bilan: ro'yxat ikki marta chizilgani uchun
+  yarim yo'lda boshlang'ich holat takrorlanadi, sakrash ko'rinmaydi.
+
+---
 
 ### 2026-08-26 · 11 — Logotip, 404 sahifasi va huquqiy bandlar
 
@@ -297,106 +374,6 @@ vaqtincha yuklangan Node 22 bilan bajarildi (repoga hech narsa qo'shilmadi).
    `bf01d7b` nima asosida qilinganini bilolmaydi.
 2. `deploy.yml` da `deploy-web` va `deploy-api` **parallel** ishlaydi. Migratsiya yiqilsa ham
    frontend baribir deploy bo'ladi. `deploy-web` ga `needs: deploy-api` qo'shilishi kerak.
-
----
-
-### 2026-08-25 · GitHub Actions deploy pipeline (sozlanmagan)
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `ci: add GitHub Actions deploy to Cloudflare (Pages + Workers)`
-
-Muammo #9 (GitHub orqali deploy). Foydalanuvchi so'radi.
-
-- `.github/workflows/deploy.yml` — master'ga push → 2 job: `deploy-web` (Pages, statik, xavfsiz)
-  va `deploy-api` (avval `prisma migrate deploy`, keyin `wrangler deploy`). `cloudflare/wrangler-action@v3`.
-- `docs/deploy.md` — to'liq sozlash: CF token, GitHub secret/variable, Worker secret, **bir martalik baseline**
-  (`migrate resolve --applied 0_init`, chunki baza db push bilan yaratilgan), deploy tartibi, seed qo'lda.
-
-**BAJARILMADI / bloklangan:**
-- Push qilinmadi (deploy outward-facing, shartlari bor, foydalanuvchi tasdig'i kerak).
-- Cloudflare auth yo'q — token/secret o'rnatolmadim. Bu foydalanuvchi qadami.
-- Production baza baseline qilinmagan → `migrate deploy` hozir xato beradi (hujjatda tushuntirildi).
-
-**Tekshirildi:** YAML struktura to'g'ri (2 job, push+dispatch trigger). Haqiqiy deploy sinovi imkonsiz (auth yo'q).
-
-**Qaror:** migratsiya CI'da deploy'dan avval (ustun tartibi). Seed CI'da EMAS (DELETE — xavfli, qo'lda).
-Frontend uchun `VITE_API_URL` majburiy (Pages'da proxy yo'q).
-
----
-
-### 2026-08-25 · 04-kontent (kod qismi) — rasmiy tuzilma
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(content): replace demo data with official 2025 institute structure`
-
-Manba: `docs/reference/tuzilma-2025-02-27.jpg` (FA Prezidiumi 2025-02-27, 12-son qaror, 10-ilova).
-Hujjat topshiriq jadvallari bilan solishtirildi — **to'liq mos, nomuvofiqlik yo'q**.
-
-- `schema.prisma` — `staffCount Int?`, `isAdvisory Boolean` qo'shildi.
-- `prisma/migrations/0_init` + `1_add_structure_staff_fields` — baselining (DB db push bilan yaratilgan,
-  migration tarixi yo'q edi). `migrate diff` bilan yaratildi, lokal bazada `migrate deploy` toza qo'llandi.
-- `seed.ts` — 17 birlik hujjatga muvofiq, barcha `head: null`; eski 6 demo `dept-*` id `deleteMany` bilan olib tashlanadi.
-- `structure.ts` route — `unitSchema` ga yangi tiplar (council/position/service) + staffCount/isAdvisory.
-- `shared/types.ts` — `StructureUnit` yangilandi.
-- Frontend: `StructurePage` (tip tarjimasi, staffCount, maslahat organi punktir), `LabsPage` (staffCount),
-  `HomePage` stats (6/18/29 + jonli nashr, `+` yo'q). `locales/*.json` — tip yorliqlari, uchala tilda mos.
-
-**Tekshirildi (LOKAL test baza `energetika_mig`):** migrate deploy toza; seed 17 birlik; GET /api/structure to'g'ri
-daraxt (6 lab, sonlar 3,3,4,2,2,3; ilmiy 18); StructurePage/LabsPage brauzerda (skrinshot) — 6 lab, maslahat organi
-ajratilgan, xodim sonlari; home stats 6/18/29; soxta ism yo'q; head hamma joyda null; tsc+build (api+web) toza; 3 til mos.
-
-**Production'ga QO'LLANMADI** (rule 8: DELETE + production yozuv → tasdiq kerak). Deploy tartibi: avval migratsiya, keyin kod.
-
-**Qolib ketdi:** demo nashrlar (Mirzayev/Toshmatov) production'da — o'chirish tasdiq kutmoqda. Lab tavsiflari
-bo'sh (o'ylab topilmadi) — institut beradi. Manzil/sana/telefon/rahbar ismlari — foydalanuvchiga savollar berildi.
-
----
-
-### 2026-08-25 · Placeholder SVG'lar haqiqiy fotolarga almashtirildi
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(ui): use real public-domain energy photos for hero and about`
-
-Foydalanuvchi haqiqiy, mavzuga oid rasm so'radi. Topshiriq "tashqi rasm yuklamang" degan edi
-(litsenziya xavfi) — shuning uchun **faqat public-domain** rasm ishlatildi (huquqiy xavf yo'q).
-
-- `public/images/hero-solar.jpg` — AQSh DoE quyosh stansiyasi fotosi (Chris Allan), public domain.
-- `public/images/about-wind.jpg` — AQSh DoE shamol fermasi (Power County, Idaho), public domain.
-- Ikkalasi ham Wikimedia Commons'dan, `sips` bilan kichraytirilib siqildi (hero 1600px/336K, about 1100px/156K).
-- `public/images/CREDITS.md` (yangi) — manba, muallif, litsenziya, Commons havolalari.
-- Eski `hero-placeholder.svg`, `about-placeholder.svg` o'chirildi.
-- `HomePage.tsx` — hero fon `hero-solar.jpg` (dekorativ, aria-hidden); about `about-wind.jpg` +
-  tavsifiy alt (`home.about_img_alt`, 3 tilda), `object-cover aspect-[4/3]`, `loading="lazy"`.
-
-**Tekshirildi:** `tsc` + `build` toza; brauzerda hero foto `naturalWidth=1600` yuklandi, matn kontrasti
-yetarli (to'q qoplama chapda); about foto ko'rinadi; ikkala rasm HTTP 200 `image/jpeg`; mobil overflow yo'q.
-
-**Qaror:** public-domain (CC-BY/CC-BY-SA emas) — atribut majburiyati yo'q, davlat sayti uchun eng xavfsiz.
-AQSh DoE fotolari — energetika idorasi manbasi, mavzuga to'liq mos. Institut o'z fotosini bergach,
-shu fayllar almashtiriladi (yo'llar o'zgarmaydi).
-
----
-
-### 2026-08-25 · 02-dizayn bajarildi (akademik palitra + hero)
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(ui): academic navy + gold palette, hero imagery, lighter sections`
-
-- `tailwind.config.js` — `primary` (bosiq navy) va `accent` (oltin) palitralari to'liq almashtirildi.
-- `public/images/hero-placeholder.svg`, `about-placeholder.svg` (yangi) — o'zimiz yasagan abstrakt SVG
-  (tarmoq/quyosh paneli motivi). Tashqi havola yo'q, foto yuklanmagan.
-- `HomePage.tsx` — hero rasm+qoplama (to'q gradient o'rniga), balandlik kamaytirildi, blur doiralar olib
-  tashlandi; stats `bg-primary-50` + oltin ikonkalar (Lightbulb/Beaker/BookOpen/Calendar); yangi "Institut
-  haqida" seksiyasi (matn+SVG); yangilik kartochkalari `imageUrl` null bo'lsa placeholder (bir xil balandlik);
-  CTA yengil fon, yagona to'q element — tugma. Hard-code matn `home.contact_desc` kalitiga ko'chirildi.
-- `Header.tsx` — ustki panel `bg-primary-900` → `bg-primary-50` (yengil).
-- `locales/{uz,en,ru}.json` — 6 yangi kalit (`about_*`, `contact_desc`), uchala tilda mos (97 kalit).
-
-**Tekshirildi:** `tsc --noEmit` toza; `build` toza; brauzerda desktop+mobil(375px) skrinshot, overflow yo'q;
-"Institut haqida" 3 tilda DOM orqali tasdiqlandi; ichki sahifalar (about/structure/labs/news/pubs/contact)
-yangi palitrada render, konsol xatosi yo'q; `btn-primary` computed rang `rgb(40,70,106)` (yangi palitra faol).
-
-**Qaror:** Footer `bg-primary-950` (to'q) qoldirildi — spec 3 ta blokni sanagan (header/hero/CTA), footer
-unda yo'q edi; footer sayt "chrome"i, hero yagona to'q *kontent* seksiyasi. Bu ataylab qilingan tanlov.
-
-**Tekshirilmadi:** haqiqiy foto yo'q (placeholder SVG); `AboutPage` da aralash uz/en kontent bor — bu bazadagi
-demo ma'lumot muammosi, dizayn topshirig'iga kirmaydi.
 
 ---
 

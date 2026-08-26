@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { INSTITUTE_STAFF } from '@/lib/structure';
+import PartnersStrip from '@/components/PartnersStrip';
 import {
   ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, GraduationCap, Users, Zap,
 } from 'lucide-react';
@@ -234,6 +235,9 @@ export default function HomePage() {
           </LocalizedLink>
         </div>
       </section>
+
+      {/* Hamkorlar lentasi — ro'yxat bo'sh bo'lsa bo'lim umuman chizilmaydi */}
+      <PartnersStrip />
     </>
   );
 }
