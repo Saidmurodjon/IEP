@@ -12,12 +12,13 @@
   },
   "dependencies": {
     "@energetika/shared": "*",
+    "@hono/zod-validator": "^0.4.1",
     "@neondatabase/serverless": "^0.10.4",
     "@prisma/adapter-neon": "^6.2.0",
     "@prisma/client": "^6.2.0",
     "hono": "^4.6.0",
-    "zod": "^3.24.0",
-    "@hono/zod-validator": "^0.4.1"
+    "xss": "^1.0.15",
+    "zod": "^3.24.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241218.0",

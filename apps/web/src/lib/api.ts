@@ -49,9 +49,11 @@ export const authApi = {
 
 // --- News ---
 export const newsApi = {
-  list: (page = 1, limit = 10) =>
-    api.get('/api/news', { params: { page, limit } }),
-  get: (slug: string) => api.get(`/api/news/${slug}`),
+  /** `drafts` — faqat admin panel uchun: qoralamalar ham qaytadi. */
+  list: (page = 1, limit = 10, drafts = false) =>
+    api.get('/api/news', { params: { page, limit, drafts: drafts || undefined } }),
+  get: (slug: string, drafts = false) =>
+    api.get(`/api/news/${slug}`, { params: { drafts: drafts || undefined } }),
   create: (data: unknown) => api.post('/api/news', data),
   update: (id: string, data: unknown) => api.put(`/api/news/${id}`, data),
   delete: (id: string) => api.delete(`/api/news/${id}`),
@@ -91,6 +93,37 @@ export const partnersApi = {
   create: (data: unknown) => api.post('/api/partners', data),
   update: (id: string, data: unknown) => api.put(`/api/partners/${id}`, data),
   delete: (id: string) => api.delete(`/api/partners/${id}`),
+};
+
+export const uploadsApi = {
+  /**
+   * Faylni yuklaydi. Rasm OLDIN `prepareImage()` bilan tayyorlanadi —
+   * bu funksiya tayyor faylni yuboradi, o'zi kichraytirmaydi.
+   */
+  upload: (
+    file: File,
+    kind: 'image' | 'photo' | 'document',
+    extra: { width?: number; height?: number; ownerType?: string; ownerId?: string } = {}
+  ) => {
+    const form = new FormData();
+    form.append('file', file);
+    if (extra.width) form.append('width', String(extra.width));
+    if (extra.height) form.append('height', String(extra.height));
+    if (extra.ownerType) form.append('ownerType', extra.ownerType);
+    if (extra.ownerId) form.append('ownerId', extra.ownerId);
+    return api.post(`/api/uploads?kind=${kind}`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  cleanup: () => api.post('/api/uploads/cleanup'),
+};
+
+export const documentsApi = {
+  list: (includeInactive = false) =>
+    api.get('/api/documents', { params: { includeInactive: includeInactive || undefined } }),
+  create: (data: unknown) => api.post('/api/documents', data),
+  update: (id: string, data: unknown) => api.put(`/api/documents/${id}`, data),
+  delete: (id: string) => api.delete(`/api/documents/${id}`),
 };
 
 export const settingsApi = {

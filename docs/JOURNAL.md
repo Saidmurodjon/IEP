@@ -13,46 +13,53 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-26
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11 va 06 kommitlari lokal (`origin/master` = `69b6548`).
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06 va 07 kommitlari lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **06-xodimlar/hamkorlar tugadi (kod).** Ikkita yangi model (`Employee`, `Partner`),
-  migratsiya `3_add_employees_partners`, ikkita API marshruti (`/api/employees`, `/api/partners` —
-  `GET` ochiq, yozuv `requireAuth`), uchta ochiq sahifa (`/management`, `/employees`,
-  `/laboratories/:id`), hamkorlar lentasi va ikkita admin bo'limi.
-- Laboratoriya kartochkalari endi batafsil sahifaga olib boradi; mudir (`isUnitHead`)
-  birinchi va kengaytirilgan kartochkada, qabul kunlari alohida ajratilgan.
-- **Laboratoriya tavsiflari to'ldirildi** — VM qarorida belgilangan yo'nalishlardan olingan,
-  har biri ustida `TODO: institut tasdiqlashi kerak` izohi (`packages/db/src/seed.ts`).
-- Hamkorlar lentasi — tashqi kutubxonasiz, faqat CSS; hover'da to'xtaydi,
-  `prefers-reduced-motion` da setka bo'ladi.
-- **11-brend/404/huquqiy**, **12-til prefiksi**, **05-namoyish** — hammasi o'z kuchida.
-- **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig`, 5433).
-  Bazada 3 ta yangilik, 17 tuzilma birligi, **0 xodim, 0 hamkor, 0 nashr**.
+- **07-kontent boshqaruvi tugadi.** Moderator endi dasturchisiz yangilik yozadi, matn ichiga
+  rasm qo'yadi, hujjat va nashr fayllarini yuklaydi.
+- **Fayl ombori:** R2 binding `MEDIA`, `POST /api/uploads` (magic bayt tekshiruvi, hajm ikki
+  bosqichda, SVG rad etiladi), ochiq `GET /api/files/:key` uzoq keshli, `POST /api/uploads/cleanup`.
+  Binding yo'q bo'lsa `503 STORAGE_UNAVAILABLE` (fail closed).
+- **Fayl hayot sikli:** rasm almashtirilsa eski fayl R2 dan o'chadi; yozuv o'chirilsa unga
+  tegishli barcha fayllar o'chadi; matndan rasm olib tashlansa ombor o'z-o'zidan tozalanadi.
+  O'chirish faqat `media_files` da qayd etilgan kalitlar bo'yicha.
+- **Sanitizatsiya (CLAUDE.md 7-qoida bajarildi):** serverda `xss` allowlist bilan saqlashdan
+  oldin, frontendda DOMPurify bilan ko'rsatishdan oldin. `img` faqat `/api/files/` dan.
+- **Tiptap tahrirlagich** (lazy chunk, 408 KB — ochiq sahifalarga tushmaydi): qalin/qiya, H2/H3,
+  ro'yxatlar, havola, iqtibos, rasmni Cmd+V va sudrab tashlash, Word'dan nusxani tozalash.
+- **Mijoz tomonida rasm tayyorlash:** 1920 px (xodim rasmi 800), WebP 0.85, foydalanuvchiga
+  "2400 → 1920, 53 KB → 5 KB" xabari.
+- **O'zbekcha xabarlar:** yagona `useToast()`, xato kodi API dan (`{error:{code}}`), matn
+  `locales/*.json` dagi `errors.<KOD>` dan, kod xabar yonida ko'rsatiladi.
+- **Moderator qulayliklari:** slug avtomatik (`o'`/`g'` apostrofsiz), til yorliqlari
+  to'ldirilganlik belgisi bilan, "O'zbekchadan nusxa", tarjimasiz maydonlar bir marta,
+  qoralama, sana sukut bo'yicha bugun, saqlanmagan o'zgarish ogohlantirishi.
+- **Yangi bo'lim:** `Document` modeli, ochiq `/documents` va `/admin/documents`.
+- **Lokal muhit:** vite dev :5173 + harness API :3000 (lokal Postgres `energetika_mig` 5433 +
+  **miniflare R2**). Bazada 3 yangilik, 0 media, 0 hujjat, 0 xodim, 0 hamkor.
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **Yangi bo'limlar BO'SH** — bu ataylab. Xodimlar, rahbariyat va hamkorlar ro'yxati
-  institutdan kelishi kerak. Kerakli ma'lumotlar ro'yxati: **`docs/kerakli-malumotlar.md`**.
-- **Fayl yuklash yo'q** — xodim rasmi va hamkor logotipi hozir qo'lda URL sifatida kiritiladi
-  (`public/images/partners/`). R2 orqali yuklash — CLAUDE.md 5-muammo, 07-topshiriq.
-- **Migratsiyalar `2_add_news_source` va `3_add_employees_partners` production'ga qo'llanmagan.**
-  Lokal bazada qo'llandi. **Deploy'dan OLDIN qo'llanishi shart**, aks holda
-  `GET /api/news` va `GET /api/employees` 500 beradi.
-- **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan** — `npm run demo`
-  shuni o'qiydi (`docs/demo.md` 1-bo'lim).
+- **R2 bucket production'da yaratilmagan.** `wrangler r2 bucket create energetika-media`
+  bajarilishi va deploy qilinishi kerak, aks holda yuklash 503 beradi.
+- **Migratsiyalar 2, 3, 4 production'ga qo'llanmagan.** Lokal bazada qo'llandi.
+  **Deploy'dan OLDIN qo'llanishi shart.**
+- **Egasiz fayllarni tozalash cron sozlanmagan** — `POST /api/uploads/cleanup` hozircha qo'lda.
+- **`npm audit` 19 ta zaiflik** (14 high, 1 critical) — hammasi mavjud build vositalarining
+  tranzitiv bog'liqliklari (vite, wrangler, prisma, concurrently, miniflare/sharp), 07 da
+  qo'shilgan paketlardan emas. Alohida topshiriq sifatida ko'rilishi kerak.
+- **⚠️ `apps/api/.dev.vars` dagi `DATABASE_URL` production Neon'ga qaragan** (`docs/demo.md`).
 - Haqiqiy 404 status kodi yo'q; sayt xaritasi yo'q; bu mashinada Node.js o'rnatilmagan.
-- 03-production `wrangler login` dan keyin; 04-kontent production'ga qo'llanmagan.
+- Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda (`docs/kerakli-malumotlar.md`).
 
 ### Keyingi qadam
-1. 06 ni PM tekshirsin.
-2. Foydalanuvchi `docs/kerakli-malumotlar.md` bo'yicha ma'lumot bersin — kelgach admin
-   panel orqali kiritiladi, kodga tegilmaydi.
-3. Navbat bo'yicha 07 (fayl yuklash va tahrirlagich) — xodim rasmi va hamkor logotipi
-   uchun ham shu kerak.
+1. 07 ni PM tekshirsin.
+2. Navbat bo'yicha 08 (xatoliklar jurnali).
+3. Production'ga chiqishdan oldin: R2 bucket + migratsiyalar 2–4.
 
 ### Ochiq savollar
-- Laboratoriya tavsiflari institut tomonidan tasdiqlanadimi yoki o'z matni beriladimi?
-- Namoyish lokal bazada o'tkaziladimi? Tavsiya: **ha**.
+- Egasiz fayllarni tozalash cron'i qachon sozlanadi (Cloudflare Cron Trigger)?
+- Laboratoriya tavsiflari institut tomonidan tasdiqlanadimi?
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -65,8 +72,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 12 | Til prefiksi | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 11 | Logotip, 404, huquqiy bandlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 06 | Xodimlar, laboratoriyalar, hamkorlar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 07 | Fayl yuklash va tahrirlagich | ⏳ Navbatda |
-| 08 | Xatoliklar jurnali | ⏸ Kutmoqda |
+| 07 | Fayl yuklash va tahrirlagich | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 08 | Xatoliklar jurnali | ⏳ Navbatda |
 | 09 | Murojaatlar va Resend | ⏸ Kutmoqda |
 | 10 | Qidiruv, imkoniyatlar, xavfsizlik | ⏸ Kutmoqda |
 
@@ -91,6 +98,87 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-26 · 07 — Fayl yuklash, matn tahrirlagich va moderator qulayligi
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(admin): file uploads, rich text editor and Uzbek feedback messages`
+
+**Server.** `lib/storage.ts` (R2 binding, fail closed, kalit `YYYY/MM/<uuid>.<ext>` — asl nomga
+bog'liq emas), `lib/file-types.ts` (**magic bayt**: JPEG/PNG/WebP/PDF/ZIP/OLE; SVG ataylab yo'q),
+`lib/errors.ts` (`{error:{code,message,meta}}`), `lib/sanitize.ts` (`xss` allowlist),
+`lib/media.ts` (matndan kalit ajratish, egaga biriktirish, eskisini o'chirish).
+Marshrutlar: `uploads`, `files`, `documents`. `news` marshruti sanitizatsiya va fayl hayot
+sikliga ulandi. Migratsiya `4_add_media_documents` (`media_files`, `documents`, `news.isPublished`).
+
+**Frontend.** `Toast` (muvaffaqiyat 4 s, xato yopilguncha + kod), `api-error.ts` (`ClientError`
+bilan mijoz xatolari ham bir xil shaklga keladi), `image-prepare.ts` (canvas → WebP 0.85),
+`FileUploadField`, `RichTextEditor` (+`Inner`, lazy), `LangTabs`, `slug.ts`, `useUnsavedWarning`,
+`lib/sanitize.ts` (DOMPurify). `AdminNewsPage` to'liq qayta qurildi; `Employees`, `Partners`,
+`Publications` sahifalariga yuklash va toast qo'shildi; `AdminDocumentsPage` va ochiq
+`DocumentsPage` yozildi.
+
+**Lokal sinov muhiti haqida.** `wrangler dev` ning o'zini ishlatib bo'lmadi: uning ostida API
+bazaga `PrismaNeonHTTP` orqali ulanadi, ya'ni **production Neon'ga yozish** degani, bu esa
+topshiriq chegarasiga zid. Shuning uchun harness'ga `wrangler dev` ishlatadigan AYNAN SHU
+dvigatel — **miniflare R2 bucket** ulandi (baza lokal Postgres bo'lib qoldi). Qo'shimcha
+ravishda `wrangler deploy --dry-run` bilan haqiqiy Workers bundle'i yig'ilishi tasdiqlandi
+(R2 binding ko'rinmoqda). Harness `node_modules/.iep-harness/` da, repoga kirmaydi.
+
+**Nima tekshirildi va qanday:**
+- `tsc --noEmit` (api + web) toza, `npm run build` toza, `wrangler deploy --dry-run` toza.
+  i18n: uchala faylda 230 tadan kalit, farq yo'q. Tahrirlagich alohida chunk (`RichTextEditorInner`).
+- **API (curl):** auth'siz yuklash 401; haqiqiy PNG/PDF 201; **kengaytmasi `.jpg` ga
+  o'zgartirilgan haqiqiy Windows PE (`MZ`) fayli → `UNSUPPORTED_TYPE`**; SVG (`.png` nomi
+  bilan) → `UNSUPPORTED_TYPE`; bo'sh fayl → `EMPTY_FILE`; 6 MB → `FILE_TOO_LARGE`;
+  PDF ni `kind=image` bilan → rad; R2 binding o'chirilganda yuklash ham, fayl berish ham
+  **503 `STORAGE_UNAVAILABLE`**; `/api/files/../../etc/passwd` → 404 (kalit naqshi tekshiriladi);
+  `Cache-Control: immutable` va `X-Content-Type-Options: nosniff` mavjud.
+- **Sanitizatsiya (curl):** `<script>`, `onerror`, `<iframe>`, `javascript:`, tashqi `img`,
+  `<style>`, `onclick` — hammasi olib tashlandi; `/api/files/` dagi rasm saqlandi.
+- **Fayl hayot sikli (API, aniq):** A rasmli yangilik → B ga almashtirildi → A **404**,
+  B 200; yangilik o'chirildi → B ham ombordan o'chdi.
+- **Brauzerda uchidan uchiga:** login → yangilik yaratish → slug avtomatik
+  (`O'zbekiston energetikasi: g'oyalar` → `ozbekiston-energetikasi-goyalar-va-yonalishlar`) →
+  sana bugun → Word'dan nusxa (`MsoNormal`, `mso-`, `style`, `class`, `<script>`, `<o:p>` —
+  hammasi tozalandi) → **rasm Cmd+V bilan** matnga qo'yildi, "2400 → 1920 nuqta, 53 KB → 5 KB"
+  xabari chiqdi, R2 ga `.webp` yozildi → saqlandi → ochiq sahifada rasm ko'rindi →
+  tahrirlashda rasm **almashtirildi va eski fayl R2 dan o'chdi (404)** → matndan rasm olib
+  tashlanib saqlandi, ombor **0 ta faylga** tushdi → yangilik o'chirildi, fayllar ham o'chdi.
+- **Brauzerda xato xabarlari:** `.exe` va SVG uchun "Bu turdagi fayl qabul qilinmaydi.
+  Ruxsat etilgan formatlar: JPEG, PNG, WebP." + yonida `UNSUPPORTED_TYPE` kodi.
+- **Qoralama:** admin ro'yxatida belgi bilan ko'rinadi; ochiq ro'yxatda yo'q; to'g'ridan-to'g'ri
+  manzil bo'yicha ochiq API **404**, admin `?drafts=true` bilan 200.
+- **Hujjatlar:** admin orqali PDF yuklandi va saqlandi, uchala tilda `/documents` da yuklab
+  olish havolasi bilan ko'rindi; mobil 375 px da overflow 0.
+- Sinov yozuvlari va fayllari oxirida tozalandi (0 media, 0 hujjat).
+
+**Yo'l-yo'lakay topilgan va tuzatilgan ikkita HAQIQIY xato:**
+1. **Tahrirlashda kontent umuman yuklanmasdi.** Ro'yxat endpointi `content` maydonlarini
+   qaytarmaydi (ular og'ir), lekin `openEdit` shakl qiymatlarini o'sha ro'yxat yozuvidan
+   olardi — tahrirlagich bo'sh ochilardi va moderator matn yozsa eski kontent yo'qolardi.
+   Endi tahrirlashda to'liq yozuv `GET /api/news/:slug?drafts=true` bilan olinadi.
+2. **Rasm bo'lmagan fayl `SERVER_ERROR` berardi.** Brauzer `.exe` ni rasm sifatida ocholmay
+   oddiy `Error` tashlardi va moderator "Serverda xatolik" degan noaniq xabarni ko'rardi.
+   `ClientError` sinfi qo'shildi: mijoz tomonidagi xatolar ham API xatolari bilan bir xil
+   kodga (`UNSUPPORTED_TYPE`) va o'zbekcha matnga o'giriladi.
+
+**Nima TEKSHIRILMADI:**
+- Haqiqiy Cloudflare R2 (production bucket hali yaratilmagan) — miniflare taqlidida sinaldi.
+- Egasiz fayllarni tozalash 24 soatlik muddat bilan (vaqt kutish kerak); endpoint mantiqi
+  o'qib chiqildi, lekin haqiqiy muddat bo'yicha sinov qilinmadi.
+- DOCX/XLSX yuklash (ZIP imzosi kodda bor, haqiqiy fayl bilan sinalmadi).
+- Production'ga hech narsa yozilmadi va deploy qilinmadi.
+
+**Qarorlar va sabablari:**
+- Sanitizator sifatida `xss` (js-xss) tanlandi: sof JS, Node bog'liqligi yo'q, Workers'da
+  ishlaydi (`sanitize-html` `postcss` tortadi, `DOMPurify` serverda `jsdom` talab qiladi).
+- DOCX/XLSX ZIP konteyner bo'lgani uchun magic bayt ularni ajratmaydi; konteyner turi
+  tasdiqlangach kengaytma faqat `docx`/`xlsx` ni farqlash uchun ishlatiladi — xavfsizlikka
+  ta'sir qilmaydi.
+- Tahrirlagichda rasm yuklanayotganda matnda vaqtinchalik joy egallovchi turadi va tugagach
+  almashtiriladi; xato bo'lsa joy egallovchi olib tashlanadi.
+
+---
 
 ### 2026-08-26 · 06 — Laboratoriya sahifalari, xodimlar reyestri va hamkorlar
 
@@ -290,90 +378,6 @@ sozlamalari ulandi. Oldin `NewsDetailPage` da `dd MMMM yyyy` bo'lgani uchun ingl
 **Boshqa:** oldingi sessiyalardan qolgan `.github/workflows/deploy.yml` o'chirilishi tiklandi —
 `docs/deploy.md` va `docs/ROADMAP.md` hamon shu faylga tayanadi, o'chirish sababi hech qayerda
 qayd etilmagan edi. `docs/tasks/*.md` va `CLAUDE.md` o'zgarishi ham shu kommitga kiritildi.
-
----
-
-### 2026-08-26 · 05 — Namoyishga tayyorlash
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(demo): settings-driven contacts and demo readiness`
-
-- **Aloqa ma'lumotlari kodda emas.** Yangi `apps/web/src/hooks/useSettings.ts` (react-query,
-  `staleTime` 5 daq, bitta so'rov). `Header.tsx`, `Footer.tsx`, `ContactPage.tsx` qattiq yozilgan
-  telefon/pochta/manzildan tozalandi. Zaxira qiymat qoldirilmadi — bo'sh sozlama = qator ko'rinmaydi.
-- **Seed sozlamalari:** haqiqiy manzil (3 tilda) + `energy@academy.uz`; `phone` va `working_hours` bo'sh.
-- **`packages/db/src/demo-content.ts`** — 3 ta yangilik (3 tilda, hujjat bilan tasdiqlangan yoki
-  neytral mavzular), `npm run db:demo`. Lokal bo'lmagan `DATABASE_URL` da ataylab xato beradi.
-  Seed'dagi o'ylab topilgan "yangi laboratoriya ochildi" yangiligi lokal bazadan olib tashlandi.
-- **AboutPage** tozalandi: o'ylab topilgan raqamlar (120+ xodim, 30+ yil) va 8 ta taxminiy
-  yo'nalish o'chirildi; o'rniga rasmiy tuzilmadan kelgan 6 laboratoriya va hujjatdagi raqamlar
-  (`INSTITUTE_STAFF`, `apps/web/src/lib/structure.ts` — HomePage bilan umumiy).
-- **Aralash til tuzatildi:** AboutPage, Footer, ContactPage (label, placeholder, zod xato xabarlari),
-  PublicationsPage, Helmet sarlavhalari — hammasi i18n'ga ko'chirildi, uchala json yangilandi.
-  Footer'dagi `t('common.language') === 'Til'` hiylasi `footer.pages` bilan almashtirildi.
-- **Nashrlar bo'sh holati** chiroyliroq: punktir ramka + "ro'yxat to'ldirilmoqda" izohi. Soxta nashr yo'q.
-- **`npm run demo`** qo'shildi (build + `wrangler dev` + `vite preview`), `docs/demo.md` yozildi.
-
-**Yo'l-yo'lakay topilgan va tuzatilgan (spetsifikatsiyada yo'q edi):**
-1. `apps/web/vite.config.js` va `.d.ts` — **repoga kommit qilingan generatsiya artefakti**
-   `vite.config.ts` ni soya qilardi (Vite `.js` ni ustun ko'radi). Undagi `envDir` yo'qligi sababli
-   `VITE_API_URL` production build'ga umuman tushmasdi → `vite preview` da sayt API'ni topolmasdi.
-   Fayllar o'chirildi va `.gitignore` ga qo'shildi (CLAUDE.md 16-qoida). Bu namoyishni buzadigan xato edi.
-2. `npm run build` ildizda **hech qachon ishlamagan**: `packages/shared` va `packages/db` da
-   `tsconfig.json` yo'q edi, `tsc --noEmit` yordam matnini chiqarib xato qaytarardi.
-   Ikkalasiga tsconfig qo'shildi, `packages/db` ga `build` skripti qo'shildi.
-
-**Nima tekshirildi va qanday:**
-- `tsc --noEmit` — apps/api, apps/web toza; `npm run build` (shared → db → api dry-run → web) toza.
-- **Brauzerda (headless Chromium, lokal Postgres `energetika_mig`):**
-  7 ochiq sahifa × 3 til = 21 yuklash — ko'rinib qolgan tarjima kaliti yo'q, konsol xatosi yo'q,
-  eski qattiq aloqa ma'lumoti yo'q; 375px da 7 sahifada gorizontal overflow 0px;
-  ingliz/rus sahifalarida o'zbekcha qoldiq topilmadi.
-- **Uchidan uchiga admin ssenariysi brauzerda bajarildi:** login → Yangiliklar → "Yangi qo'shish" →
-  3 tilda to'ldirish → Saqlash → admin ro'yxatida ko'rindi → ochiq `/news` sahifasida ko'rindi.
-  Sozlamalar → `phone` = `+998 71 000-00-00` → Saqlash → header/footer/Aloqa'da 3 ta `tel:` havola
-  paydo bo'ldi → `phone` yana bo'shatildi → 0 ta `tel:` havola. Sinov yozuvi bazadan o'chirildi.
-- `npm run demo` haqiqatan ishga tushirildi: web :5173 (200), API :3000 (200), yig'ilgan bundle
-  ichida `localhost:3000` bor.
-- Grep mezonlari: `998 71 262`, `262-00-00`, `info@energetika` — hammasi bo'sh.
-
-**Nima TEKSHIRILMADI:**
-- Kontakt formasini haqiqatan yuborish (POST) — sinalmadi.
-- `npm run demo` ni lokal baza bilan uchidan uchiga — `.dev.vars` production'ga qaragani uchun
-  o'sha rejimda faqat 200-javob va bundle tekshirildi, ma'lumot production'dan keldi.
-- Production'ga hech narsa yozilmadi va deploy qilinmadi.
-
-**Muhit haqida:** bu mashinada Node.js/npm o'rnatilmagan. Barcha tekshiruvlar scratchpad'ga
-vaqtincha yuklangan Node 22 bilan bajarildi (repoga hech narsa qo'shilmadi).
-
-**Qarorlar va sabablari:**
-- Telefon uchun zaxira qiymat yo'q: noto'g'ri raqamdan ko'ra bo'sh joy afzal (topshiriq talabi).
-- `working_hours` ham bo'shatildi — tasdiqlanmagan ma'lumot o'ylab topilmaydi.
-- Namoyish kontenti seed'dan ajratildi: seed production'da ishlatilishi mumkin, demo — hech qachon.
-- AboutPage raqamlari HomePage bilan bitta `INSTITUTE_STAFF` konstantasidan — ikki joyda
-  har xil raqam ko'rinishining oldini olish uchun.
-
----
-
-### 2026-08-25 · PM holat tekshiruvi
-
-**Kim:** Cowork sessiyasi (PM roli) · Yozuvsiz (faqat o'qish + jurnal)
-
-| Tekshiruv | Natija |
-|---|---|
-| `git log` — 6 kommit, `origin/master` = `69b6548` = lokal HEAD | ✅ push tasdiqlandi |
-| `tsc --noEmit` (api + web) | ✅ toza |
-| `seed.ts` — 17 birlik, `staffCount` yig'indisi 25 (18 ilmiy + 7 ma'muriy) | ✅ hujjatga mos |
-| `deleteMany` qamrovi — aynan 6 ta legacy `dept-*` id | ✅ xavfsiz, keng emas |
-| Migratsiyalar `0_init` + `1_add_structure_staff_fields` | ✅ mavjud |
-| Live `GET /api/structure` | ❌ **hali eski demo** — `prof. Mirzayev A.K.` ochiq saytda |
-| Live frontend `/images/CREDITS.md` | ❌ 404 (SPA fallback) — yangi build deploy qilinmagan |
-
-**Topilgan kamchiliklar:**
-1. `docs/tasks/03-production.md`, `docs/tasks/04-kontent.md` va `docs/reference/` **kommit qilinmagan**.
-   04 bajarilgan, lekin uning spetsifikatsiyasi va manba hujjati repoda yo'q — keyingi sessiya
-   `bf01d7b` nima asosida qilinganini bilolmaydi.
-2. `deploy.yml` da `deploy-web` va `deploy-api` **parallel** ishlaydi. Migratsiya yiqilsa ham
-   frontend baribir deploy bo'ladi. `deploy-web` ga `needs: deploy-api` qo'shilishi kerak.
 
 ---
 

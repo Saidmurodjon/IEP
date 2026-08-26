@@ -60,6 +60,7 @@ export default function Footer() {
                 { to: '/employees', label: t('nav.employees') },
                 { to: '/news', label: t('nav.news') },
                 { to: '/publications', label: t('nav.publications') },
+                { to: '/documents', label: t('nav.documents') },
                 { to: '/contact', label: t('nav.contact') },
               ].map((link) => (
                 <li key={link.to}>

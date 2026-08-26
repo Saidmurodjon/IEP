@@ -18,6 +18,7 @@ const EmployeesPage = lazy(() => import('@/pages/public/EmployeesPage'));
 const NewsPage = lazy(() => import('@/pages/public/NewsPage'));
 const NewsDetailPage = lazy(() => import('@/pages/public/NewsDetailPage'));
 const PublicationsPage = lazy(() => import('@/pages/public/PublicationsPage'));
+const DocumentsPage = lazy(() => import('@/pages/public/DocumentsPage'));
 const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
 const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
@@ -31,6 +32,7 @@ const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
 const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
 const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'));
 const AdminPartnersPage = lazy(() => import('@/pages/admin/AdminPartnersPage'));
+const AdminDocumentsPage = lazy(() => import('@/pages/admin/AdminDocumentsPage'));
 const AdminNotFoundPage = lazy(() => import('@/pages/admin/AdminNotFoundPage'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -116,6 +118,7 @@ export default function App() {
           <Route path="settings" element={<AdminSettingsPage />} />
           <Route path="employees" element={<AdminEmployeesPage />} />
           <Route path="partners" element={<AdminPartnersPage />} />
+          <Route path="documents" element={<AdminDocumentsPage />} />
           <Route path="messages" element={<AdminMessagesPage />} />
           {/* Admin ichidagi noma'lum manzil — ochiq saytnikidan alohida sahifa */}
           <Route path="*" element={<AdminNotFoundPage />} />
@@ -137,6 +140,7 @@ export default function App() {
             <Route path="news" element={<NewsPage />} />
             <Route path="news/:slug" element={<NewsDetailPage />} />
             <Route path="publications" element={<PublicationsPage />} />
+            <Route path="documents" element={<DocumentsPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>

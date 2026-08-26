@@ -7,6 +7,7 @@ import { newsApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Calendar, ArrowLeft } from 'lucide-react';
 import { formatDate } from '@/lib/date';
+import { sanitizeHtml } from '@/lib/sanitize';
 import type { Lang } from '@energetika/shared';
 
 export default function NewsDetailPage() {
@@ -77,7 +78,8 @@ export default function NewsDetailPage() {
           </p>
           <div
             className="prose-content"
-            dangerouslySetInnerHTML={{ __html: getField('content') }}
+            // Server saqlashdan oldin tozalagan; bu ikkinchi qatlam (CLAUDE.md 7-qoida).
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(getField('content')) }}
           />
 
           {/*

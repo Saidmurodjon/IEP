@@ -7,9 +7,18 @@
     "skipLibCheck": true,
     "outDir": "dist",
     "paths": {
-      "@energetika/db": ["../../packages/db/src/index.ts"],
-      "@energetika/shared": ["../../packages/shared/src/index.ts"]
-    }
+      "@energetika/db": [
+        "../../packages/db/src/index.ts"
+      ],
+      "@energetika/shared": [
+        "../../packages/shared/src/index.ts"
+      ]
+    },
+    "types": [
+      "@cloudflare/workers-types"
+    ]
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ]
 }

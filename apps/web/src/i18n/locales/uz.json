@@ -8,7 +8,8 @@
     "publications": "Nashrlar",
     "contact": "Aloqa",
     "management": "Rahbariyat",
-    "employees": "Xodimlar"
+    "employees": "Xodimlar",
+    "documents": "Hujjatlar"
   },
   "home": {
     "hero_title": "O'zbekiston Respublikasi Fanlar akademiyasi",
@@ -143,7 +144,16 @@
     "total_msgs": "Xabarlar",
     "unread_msgs": "O'qilmagan",
     "employees": "Xodimlar",
-    "partners": "Hamkorlar"
+    "partners": "Hamkorlar",
+    "documents": "Hujjatlar",
+    "draft": "Qoralama",
+    "published": "Nashr etilgan",
+    "save_draft": "Qoralama sifatida saqlash",
+    "publish": "Nashr etish",
+    "copy_from_uz": "O'zbekchadan nusxa ko'chirish",
+    "filled": "to'ldirilgan",
+    "empty_tab": "bo'sh",
+    "unsaved_warning": "Saqlanmagan o'zgarishlar bor. Sahifadan chiqasizmi?"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -155,7 +165,8 @@
     "academy": "O'zbekiston Respublikasi Fanlar akademiyasi",
     "institute_name": "Energetika muammolari instituti",
     "institute_name_line1": "Energetika muammolari",
-    "institute_name_line2": "instituti"
+    "institute_name_line2": "instituti",
+    "close": "Yopish"
   },
   "notFound": {
     "title": "Sahifa topilmadi",
@@ -197,5 +208,69 @@
     "staff_list": "Laboratoriya xodimlari",
     "staff_empty": "Xodimlar ro'yxati to'ldirilmoqda.",
     "back": "Laboratoriyalarga qaytish"
+  },
+  "errors": {
+    "FILE_TOO_LARGE": "Fayl hajmi juda katta. Ruxsat etilgan eng katta hajm {{limit}}.",
+    "UNSUPPORTED_TYPE": "Bu turdagi fayl qabul qilinmaydi. Ruxsat etilgan formatlar: {{formats}}.",
+    "IMAGE_TOO_SMALL": "Rasm o'lchami juda kichik. Eng kami {{min}} nuqta bo'lishi kerak.",
+    "IMAGE_TOO_LARGE": "Rasm o'lchami juda katta. Eng ko'pi {{max}} nuqta bo'lishi kerak.",
+    "EMPTY_FILE": "Fayl bo'sh.",
+    "STORAGE_UNAVAILABLE": "Fayl ombori vaqtincha ishlamayapti. Keyinroq urinib ko'ring.",
+    "UPLOAD_FAILED": "Faylni yuklashda xatolik yuz berdi. Qaytadan urinib ko'ring.",
+    "VALIDATION_ERROR": "Ma'lumotlar to'liq emas. Qizil bilan belgilangan maydonlarni to'ldiring.",
+    "NOT_FOUND": "Yozuv topilmadi. Ehtimol u o'chirilgan.",
+    "UNAUTHORIZED": "Sessiya muddati tugadi. Qaytadan kiring.",
+    "SERVER_ERROR": "Serverda xatolik. Agar takrorlansa, texnik xodimga murojaat qiling."
+  },
+  "toast": {
+    "news_saved": "Yangilik saqlandi.",
+    "news_deleted": "Yangilik o'chirildi.",
+    "image_uploaded": "Rasm yuklandi.",
+    "file_uploaded": "Fayl yuklandi.",
+    "file_deleted": "Fayl o'chirildi.",
+    "employee_saved": "Xodim saqlandi.",
+    "employee_deleted": "Xodim o'chirildi.",
+    "partner_saved": "Hamkor saqlandi.",
+    "partner_deleted": "Hamkor o'chirildi.",
+    "document_saved": "Hujjat saqlandi.",
+    "document_deleted": "Hujjat o'chirildi.",
+    "publication_saved": "Nashr saqlandi.",
+    "publication_deleted": "Nashr o'chirildi.",
+    "settings_saved": "O'zgarishlar saqlandi.",
+    "saved": "O'zgarishlar saqlandi.",
+    "image_resized": "Rasm {{from}} nuqtadan {{to}} nuqtaga kichraytirildi, hajmi {{before}} dan {{after}} ga tushdi.",
+    "copied_from_uz": "O'zbekcha matn ko'chirildi."
+  },
+  "editor": {
+    "bold": "Qalin",
+    "italic": "Qiya",
+    "h2": "Sarlavha 2",
+    "h3": "Sarlavha 3",
+    "bullet_list": "Belgili ro'yxat",
+    "ordered_list": "Raqamli ro'yxat",
+    "quote": "Iqtibos",
+    "link": "Havola",
+    "unlink": "Havolani olib tashlash",
+    "image": "Rasm qo'yish",
+    "link_prompt": "Havola manzilini kiriting",
+    "uploading": "Rasm yuklanmoqda..."
+  },
+  "upload": {
+    "choose_image": "Rasm tanlash",
+    "choose_file": "Fayl tanlash",
+    "replace": "Almashtirish",
+    "remove": "O'chirish",
+    "preparing": "Rasm tayyorlanmoqda...",
+    "uploading": "Yuklanmoqda...",
+    "no_file": "Fayl tanlanmagan"
+  },
+  "documents": {
+    "title": "Me'yoriy hujjatlar",
+    "subtitle": "Buyruqlar, nizomlar va boshqa hujjatlar",
+    "empty": "Hujjatlar ro'yxati to'ldirilmoqda.",
+    "empty_hint": "Hujjatlar institut tomonidan joylashtirilgach shu yerda ko'rinadi.",
+    "download": "Yuklab olish",
+    "number": "Hujjat raqami",
+    "date": "Sanasi"
   }
 }

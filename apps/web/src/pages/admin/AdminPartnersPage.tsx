@@ -9,6 +9,8 @@ import { Plus, Pencil, Trash2, X, Eye, EyeOff } from 'lucide-react';
 import clsx from 'clsx';
 import { partnersApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import FileUploadField from '@/components/admin/FileUploadField';
+import { useToast } from '@/components/Toast';
 
 const schema = z.object({
   nameUz: z.string().min(1, 'Nomini kiriting'),
@@ -27,6 +29,7 @@ export default function AdminPartnersPage() {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<Partner | null>(null);
+  const toast = useToast();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-partners'],
@@ -34,9 +37,10 @@ export default function AdminPartnersPage() {
   });
   const items: Partner[] = data?.data?.data ?? [];
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const logoUrl = watch('logoUrl');
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset(); };
   const refresh = () => {
@@ -46,15 +50,18 @@ export default function AdminPartnersPage() {
 
   const createMutation = useMutation({
     mutationFn: (values: FormData) => partnersApi.create(values),
-    onSuccess: () => { refresh(); closeForm(); },
+    onSuccess: () => { refresh(); toast.success(t('toast.partner_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, values }: { id: string; values: Partial<FormData> }) => partnersApi.update(id, values),
-    onSuccess: () => { refresh(); closeForm(); },
+    onSuccess: () => { refresh(); toast.success(t('toast.partner_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const deleteMutation = useMutation({
     mutationFn: (id: string) => partnersApi.delete(id),
-    onSuccess: refresh,
+    onSuccess: () => { refresh(); toast.success(t('toast.partner_deleted')); },
+    onError: (error) => toast.showError(error),
   });
 
   const openEdit = (item: Partner) => {
@@ -121,8 +128,15 @@ export default function AdminPartnersPage() {
                   </div>
                 ))}
                 <div>
-                  <label className="label">Logotip manzili *</label>
-                  <input {...register('logoUrl')} className="input" placeholder="/images/partners/nom.png" />
+                  <FileUploadField
+                    kind="image"
+                    label="Logotip *"
+                    value={logoUrl ?? null}
+                    onChange={(url) => setValue('logoUrl', url ?? '', { shouldDirty: true })}
+                    ownerType="partner"
+                    ownerId={editItem?.id}
+                  />
+                  <input type="hidden" {...register('logoUrl')} />
                   {errors.logoUrl && <p className="text-red-500 text-xs mt-1">{errors.logoUrl.message}</p>}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

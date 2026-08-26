@@ -11,12 +11,21 @@ import { settingsRouter } from './routes/settings';
 import { contactRouter } from './routes/contact';
 import { employeesRouter } from './routes/employees';
 import { partnersRouter } from './routes/partners';
+import { uploadsRouter } from './routes/uploads';
+import { filesRouter } from './routes/files';
+import { documentsRouter } from './routes/documents';
 import type { PrismaClient } from '@prisma/client';
 
 export interface Env {
   DATABASE_URL: string;
   JWT_SECRET: string;
   FRONTEND_URL: string;
+  /**
+   * R2 media ombori. Sozlanmagan bo'lishi MUMKIN — shuning uchun ixtiyoriy.
+   * Yuklash endpointi bog'lanish yo'qligini o'zi tekshiradi va 503 qaytaradi
+   * (`lib/storage.ts`), sukut bo'yicha boshqa omborga o'tmaydi.
+   */
+  MEDIA?: R2Bucket;
 }
 
 export type AppContext = {
@@ -53,6 +62,9 @@ app.route('/api/settings', settingsRouter);
 app.route('/api/contact', contactRouter);
 app.route('/api/employees', employeesRouter);
 app.route('/api/partners', partnersRouter);
+app.route('/api/documents', documentsRouter);
+app.route('/api/uploads', uploadsRouter);
+app.route('/api/files', filesRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
 app.onError((err, c) => {

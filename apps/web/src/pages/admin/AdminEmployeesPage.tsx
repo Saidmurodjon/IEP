@@ -11,6 +11,8 @@ import { employeesApi, structureApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { Employee } from '@/lib/employee';
 import { type Unit } from '@/lib/structure';
+import FileUploadField from '@/components/admin/FileUploadField';
+import { useToast } from '@/components/Toast';
 
 const schema = z.object({
   fullNameUz: z.string().min(1, 'Ism kiriting'),
@@ -54,6 +56,7 @@ export default function AdminEmployeesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<Employee | null>(null);
   const [activeTab, setActiveTab] = useState<'Uz' | 'En' | 'Ru'>('Uz');
+  const toast = useToast();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-employees'],
@@ -68,23 +71,27 @@ export default function AdminEmployeesPage() {
   const items: Employee[] = data?.data?.data ?? [];
   const units = flatten((structureData?.data?.data ?? []) as Unit[]);
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
+  const photoUrl = watch('photoUrl');
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
 
   const createMutation = useMutation({
     mutationFn: (values: FormData) => employeesApi.create(values),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); closeForm(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, values }: { id: string; values: Partial<FormData> }) => employeesApi.update(id, values),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); closeForm(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const deleteMutation = useMutation({
     mutationFn: (id: string) => employeesApi.delete(id),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_deleted')); },
+    onError: (error) => toast.showError(error),
   });
 
   const openEdit = (item: Employee) => {
@@ -218,9 +225,15 @@ export default function AdminEmployeesPage() {
                     <label className="label">Xona raqami</label>
                     <input {...register('officeRoom')} className="input" />
                   </div>
-                  <div>
-                    <label className="label">Rasm URL</label>
-                    <input {...register('photoUrl')} className="input" placeholder="https://..." />
+                  <div className="sm:col-span-2">
+                    <FileUploadField
+                      kind="photo"
+                      label="Xodim rasmi"
+                      value={photoUrl ?? null}
+                      onChange={(url) => setValue('photoUrl', url ?? '', { shouldDirty: true })}
+                      ownerType="employee"
+                      ownerId={editItem?.id}
+                    />
                   </div>
                   <div>
                     <label className="label">ORCID</label>

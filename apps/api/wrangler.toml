@@ -6,6 +6,12 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 NODE_ENV = "production"
 
+# Media ombori. Bog'lanish yo'q bo'lsa yuklash endpointi 503 /
+# STORAGE_UNAVAILABLE qaytaradi (fail closed), fayllar boshqa joyga yozilmaydi.
+[[r2_buckets]]
+binding = "MEDIA"
+bucket_name = "energetika-media"
+
 # Secrets (set via: wrangler secret put SECRET_NAME)
 # DATABASE_URL
 # JWT_SECRET

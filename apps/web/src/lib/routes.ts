@@ -37,6 +37,7 @@ export const PUBLIC_ROUTES: readonly PublicRoute[] = [
   { pattern: 'news', key: 'news', inAllLangs: true, dynamic: false },
   { pattern: 'news/:slug', key: 'news-detail', inAllLangs: true, dynamic: true },
   { pattern: 'publications', key: 'publications', inAllLangs: true, dynamic: false },
+  { pattern: 'documents', key: 'documents', inAllLangs: true, dynamic: false },
   { pattern: 'contact', key: 'contact', inAllLangs: true, dynamic: false },
 ] as const;
 

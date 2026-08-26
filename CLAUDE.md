@@ -47,13 +47,15 @@ Faqat Web Crypto API (`crypto.subtle`) va Workers qo'llab-quvvatlaydigan kutubxo
 apps/
   web/          React + Vite frontend
     src/pages/public/   Ochiq sahifalar (Home, About, Management, Structure, Labs, LabDetail,
-                        Employees, News, Publications, Contact, NotFound)
+                        Employees, News, Publications, Documents, Contact, NotFound)
     src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Employees,
-                        Partners, Settings, Messages)
+                        Partners, Documents, Settings, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API
-    src/routes/         auth, news, publications, structure, settings, contact, employees, partners
+    src/routes/         auth, news, publications, structure, settings, contact, employees,
+                        partners, documents, uploads, files
+    src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media
     src/middleware/     requireAuth
     src/lib/            db, jwt
 packages/
@@ -74,10 +76,13 @@ packages/
 4. **Har bir yozuv (POST/PUT/PATCH/DELETE) endpoint'i `requireAuth` bilan himoyalansin.** Faqat quyidagilar ochiq:
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
-   `GET /api/partners`, `POST /api/contact`.
+   `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`.
 5. **Kiruvchi ma'lumot doim zod bilan tekshirilsin** (`zValidator`). Validatsiyasiz `c.req.json()` ishlatmang.
 6. **Xato xabarlari ichki tafsilotni oshkor qilmasin.** Login uchun doim `Invalid credentials` — "email topilmadi" demang.
-7. **HTML kontent** (`contentUz` va h.k.) frontendda `dangerouslySetInnerHTML` bilan chiqariladi — uni ko'rsatishdan oldin sanitizatsiya qiling.
+7. ✅ **HTML kontent sanitizatsiyasi bajarildi.** Server saqlashdan oldin tozalaydi
+   (`apps/api/src/lib/sanitize.ts`, allowlist), frontend ko'rsatishdan oldin ikkinchi marta
+   tozalaydi (`apps/web/src/lib/sanitize.ts`, DOMPurify). Ruxsat etilgan teglar ro'yxatini
+   kengaytirsangiz — **ikkala faylni ham** yangilang. `img` faqat `/api/files/` dan.
 
 ### 4.2 Ma'lumotlar bazasi
 
@@ -98,13 +103,21 @@ packages/
     Admin marshrutlari (`/admin/...`) prefikssiz qoladi va oddiy `Link` bilan yoziladi.
     Yangi ochiq sahifa qo'shilganda u avval `src/lib/routes.ts` dagi `PUBLIC_ROUTES` ro'yxatiga
     yoziladi, keyin `App.tsx` ga.
+16. **Fayl yuklash faqat `POST /api/uploads` orqali.** Fayl turi **magic bayt** bo'yicha
+    aniqlanadi (`lib/file-types.ts`) — `Content-Type` va kengaytmaga ishonilmaydi. SVG
+    qabul qilinmaydi. Yangi format qo'shsangiz imzosini ham yozing.
+17. **Fayl o'chirish faqat `media_files` jadvalida qayd etilgan kalitlar bo'yicha.** Ombor
+    bo'ylab ommaviy o'chirish (`list()` + `delete`) hech qachon qilinmaydi.
+18. **Admin paneldagi barcha xabarlar `useToast()` orqali.** Xato kodi API dan keladi,
+    o'zbekcha matn `locales/*.json` dagi `errors.<KOD>` dan olinadi.
+
 
 ### 4.4 Umumiy
 
-16. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
-17. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
-18. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
-19. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+19. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
+20. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
+21. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
+22. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 
 ---
 
@@ -118,7 +131,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 2 | ~~JWT_SECRET fallback repoda ochiq~~ — fallback o'chirildi, `lib/env.ts` fail closed (secret yo'q/32 belgidan qisqa → 500) | ✅ Tuzatildi |
 | 3 | ~~Parol hashlash — salt'siz SHA-256~~ — PBKDF2, 210 000 iteratsiya, 16-baytli tasodifiy salt, timing-safe taqqoslash | ✅ Tuzatildi |
 | 4 | ~~`/api/auth/login` da rate limit yo'q~~ — IP+email uchun 15 daqiqada 5 urinish, 6-chisi 429 (TODO: KV/Durable Object) | ✅ Tuzatildi |
-| 5 | Fayl yuklash yo'q — R2 binding yo'q, `imageUrl`/`fileUrl` faqat qo'lda URL | 🟠 Ochiq |
+| 5 | ~~Fayl yuklash yo'q~~ — R2 binding (`MEDIA`), `POST /api/uploads` magic bayt tekshiruvi bilan, `MediaFile` jadvali, avtomatik tozalash, tiptap tahrirlagich. Production'da bucket yaratilishi kerak | ✅ Tuzatildi |
 | 6 | Kontakt formasi email yubormaydi, faqat bazaga yozadi | 🟠 Ochiq |
 | 7 | SSR/prerender va sitemap yo'q — SEO nolga teng | 🟠 Ochiq |
 | 8 | ~~Bazada faqat demo ma'lumot~~ — tuzilma rasmiy 2025 hujjatiga ko'chirildi (kod tayyor, lokal test bazada tasdiqlangan). Production seed foydalanuvchi tasdig'ini kutmoqda; demo nashrlar hali qolgan | 🟠 Qisman |

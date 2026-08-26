@@ -36,6 +36,8 @@ model News {
   // ko'rsatilgan holda joylashtiriladi.
   sourceName  String?
   sourceUrl   String?
+  /// Qoralama ochiq sahifada KO'RINMAYDI. Nashr etish alohida amal.
+  isPublished Boolean  @default(true)
   publishedAt DateTime @default(now())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -171,4 +173,49 @@ model ContactMessage {
   createdAt DateTime @default(now())
 
   @@map("contact_messages")
+}
+
+/// Omborga yuklangan fayl. Bu jadval bo'lmasa tahrirlashda eski faylni
+/// o'chirish va yozuv o'chirilganda omborni tozalash imkonsiz bo'ladi.
+///
+/// `ownerId` bo'sh fayl EGASIZ hisoblanadi (moderator rasm yukladi, lekin
+/// yozuvni saqlamasdan chiqib ketdi) va tozalash amali bilan o'chiriladi.
+model MediaFile {
+  id           String   @id @default(cuid())
+  /// R2 dagi kalit: `YYYY/MM/<uuid>.<ext>`. Asl fayl nomiga bog'liq emas.
+  key          String   @unique
+  originalName String
+  mimeType     String
+  size         Int
+  width        Int?
+  height       Int?
+  /// `news`, `publication`, `employee`, `partner`, `document`
+  ownerType    String?
+  ownerId      String?
+  createdAt    DateTime @default(now())
+
+  @@index([ownerType, ownerId])
+  @@map("media_files")
+}
+
+/// Me'yoriy hujjatlar, buyruqlar va nizomlar.
+model Document {
+  id             String    @id @default(cuid())
+  titleUz        String
+  titleEn        String
+  titleRu        String
+  descriptionUz  String?   @db.Text
+  descriptionEn  String?   @db.Text
+  descriptionRu  String?   @db.Text
+  /// `MediaFile.key` — fayl R2 da shu kalit bilan yotadi.
+  fileKey        String
+  documentNumber String?
+  documentDate   DateTime?
+  category       String    @default("other")
+  order          Int       @default(0)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("documents")
 }

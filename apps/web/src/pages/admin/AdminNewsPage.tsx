@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,9 +6,15 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { newsApi } from '@/lib/api';
-import { Plus, Pencil, Trash2, X, Calendar } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, Calendar, FileEdit } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import clsx from 'clsx';
+import RichTextEditor from '@/components/admin/RichTextEditor';
+import FileUploadField from '@/components/admin/FileUploadField';
+import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTabs';
+import { useToast } from '@/components/Toast';
+import { slugify, uniqueSlug } from '@/lib/slug';
+import { useUnsavedWarning } from '@/hooks/useUnsavedWarning';
 
 const schema = z.object({
   slug: z.string().min(1, 'Slug kiriting'),
@@ -18,67 +24,123 @@ const schema = z.object({
   imageUrl: z.string().optional(),
   sourceName: z.string().optional(),
   sourceUrl: z.string().optional(),
+  publishedAt: z.string().optional(),
+  isPublished: z.boolean().optional(),
 });
 type FormData = z.infer<typeof schema>;
 
-type NewsItem = FormData & { id: string; publishedAt: string };
-
-function slugify(text: string) {
-  return text.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-}
+type NewsItem = FormData & { id: string; publishedAt: string; isPublished: boolean };
 
 export default function AdminNewsPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<NewsItem | null>(null);
-  const [activeTab, setActiveTab] = useState<'uz' | 'en' | 'ru'>('uz');
+  const [activeTab, setActiveTab] = useState<LangSuffix>('Uz');
+  const toast = useToast();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-news-list'],
-    queryFn: () => newsApi.list(1, 50),
+    // Admin panelda qoralamalar ham ko'rinadi.
+    queryFn: () => newsApi.list(1, 50, true),
   });
 
   const items: NewsItem[] = data?.data?.data ?? [];
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
+  const {
+    register, handleSubmit, reset, setValue, watch, getValues,
+    formState: { errors, isDirty },
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const titleUz = watch('titleUz');
+  const imageUrl = watch('imageUrl');
+  const isPublished = watch('isPublished');
+  const values = watch();
+
+  // Shakl ochiq va o'zgargan bo'lsa — sahifadan chiqishda ogohlantirish.
+  useUnsavedWarning(showForm && isDirty);
+
+  // Sarlavha yozilganda havola avtomatik shakllanadi. Saqlangan yozuvda
+  // ATAYLAB o'zgarmaydi — eski havolalar buzilmasligi kerak.
+  useEffect(() => {
+    if (editItem || !titleUz) return;
+    const base = slugify(titleUz);
+    if (!base) return;
+    setValue('slug', uniqueSlug(base, items.map((item) => item.slug)), { shouldDirty: false });
+  }, [titleUz, editItem, setValue, items]);
+
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ['admin-news-list'] });
+    qc.invalidateQueries({ queryKey: ['news'] });
+  };
 
   const createMutation = useMutation({
     mutationFn: (data: FormData) => newsApi.create(data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-news-list'] }); closeForm(); },
+    onSuccess: () => { refresh(); toast.success(t('toast.news_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<FormData> }) => newsApi.update(id, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-news-list'] }); closeForm(); },
+    onSuccess: () => { refresh(); toast.success(t('toast.news_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const deleteMutation = useMutation({
     mutationFn: (id: string) => newsApi.delete(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-news-list'] }),
+    onSuccess: () => { refresh(); toast.success(t('toast.news_deleted')); },
+    onError: (error) => toast.showError(error),
   });
 
-  const closeForm = () => { setShowForm(false); setEditItem(null); reset(); };
+  const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
 
-  const openEdit = (item: NewsItem) => {
-    setEditItem(item);
-    Object.entries(item).forEach(([k, v]) => setValue(k as keyof FormData, v as string));
-    setShowForm(true);
+  /** O'zbekcha matnni joriy yorliqqa ko'chiradi — keyin tarjima qilinadi. */
+  const copyFromUz = () => {
+    const current = getValues();
+    setValue(`title${activeTab}` as keyof FormData, current.titleUz, { shouldDirty: true });
+    setValue(`summary${activeTab}` as keyof FormData, current.summaryUz, { shouldDirty: true });
+    setValue(`content${activeTab}` as keyof FormData, current.contentUz, { shouldDirty: true });
+    toast.success(t('toast.copied_from_uz'));
   };
 
-  const onSubmit = (data: FormData) => {
-    if (!data.slug) data.slug = slugify(data.titleUz);
-    if (editItem) updateMutation.mutate({ id: editItem.id, data });
-    else createMutation.mutate(data);
+  /** Qaysi til yorlig'i to'ldirilgan — moderator qolganini ko'radi. */
+  const filled: Record<LangSuffix, boolean> = {
+    Uz: !!values.titleUz && !!values.contentUz,
+    En: !!values.titleEn && !!values.contentEn,
+    Ru: !!values.titleRu && !!values.contentRu,
   };
 
-  const TABS = [
-    { key: 'uz', label: "O'zbek" },
-    { key: 'en', label: 'English' },
-    { key: 'ru', label: 'Русский' },
-  ] as const;
+  /**
+   * Tahrirlash uchun TO'LIQ yozuv olinadi.
+   *
+   * Ro'yxat endpointi `content` maydonlarini qaytarmaydi (ular og'ir), shuning
+   * uchun ro'yxatdagi yozuvni shaklga solib bo'lmaydi — tahrirlagich bo'sh
+   * ochilardi va moderator matn yozsa eski kontent yo'qolardi.
+   */
+  const openEdit = async (item: NewsItem) => {
+    try {
+      const response = await newsApi.get(item.slug, true);
+      const full = response.data.data as NewsItem;
+      setEditItem(full);
+      Object.entries(full).forEach(([key, value]) => {
+        if (value === null || value === undefined) return;
+        setValue(key as keyof FormData, value as never);
+      });
+      // `<input type="date">` faqat `yyyy-mm-dd` shaklini qabul qiladi.
+      setValue('publishedAt', new Date(full.publishedAt).toISOString().slice(0, 10));
+      setShowForm(true);
+    } catch (error) {
+      toast.showError(error);
+    }
+  };
+
+  const submit = (data: FormData, publish?: boolean) => {
+    const payload: FormData = {
+      ...data,
+      slug: data.slug || uniqueSlug(slugify(data.titleUz), items.map((item) => item.slug)),
+      ...(publish === undefined ? {} : { isPublished: publish }),
+    };
+    if (editItem) updateMutation.mutate({ id: editItem.id, data: payload });
+    else createMutation.mutate(payload);
+  };
 
   return (
     <>
@@ -87,7 +149,12 @@ export default function AdminNewsPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-900">{t('admin.news')}</h1>
           <button
-            onClick={() => { reset(); setShowForm(true); }}
+            onClick={() => {
+              // Nashr sanasi sukut bo'yicha bugungi kun.
+              reset({ publishedAt: new Date().toISOString().slice(0, 10), isPublished: true });
+              setEditItem(null);
+              setShowForm(true);
+            }}
             className="btn-primary gap-2"
           >
             <Plus className="h-4 w-4" /> {t('admin.add_new')}
@@ -106,65 +173,99 @@ export default function AdminNewsPage() {
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-                <div>
-                  <label className="label">Slug</label>
-                  <input
-                    {...register('slug')}
-                    className="input"
-                    placeholder="yangilik-slugi"
-                    onBlur={() => {
-                      if (!watch('slug') && titleUz) {
-                        setValue('slug', slugify(titleUz));
-                      }
-                    }}
-                  />
-                  {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>}
+              <form onSubmit={handleSubmit((data) => submit(data))} className="p-5 space-y-4">
+                {/*
+                  Tarjima talab qilmaydigan maydonlar til yorliqlaridan
+                  TASHQARIDA, bir marta ko'rsatiladi (07-topshiriq, 9-bo'lim).
+                */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="label">
+                      Havola (slug) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register('slug')}
+                      className={clsx('input', errors.slug && 'border-red-400 focus:ring-red-400')}
+                      placeholder="yangilik-slugi"
+                    />
+                    {errors.slug ? (
+                      <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>
+                    ) : (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Sarlavhadan avtomatik hosil bo'ladi. Saqlangandan keyin o'zgartirmang —
+                        eski havolalar buziladi.
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="label">Nashr sanasi</label>
+                    <input type="date" {...register('publishedAt')} className="input" />
+                  </div>
                 </div>
 
-                {/* Language tabs */}
-                <div>
-                  <div className="flex gap-1 border-b mb-4">
-                    {TABS.map((tab) => (
-                      <button
-                        key={tab.key}
-                        type="button"
-                        onClick={() => setActiveTab(tab.key)}
-                        className={clsx(
-                          'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-                          activeTab === tab.key
-                            ? 'border-primary-600 text-primary-700'
-                            : 'border-transparent text-gray-500 hover:text-gray-700'
-                        )}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
+                <FileUploadField
+                  kind="image"
+                  label="Bosh rasm"
+                  value={imageUrl ?? null}
+                  onChange={(url) => setValue('imageUrl', url ?? '', { shouldDirty: true })}
+                  ownerType="news"
+                  ownerId={editItem?.id}
+                />
 
-                  {TABS.map((tab) => (
-                    <div key={tab.key} className={activeTab === tab.key ? '' : 'hidden'}>
+                {/* Tarjima qilinadigan maydonlar — til yorliqlari ichida */}
+                <div>
+                  <LangTabs
+                    active={activeTab}
+                    onChange={setActiveTab}
+                    filled={filled}
+                    onCopyFromUz={copyFromUz}
+                  />
+
+                  {LANG_TABS.map((tab) => (
+                    <div key={tab.key} className={clsx('pt-4', activeTab === tab.key ? '' : 'hidden')}>
                       <div className="space-y-3">
                         <div>
-                          <label className="label">{t(`admin.title_${tab.key}`)}</label>
-                          <input {...register(`title${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} className="input" />
+                          <label className="label">
+                            {t(`admin.title_${tab.key.toLowerCase()}`)}
+                            {tab.key === 'Uz' && <span className="text-red-500"> *</span>}
+                          </label>
+                          <input
+                            {...register(`title${tab.key}` as keyof FormData)}
+                            className={clsx(
+                              'input',
+                              errors[`title${tab.key}` as keyof FormData] && 'border-red-400 focus:ring-red-400'
+                            )}
+                          />
+                          {errors[`title${tab.key}` as keyof FormData] && (
+                            <p className="text-red-500 text-xs mt-1">Sarlavhani kiriting.</p>
+                          )}
                         </div>
                         <div>
                           <label className="label">Qisqacha ({tab.key.toUpperCase()})</label>
-                          <textarea {...register(`summary${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} rows={2} className="input resize-none" />
+                          <textarea
+                            {...register(`summary${tab.key}` as keyof FormData)}
+                            rows={2}
+                            className="input resize-none"
+                          />
                         </div>
                         <div>
-                          <label className="label">{t(`admin.content_${tab.key}`)}</label>
-                          <textarea {...register(`content${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} rows={6} className="input resize-none" />
+                          <label className="label">{t(`admin.content_${tab.key.toLowerCase()}`)}</label>
+                          {/* Tahrirlagich lazy yuklanadi — ochiq sahifalar hajmini ko'tarmaydi */}
+                          <RichTextEditor
+                            value={(values[`content${tab.key}` as keyof FormData] as string) ?? ''}
+                            onChange={(html) =>
+                              setValue(`content${tab.key}` as keyof FormData, html, { shouldDirty: true })
+                            }
+                            ownerType="news"
+                            ownerId={editItem?.id}
+                          />
+                          <p className="text-xs text-gray-400 mt-1">
+                            Rasmni nusxalab Cmd+V bosing yoki faylni tahrirlagich ustiga sudrab tashlang.
+                          </p>
                         </div>
                       </div>
                     </div>
                   ))}
-                </div>
-
-                <div>
-                  <label className="label">Rasm URL (ixtiyoriy)</label>
-                  <input {...register('imageUrl')} className="input" placeholder="https://..." />
                 </div>
 
                 {/*
@@ -201,15 +302,34 @@ export default function AdminNewsPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100">
                   <button
                     type="submit"
                     disabled={createMutation.isPending || updateMutation.isPending}
-                    className="btn-primary"
+                    className="btn-primary mt-4"
                   >
                     {t('admin.save')}
                   </button>
-                  <button type="button" onClick={closeForm} className="btn-secondary">
+                  {/* Qoralama ochiq sahifada ko'rinmaydi */}
+                  {isPublished !== false && (
+                    <button
+                      type="button"
+                      onClick={handleSubmit((data) => submit(data, false))}
+                      className="btn-secondary mt-4"
+                    >
+                      {t('admin.save_draft')}
+                    </button>
+                  )}
+                  {isPublished === false && (
+                    <button
+                      type="button"
+                      onClick={handleSubmit((data) => submit(data, true))}
+                      className="btn-primary mt-4"
+                    >
+                      {t('admin.publish')}
+                    </button>
+                  )}
+                  <button type="button" onClick={closeForm} className="btn-secondary mt-4">
                     {t('admin.cancel')}
                   </button>
                 </div>
@@ -235,7 +355,15 @@ export default function AdminNewsPage() {
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-gray-900 truncate max-w-xs">{item.titleUz}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900 truncate max-w-xs">{item.titleUz}</span>
+                        {item.isPublished === false && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-medium flex-shrink-0">
+                            <FileEdit className="h-3 w-3" />
+                            {t('admin.draft')}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-xs text-gray-400">{item.slug}</div>
                     </td>
                     <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">
@@ -247,7 +375,7 @@ export default function AdminNewsPage() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
-                          onClick={() => openEdit(item)}
+                          onClick={() => void openEdit(item)}
                           className="p-1.5 text-gray-400 hover:text-primary-700 hover:bg-primary-50 rounded transition-colors"
                         >
                           <Pencil className="h-4 w-4" />

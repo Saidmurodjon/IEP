@@ -2,6 +2,8 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
+import { sanitizeFields, CONTENT_FIELDS } from '../lib/sanitize';
+import { deleteOwnerFiles, replaceSingleFile, syncContentFiles } from '../lib/media';
 import type { AppContext } from '../index';
 
 export const newsRouter = new Hono<AppContext>();
@@ -16,6 +18,8 @@ const newsSchema = z.object({
   // manbadan olingan material uchun to'ldirilishi shart.
   sourceName: z.string().max(200).optional().or(z.literal('')),
   sourceUrl: z.string().url().optional().or(z.literal('')),
+  // Qoralama ochiq sahifada ko'rinmaydi.
+  isPublished: z.boolean().optional(),
   publishedAt: z.string().optional(),
 });
 
@@ -31,15 +35,20 @@ newsRouter.get('/', async (c) => {
   const limit = parseInt(c.req.query('limit') ?? '10');
   const skip = (page - 1) * limit;
 
+  // Qoralamalar ochiq saytda ko'rinmaydi. Admin panel `?drafts=true` bilan so'raydi.
+  const includeDrafts = c.req.query('drafts') === 'true';
+  const where = includeDrafts ? {} : { isPublished: true };
+
   const [items, total] = await Promise.all([
     db.news.findMany({
+      where,
       orderBy: { publishedAt: 'desc' }, skip, take: limit,
       select: { id: true, slug: true, imageUrl: true, publishedAt: true,
         titleUz: true, titleEn: true, titleRu: true,
         summaryUz: true, summaryEn: true, summaryRu: true,
-        sourceName: true, sourceUrl: true },
+        sourceName: true, sourceUrl: true, isPublished: true },
     }),
-    db.news.count(),
+    db.news.count({ where }),
   ]);
 
   return c.json({ data: items, total, page, limit, totalPages: Math.ceil(total / limit) });
@@ -49,12 +58,17 @@ newsRouter.get('/:slug', async (c) => {
   const db = c.get('db');
   const item = await db.news.findUnique({ where: { slug: c.req.param('slug') } });
   if (!item) return c.json({ error: 'Not found' }, 404);
+  // Qoralamani faqat admin panel ko'ra oladi.
+  if (!item.isPublished && c.req.query('drafts') !== 'true') {
+    return c.json({ error: 'Not found' }, 404);
+  }
   return c.json({ data: item });
 });
 
 newsRouter.post('/', requireAuth, zValidator('json', newsSchema), async (c) => {
   const db = c.get('db');
-  const data = c.req.valid('json');
+  // Moderator ixtiyoriy HTML yuborishi mumkin — saqlashdan OLDIN tozalanadi.
+  const data = sanitizeFields(c.req.valid('json'), CONTENT_FIELDS);
   const item = await db.news.create({
     data: {
       ...data,
@@ -64,12 +78,18 @@ newsRouter.post('/', requireAuth, zValidator('json', newsSchema), async (c) => {
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : new Date(),
     },
   });
+  // Matn ichidagi rasmlar shu yangilikka biriktiriladi.
+  await syncContentFiles(c.env, db, 'news', item.id, [
+    item.contentUz, item.contentEn, item.contentRu, item.imageUrl,
+  ]);
   return c.json({ data: item }, 201);
 });
 
 newsRouter.put('/:id', requireAuth, zValidator('json', newsSchema.partial()), async (c) => {
   const db = c.get('db');
-  const data = c.req.valid('json');
+  const data = sanitizeFields(c.req.valid('json'), CONTENT_FIELDS);
+  const before = await db.news.findUnique({ where: { id: c.req.param('id') } });
+  if (!before) return c.json({ error: 'Not found' }, 404);
   const item = await db.news.update({
     where: { id: c.req.param('id') },
     data: {
@@ -80,11 +100,20 @@ newsRouter.put('/:id', requireAuth, zValidator('json', newsSchema.partial()), as
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : undefined,
     },
   });
+  // Bosh rasm almashtirilgan bo'lsa, eskisi ombordan o'chiriladi.
+  await replaceSingleFile(c.env, db, before.imageUrl, item.imageUrl);
+  await syncContentFiles(c.env, db, 'news', item.id, [
+    item.contentUz, item.contentEn, item.contentRu, item.imageUrl,
+  ]);
   return c.json({ data: item });
 });
 
 newsRouter.delete('/:id', requireAuth, async (c) => {
   const db = c.get('db');
-  await db.news.delete({ where: { id: c.req.param('id') } });
+  const id = c.req.param('id');
+  if (!id) return c.json({ error: 'Not found' }, 404);
+  // Avval fayllar, keyin yozuv — aks holda fayllar egasiz qolib ketardi.
+  await deleteOwnerFiles(c.env, db, 'news', id);
+  await db.news.delete({ where: { id } });
   return c.json({ message: 'Deleted successfully' });
 });

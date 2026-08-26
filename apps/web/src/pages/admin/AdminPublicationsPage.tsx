@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { pubsApi } from '@/lib/api';
 import { Plus, Pencil, Trash2, X, BookOpen } from 'lucide-react';
 import clsx from 'clsx';
+import FileUploadField from '@/components/admin/FileUploadField';
+import { useToast } from '@/components/Toast';
 
 const schema = z.object({
   titleUz: z.string().min(1), titleEn: z.string().min(1), titleRu: z.string().min(1),
@@ -43,22 +45,30 @@ export default function AdminPublicationsPage() {
 
   const items: PubItem[] = data?.data?.data ?? [];
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
+  const toast = useToast();
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { category: 'article', year: new Date().getFullYear() },
   });
 
   const createMutation = useMutation({
     mutationFn: (d: FormData) => pubsApi.create(d),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-pubs-list'] }); closeForm(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-pubs-list'] }); qc.invalidateQueries({ queryKey: ['publications'] }); toast.success(t('toast.publication_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: Partial<FormData> }) => pubsApi.update(id, data),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-pubs-list'] }); closeForm(); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-pubs-list'] }); qc.invalidateQueries({ queryKey: ['publications'] }); toast.success(t('toast.publication_saved')); closeForm(); },
+    onError: (error) => toast.showError(error),
   });
   const deleteMutation = useMutation({
     mutationFn: (id: string) => pubsApi.delete(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-pubs-list'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-pubs-list'] });
+      qc.invalidateQueries({ queryKey: ['publications'] });
+      toast.success(t('toast.publication_deleted'));
+    },
+    onError: (error) => toast.showError(error),
   });
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset({ category: 'article', year: new Date().getFullYear() }); };
@@ -140,11 +150,16 @@ export default function AdminPublicationsPage() {
                     <label className="label">DOI</label>
                     <input {...register('doi')} className="input" placeholder="10.xxxx/..." />
                   </div>
-                  <div>
-                    <label className="label">Fayl URL</label>
-                    <input {...register('fileUrl')} className="input" placeholder="https://..." />
-                  </div>
                 </div>
+
+                <FileUploadField
+                  kind="document"
+                  label="Nashr fayli (PDF, DOC, XLS)"
+                  value={watch('fileUrl') ?? null}
+                  onChange={(url) => setValue('fileUrl', url ?? '', { shouldDirty: true })}
+                  ownerType="publication"
+                  ownerId={editItem?.id}
+                />
 
                 <div className="flex gap-3 pt-2">
                   <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="btn-primary">{t('admin.save')}</button>
