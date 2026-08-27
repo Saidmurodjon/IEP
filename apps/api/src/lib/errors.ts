@@ -19,6 +19,7 @@ export const ERROR_CODES = [
   'VALIDATION_ERROR',
   'NOT_FOUND',
   'UNAUTHORIZED',
+  'RATE_LIMITED',
   'SERVER_ERROR',
 ] as const;
 
@@ -35,6 +36,7 @@ const STATUS: Record<ErrorCode, ContentfulStatusCode> = {
   VALIDATION_ERROR: 400,
   NOT_FOUND: 404,
   UNAUTHORIZED: 401,
+  RATE_LIMITED: 429,
   SERVER_ERROR: 500,
 };
 

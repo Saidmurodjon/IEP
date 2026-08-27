@@ -9,7 +9,8 @@
     "contact": "Aloqa",
     "management": "Rahbariyat",
     "employees": "Xodimlar",
-    "documents": "Hujjatlar"
+    "documents": "Hujjatlar",
+    "appeal_status": "Murojaat holati"
   },
   "home": {
     "hero_title": "O'zbekiston Respublikasi Fanlar akademiyasi",
@@ -105,7 +106,8 @@
     "err_name": "Ism kamida 2 ta harf",
     "err_email": "Elektron pochta noto'g'ri",
     "err_subject": "Mavzu kiriting",
-    "err_message": "Xabar kamida 10 ta belgi"
+    "err_message": "Xabar kamida 10 ta belgi",
+    "ticket_hint": "Bu raqamni saqlab qo'ying — murojaat holatini tekshirishda kerak bo'ladi."
   },
   "footer": {
     "rights": "Barcha huquqlar himoyalangan",
@@ -142,7 +144,6 @@
     "total_news": "Jami yangiliklar",
     "total_pubs": "Jami nashrlar",
     "total_msgs": "Xabarlar",
-    "unread_msgs": "O'qilmagan",
     "employees": "Xodimlar",
     "partners": "Hamkorlar",
     "documents": "Hujjatlar",
@@ -155,7 +156,8 @@
     "empty_tab": "bo'sh",
     "unsaved_warning": "Saqlanmagan o'zgarishlar bor. Sahifadan chiqasizmi?",
     "logs": "Xatoliklar jurnali",
-    "unresolved_errors": "Hal qilinmagan xatolar"
+    "unresolved_errors": "Hal qilinmagan xatolar",
+    "unanswered_msgs": "Javobsiz murojaatlar"
   },
   "common": {
     "loading": "Yuklanmoqda...",
@@ -222,7 +224,8 @@
     "VALIDATION_ERROR": "Ma'lumotlar to'liq emas. Qizil bilan belgilangan maydonlarni to'ldiring.",
     "NOT_FOUND": "Yozuv topilmadi. Ehtimol u o'chirilgan.",
     "UNAUTHORIZED": "Sessiya muddati tugadi. Qaytadan kiring.",
-    "SERVER_ERROR": "Serverda xatolik. Agar takrorlansa, texnik xodimga murojaat qiling."
+    "SERVER_ERROR": "Serverda xatolik. Agar takrorlansa, texnik xodimga murojaat qiling.",
+    "RATE_LIMITED": "Juda ko'p so'rov yuborildi. Birozdan keyin qaytadan urinib ko'ring."
   },
   "toast": {
     "news_saved": "Yangilik saqlandi.",
@@ -309,5 +312,39 @@
     "home": "Bosh sahifaga qaytish",
     "dashboard": "Boshqaruv paneliga qaytish",
     "incident": "Hodisa raqami"
+  },
+  "appeal": {
+    "title": "Murojaat holatini tekshirish",
+    "subtitle": "Murojaatingiz ko'rib chiqilish bosqichini bilib oling",
+    "hint": "Murojaat raqami va murojaat yuborishda ko'rsatgan elektron pochta manzilingizni kiriting. Ikkalasi mos kelgandagina holat ko'rsatiladi.",
+    "ticket": "Murojaat raqami",
+    "ticket_required": "Murojaat raqamini kiriting",
+    "check": "Tekshirish",
+    "received": "Qabul qilingan",
+    "changed": "Oxirgi o'zgarish",
+    "not_found": "Bunday murojaat topilmadi. Raqam va elektron pochta manzilini tekshirib qaytadan urinib ko'ring.",
+    "too_many": "Juda ko'p so'rov yuborildi. Bir daqiqadan keyin qaytadan urinib ko'ring.",
+    "status_new": "Qabul qilindi",
+    "status_in_review": "Ko'rib chiqilmoqda",
+    "status_answered": "Ko'rib chiqildi",
+    "status_closed": "Yopildi"
+  },
+  "appeals": {
+    "unanswered": "Javobsiz murojaatlar",
+    "filter": "Holat",
+    "message": "Murojaat matni",
+    "note": "Ichki izoh",
+    "note_placeholder": "Xodimlar uchun izoh",
+    "note_hint": "Bu izoh fuqaroga ko'rinmaydi.",
+    "save_note": "Izohni saqlash",
+    "set_new": "Yangi deb belgilash",
+    "set_in_review": "Ko'rib chiqilmoqda",
+    "set_answered": "Ko'rib chiqildi + xat yuborish",
+    "set_closed": "Yopish",
+    "confirm_answered": "Fuqaroga «Murojaatingiz ko'rib chiqildi» xati yuboriladi. Davom etasizmi?",
+    "not_notified": "xat yuborilmagan",
+    "not_notified_hint": "Tasdiq xati yuborilmagan. RESEND_API_KEY sozlanmagan bo'lishi mumkin.",
+    "empty": "Murojaatlar yo'q.",
+    "empty_hint": "Fuqarolar yuborgan murojaatlar shu yerda ko'rinadi."
   }
 }

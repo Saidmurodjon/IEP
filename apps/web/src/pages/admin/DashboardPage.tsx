@@ -25,14 +25,22 @@ export default function DashboardPage() {
   const totalPubs = pubsData?.data?.total ?? 0;
   const totalMsgs = msgsData?.data?.total ?? 0;
   const recentNews = newsData?.data?.data ?? [];
-  const unreadMsgs = (msgsData?.data?.data ?? []).filter((m: { read: boolean }) => !m.read).length;
+  // Javobsiz murojaatlar — API ro'yxat bilan birga qaytaradi.
+  const unansweredMsgs: number = msgsData?.data?.unanswered ?? 0;
   const unresolvedErrors: number = logsData?.data?.unresolvedLastDay ?? 0;
 
   const stats = [
     { label: t('admin.total_news'), value: totalNews, icon: Newspaper, to: '/admin/news', color: 'text-blue-600 bg-blue-50' },
     { label: t('admin.total_pubs'), value: totalPubs, icon: BookOpen, to: '/admin/publications', color: 'text-emerald-600 bg-emerald-50' },
     { label: t('admin.total_msgs'), value: totalMsgs, icon: MessageSquare, to: '/admin/messages', color: 'text-orange-600 bg-orange-50' },
-    { label: t('admin.unread_msgs'), value: unreadMsgs, icon: TrendingUp, to: '/admin/messages', color: 'text-purple-600 bg-purple-50' },
+    {
+      label: t('admin.unanswered_msgs'),
+      value: unansweredMsgs,
+      icon: TrendingUp,
+      to: '/admin/messages',
+      color: unansweredMsgs > 0 ? 'text-purple-600 bg-purple-50' : 'text-gray-400 bg-gray-50',
+      highlight: unansweredMsgs > 0,
+    },
     {
       label: t('admin.unresolved_errors'),
       value: unresolvedErrors,

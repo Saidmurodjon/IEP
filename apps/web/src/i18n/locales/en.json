@@ -9,7 +9,8 @@
     "contact": "Contact",
     "management": "Management",
     "employees": "Staff",
-    "documents": "Documents"
+    "documents": "Documents",
+    "appeal_status": "Appeal status"
   },
   "home": {
     "hero_title": "Academy of Sciences of the Republic of Uzbekistan",
@@ -105,7 +106,8 @@
     "err_name": "Name must be at least 2 characters",
     "err_email": "Invalid email address",
     "err_subject": "Please enter a subject",
-    "err_message": "Message must be at least 10 characters"
+    "err_message": "Message must be at least 10 characters",
+    "ticket_hint": "Save this number — you will need it to check the status of your appeal."
   },
   "footer": {
     "rights": "All rights reserved",
@@ -142,7 +144,6 @@
     "total_news": "Total News",
     "total_pubs": "Total Publications",
     "total_msgs": "Messages",
-    "unread_msgs": "Unread",
     "employees": "Staff",
     "partners": "Partners",
     "documents": "Documents",
@@ -155,7 +156,8 @@
     "empty_tab": "empty",
     "unsaved_warning": "You have unsaved changes. Leave the page?",
     "logs": "Error log",
-    "unresolved_errors": "Unresolved errors"
+    "unresolved_errors": "Unresolved errors",
+    "unanswered_msgs": "Unanswered appeals"
   },
   "common": {
     "loading": "Loading...",
@@ -222,7 +224,8 @@
     "VALIDATION_ERROR": "Some data is missing. Please fill in the fields marked in red.",
     "NOT_FOUND": "Record not found. It may have been deleted.",
     "UNAUTHORIZED": "Your session has expired. Please sign in again.",
-    "SERVER_ERROR": "Server error. If it happens again, contact the technical staff."
+    "SERVER_ERROR": "Server error. If it happens again, contact the technical staff.",
+    "RATE_LIMITED": "Too many requests. Please try again shortly."
   },
   "toast": {
     "news_saved": "News item saved.",
@@ -309,5 +312,39 @@
     "home": "Back to home page",
     "dashboard": "Back to dashboard",
     "incident": "Incident ID"
+  },
+  "appeal": {
+    "title": "Check appeal status",
+    "subtitle": "Find out how your appeal is being processed",
+    "hint": "Enter the appeal number and the email address you used when submitting. The status is shown only if both match.",
+    "ticket": "Appeal number",
+    "ticket_required": "Enter the appeal number",
+    "check": "Check",
+    "received": "Received",
+    "changed": "Last change",
+    "not_found": "No such appeal was found. Check the number and email address and try again.",
+    "too_many": "Too many requests. Please try again in a minute.",
+    "status_new": "Received",
+    "status_in_review": "Under review",
+    "status_answered": "Reviewed",
+    "status_closed": "Closed"
+  },
+  "appeals": {
+    "unanswered": "Unanswered appeals",
+    "filter": "Status",
+    "message": "Appeal text",
+    "note": "Internal note",
+    "note_placeholder": "Note for staff",
+    "note_hint": "This note is not visible to the citizen.",
+    "save_note": "Save note",
+    "set_new": "Mark as new",
+    "set_in_review": "Under review",
+    "set_answered": "Reviewed + send email",
+    "set_closed": "Close",
+    "confirm_answered": "An email “Your appeal has been reviewed” will be sent to the citizen. Continue?",
+    "not_notified": "email not sent",
+    "not_notified_hint": "The confirmation email was not sent. RESEND_API_KEY may not be configured.",
+    "empty": "No appeals.",
+    "empty_hint": "Appeals submitted by citizens will appear here."
   }
 }

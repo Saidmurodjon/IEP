@@ -4,7 +4,7 @@ import axios from 'axios';
 export const ERROR_CODES = [
   'FILE_TOO_LARGE', 'UNSUPPORTED_TYPE', 'IMAGE_TOO_SMALL', 'IMAGE_TOO_LARGE',
   'EMPTY_FILE', 'STORAGE_UNAVAILABLE', 'UPLOAD_FAILED', 'VALIDATION_ERROR',
-  'NOT_FOUND', 'UNAUTHORIZED', 'SERVER_ERROR',
+  'NOT_FOUND', 'UNAUTHORIZED', 'RATE_LIMITED', 'SERVER_ERROR',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -56,6 +56,7 @@ export function toApiError(error: unknown): ApiError {
     if (status === 401) return { code: 'UNAUTHORIZED' };
     if (status === 404) return { code: 'NOT_FOUND' };
     if (status === 400 || status === 422) return { code: 'VALIDATION_ERROR' };
+    if (status === 429) return { code: 'RATE_LIMITED' };
     if (status === 503) return { code: 'STORAGE_UNAVAILABLE' };
   }
   return { code: 'SERVER_ERROR' };

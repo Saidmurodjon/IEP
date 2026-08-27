@@ -17,6 +17,8 @@ const SETTING_KEYS = [
   { key: 'phone', label: 'Telefon', group: 'contact' },
   { key: 'email', label: 'Email', group: 'contact' },
   { key: 'working_hours', label: 'Ish vaqti', group: 'contact' },
+  { key: 'appeals_email', label: 'Murojaat bildirishnomalari uchun pochta', group: 'contact' },
+  { key: 'appeals_retention_days', label: 'Yopilgan murojaatlarni saqlash muddati (kun)', group: 'contact' },
 ];
 
 export default function AdminSettingsPage() {

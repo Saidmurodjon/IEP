@@ -62,6 +62,7 @@ export default function Footer() {
                 { to: '/publications', label: t('nav.publications') },
                 { to: '/documents', label: t('nav.documents') },
                 { to: '/contact', label: t('nav.contact') },
+                { to: '/appeal-status', label: t('nav.appeal_status') },
               ].map((link) => (
                 <li key={link.to}>
                   <LocalizedLink

@@ -29,6 +29,17 @@ export interface Env {
    * (`lib/storage.ts`), sukut bo'yicha boshqa omborga o'tmaydi.
    */
   MEDIA?: R2Bucket;
+  /**
+   * Resend API kaliti. Sozlanmagan bo'lishi MUMKIN — bunday holatda xat
+   * yuborilmaydi, lekin murojaat baribir saqlanadi va jurnalga `warning`
+   * tushadi (`lib/mail.ts`).
+   */
+  RESEND_API_KEY?: string;
+  /**
+   * Jo'natuvchi manzil. ALOHIDA secret: Resend'da domen tasdiqlangandan
+   * (`iep.uz` ulangandan) keyin faqat shu qiymat o'zgartiriladi.
+   */
+  MAIL_FROM?: string;
 }
 
 export type AppContext = {

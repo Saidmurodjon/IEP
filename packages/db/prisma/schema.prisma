@@ -162,16 +162,36 @@ model SiteSetting {
   @@map("site_settings")
 }
 
+/// Fuqaro murojaati.
+///
+/// VM ning 2021-yil 15-iyundagi 373-son qarori, 11-bandi murojaatning
+/// ko'rib chiqilish holatini kuzatib borishni talab qiladi — shu sababli
+/// `ticketNumber` va `status` maydonlari bor.
+///
+/// DIQQAT: bu jadval SHAXSIY MA'LUMOT saqlaydi. Xatlarga murojaat matni va
+/// telefon raqami qo'shilmaydi, ular faqat admin panelda ko'riladi.
 model ContactMessage {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String?
-  subject   String
-  message   String   @db.Text
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  id              String    @id @default(cuid())
+  /// `M-YYYY-NNNN`. Fuqaro uni telefonda aytishi mumkin, shuning uchun
+  /// qisqa va ketma-ket.
+  ticketNumber    String    @unique
+  name            String
+  email           String
+  phone           String?
+  subject         String
+  message         String    @db.Text
+  /// `new`, `in_review`, `answered`, `closed`
+  status          String    @default("new")
+  statusChangedAt DateTime  @default(now())
+  answeredAt      DateTime?
+  /// Ichki izoh — fuqaroga KO'RINMAYDI.
+  answerNote      String?   @db.Text
+  /// Tasdiq xati yuborilgan vaqt. `null` — xat yuborilmagan
+  /// (masalan `RESEND_API_KEY` o'rnatilmagan).
+  notifiedAt      DateTime?
+  createdAt       DateTime  @default(now())
 
+  @@index([status, createdAt])
   @@map("contact_messages")
 }
 

@@ -196,6 +196,11 @@ async function main() {
     // kiritiladi; bu yerga taxminiy raqam yozilmaydi.
     { key: 'phone', value: '' },
     { key: 'working_hours', value: '' },
+    // Murojaat bildirishnomalari uchun pochta. Bo'sh bo'lsa umumiy `email`
+    // ishlatiladi. Institut alohida manzil bersa shu yerga kiritiladi.
+    { key: 'appeals_email', value: '' },
+    // TODO: aniq muddat institut YURISKONSULTIDAN aniqlashtirilishi kerak.
+    { key: 'appeals_retention_days', value: '365' },
   ];
 
   for (const setting of settings) {

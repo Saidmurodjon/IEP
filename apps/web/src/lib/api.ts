@@ -162,7 +162,12 @@ export const settingsApi = {
 // --- Contact ---
 export const contactApi = {
   send: (data: unknown) => api.post('/api/contact', data),
-  list: (page = 1) => api.get('/api/contact', { params: { page } }),
-  markRead: (id: string) => api.patch(`/api/contact/${id}/read`),
+  list: (page = 1, status?: string) =>
+    api.get('/api/contact', { params: { page, status: status || undefined } }),
+  update: (id: string, data: { status?: string; answerNote?: string }) =>
+    api.patch(`/api/contact/${id}`, data),
   delete: (id: string) => api.delete(`/api/contact/${id}`),
+  /** Holatni tekshirish — raqam VA pochta ikkalasi ham majburiy. */
+  status: (ticket: string, email: string) =>
+    api.get('/api/contact/status', { params: { ticket, email } }),
 };

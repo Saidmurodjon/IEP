@@ -20,6 +20,7 @@ const NewsDetailPage = lazy(() => import('@/pages/public/NewsDetailPage'));
 const PublicationsPage = lazy(() => import('@/pages/public/PublicationsPage'));
 const DocumentsPage = lazy(() => import('@/pages/public/DocumentsPage'));
 const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
+const AppealStatusPage = lazy(() => import('@/pages/public/AppealStatusPage'));
 const NotFoundPage = lazy(() => import('@/pages/public/NotFoundPage'));
 
 // Admin pages
@@ -144,6 +145,7 @@ export default function App() {
             <Route path="publications" element={<PublicationsPage />} />
             <Route path="documents" element={<DocumentsPage />} />
             <Route path="contact" element={<ContactPage />} />
+            <Route path="appeal-status" element={<AppealStatusPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Route>
 

@@ -16,3 +16,6 @@ bucket_name = "energetika-media"
 # DATABASE_URL
 # JWT_SECRET
 # FRONTEND_URL
+# RESEND_API_KEY  — xat yuborish uchun. Yo'q bo'lsa murojaat baribir saqlanadi.
+# MAIL_FROM       — jo'natuvchi manzil. Resend'da domen tasdiqlangach o'zgartiriladi,
+#                   masalan "Energetika instituti <murojaat@iep.uz>".

@@ -4,8 +4,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { contactApi } from '@/lib/api';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
+import LocalizedLink from '@/components/LocalizedLink';
+import { useToast } from '@/components/Toast';
 import { useSettings, telHref } from '@/hooks/useSettings';
 
 type FormData = {
@@ -14,12 +16,21 @@ type FormData = {
   phone?: string;
   subject: string;
   message: string;
+  /** Ko'rinmas maydon (honeypot) — odam uni to'ldirmaydi, robot to'ldiradi. */
+  website?: string;
 };
 
 export default function ContactPage() {
   const { t } = useTranslation();
   const [sent, setSent] = useState(false);
+  const [ticketNumber, setTicketNumber] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  /**
+   * Forma ochilgan vaqt. Uch soniyadan tez yuborilgan murojaat — robot
+   * (09-topshiriq, 5-bo'lim). Serverda tekshiriladi.
+   */
+  const openedAt = useRef(Date.now());
   // Aloqa ma'lumotlari `/api/settings` dan keladi — qattiq yozilgan qiymat yo'q.
   const { value, localized } = useSettings();
   const address = localized('address');
@@ -36,6 +47,7 @@ export default function ContactPage() {
         phone: z.string().optional(),
         subject: z.string().min(2, t('contact.err_subject')),
         message: z.string().min(10, t('contact.err_message')),
+        website: z.string().optional(),
       }),
     [t]
   );
@@ -47,11 +59,12 @@ export default function ContactPage() {
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      await contactApi.send(data);
+      const response = await contactApi.send({ ...data, formOpenedAt: openedAt.current });
+      setTicketNumber(response.data?.data?.ticketNumber ?? null);
       setSent(true);
       reset();
-    } catch {
-      alert(t('common.error'));
+    } catch (error) {
+      toast.showError(error);
     } finally {
       setLoading(false);
     }
@@ -133,13 +146,51 @@ export default function ContactPage() {
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <CheckCircle className="h-16 w-16 text-emerald-500 mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('contact.success')}</h3>
-                <p className="text-gray-500 mb-6">{t('contact.reply_soon')}</p>
-                <button onClick={() => setSent(false)} className="btn-secondary">
+                <p className="text-gray-500 mb-4">{t('contact.reply_soon')}</p>
+
+                {/* Murojaat raqami — fuqaro uni holatni tekshirishda ishlatadi */}
+                {ticketNumber && (
+                  <div className="mb-6 rounded-xl border border-primary-200 bg-primary-50 px-5 py-4">
+                    <div className="text-xs text-primary-700 uppercase tracking-wide font-medium">
+                      {t('appeal.ticket')}
+                    </div>
+                    <div className="text-2xl font-bold text-primary-900 font-mono mt-1">{ticketNumber}</div>
+                    <p className="text-xs text-primary-700 mt-2 max-w-xs">{t('contact.ticket_hint')}</p>
+                    <LocalizedLink
+                      to="/appeal-status"
+                      className="inline-block mt-3 text-sm font-medium text-primary-700 hover:underline"
+                    >
+                      {t('appeal.check')} →
+                    </LocalizedLink>
+                  </div>
+                )}
+
+                <button
+                  onClick={() => { setSent(false); setTicketNumber(null); openedAt.current = Date.now(); }}
+                  className="btn-secondary"
+                >
                   {t('contact.send_another')}
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                {/*
+                  Ko'rinmas maydon. Odam uni ko'rmaydi va to'ldirmaydi, robot esa
+                  barcha maydonlarni to'ldiradi. To'ldirilgan bo'lsa murojaat
+                  serverda jimgina rad etiladi.
+                  `hidden` emas, ekrandan tashqariga chiqarilgan: ba'zi robotlar
+                  `hidden` maydonlarni o'tkazib yuboradi.
+                */}
+                <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
+                  <label htmlFor="website">Veb-sayt</label>
+                  <input
+                    id="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    {...register('website')}
+                  />
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="label">{t('contact.name')} *</label>

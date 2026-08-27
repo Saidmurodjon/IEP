@@ -47,7 +47,8 @@ Faqat Web Crypto API (`crypto.subtle`) va Workers qo'llab-quvvatlaydigan kutubxo
 apps/
   web/          React + Vite frontend
     src/pages/public/   Ochiq sahifalar (Home, About, Management, Structure, Labs, LabDetail,
-                        Employees, News, Publications, Documents, Contact, NotFound)
+                        Employees, News, Publications, Documents, Contact, AppealStatus,
+                        NotFound)
     src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Employees,
                         Partners, Documents, Settings, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
@@ -56,7 +57,7 @@ apps/
     src/routes/         auth, news, publications, structure, settings, contact, employees,
                         partners, documents, uploads, files
     src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media,
-                        redact, error-log
+                        redact, error-log, mail, mail-templates
     src/lib/__tests__/  vitest birlik sinovlari (`npm test --workspace=apps/api`)
     src/middleware/     requireAuth
     src/lib/            db, jwt
@@ -79,7 +80,7 @@ packages/
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
    `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`,
-   `POST /api/logs/client`.
+   `GET /api/contact/status`, `POST /api/logs/client`.
    **`POST /api/logs/client` nega ochiq:** JavaScript xatosi tizimga kirmagan foydalanuvchida
    ham yuz beradi, shuning uchun uni `requireAuth` bilan yopib bo'lmaydi. Buning evaziga
    cheklovlar qattiq: IP bo'yicha daqiqasiga 10 ta, matn uzunligi cheklangan, `zValidator`.
@@ -142,7 +143,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 3 | ~~Parol hashlash — salt'siz SHA-256~~ — PBKDF2, 210 000 iteratsiya, 16-baytli tasodifiy salt, timing-safe taqqoslash | ✅ Tuzatildi |
 | 4 | ~~`/api/auth/login` da rate limit yo'q~~ — IP+email uchun 15 daqiqada 5 urinish, 6-chisi 429 (TODO: KV/Durable Object) | ✅ Tuzatildi |
 | 5 | ~~Fayl yuklash yo'q~~ — R2 binding (`MEDIA`), `POST /api/uploads` magic bayt tekshiruvi bilan, `MediaFile` jadvali, avtomatik tozalash, tiptap tahrirlagich. Production'da bucket yaratilishi kerak | ✅ Tuzatildi |
-| 6 | Kontakt formasi email yubormaydi, faqat bazaga yozadi | 🟠 Ochiq |
+| 6 | ~~Kontakt formasi email yubormaydi~~ — Resend orqali fuqaroga tasdiq, institutga bildirishnoma va holat o'zgarganda xabar. Murojaat raqami `M-YYYY-NNNN`, holat kuzatuvi, spam himoyasi. `RESEND_API_KEY` va `MAIL_FROM` production'da o'rnatilishi kerak | ✅ Tuzatildi |
 | 7 | SSR/prerender va sitemap yo'q — SEO nolga teng | 🟠 Ochiq |
 | 8 | ~~Bazada faqat demo ma'lumot~~ — tuzilma rasmiy 2025 hujjatiga ko'chirildi (kod tayyor, lokal test bazada tasdiqlangan). Production seed foydalanuvchi tasdig'ini kutmoqda; demo nashrlar hali qolgan | 🟠 Qisman |
 | 9 | ~~Cloudflare Pages GitHub'ga ulanmagan~~ — GitHub Actions workflow yozildi (`.github/workflows/deploy.yml`), sozlash: `docs/deploy.md`. Secret'lar + baseline foydalanuvchi tomonidan kutilmoqda | 🟠 Qisman |
@@ -199,112 +200,51 @@ Ishni tugadi deb hisoblashdan oldin:
 
 ## 8a. Samarali ishlash
 
-Kontekst cheklangan resurs. Uni tejab ishlatgan sessiya uzoqroq ishlaydi va
-kamroq xato qiladi. Quyidagilar majburiy.
+Kontekst va token cheklangan resurs.
 
-### 8a.1 O'qishda
+**O'qishda.** Butun faylni o'qimang, avval `grep` bilan kerakli joyni toping.
+Bir marta o'qigan faylni qayta o'qimang. `git log`, `ls`, `build` chiqishlarini
+`head` yoki `tail` bilan cheklang. Topshiriq faylini bir marta o'qing.
 
-**Butun faylni o'qimang.** Avval `grep` bilan kerakli joyni toping, keyin
-faqat o'sha qismni o'qing. `apps/web/src/pages` dagi fayllar yuzlab qatordan
-iborat, ularning to'liq mazmuni deyarli hech qachon kerak emas.
+**Tekshirishda.** Skrinshot qimmat. Uni faqat dizayn o'zgarganda oling.
+Mantiqni tekshirish uchun DOM so'rovi yoki HTTP javobi yetarli.
 
-**Bir marta o'qigan faylni qayta o'qimang.** Tahrirlagandan keyin natijani
-tekshirish uchun qayta o'qish shart emas, chunki tahrir muvaffaqiyatsiz
-bo'lsa xato qaytadi.
+**Yozishda.** Butun faylni qayta yozmang, faqat o'zgargan qismni almashtiring.
+Bir vaqtda bitta masala. Yo'l-yo'lakay topilgan boshqa kamchilikni darhol
+tuzatmang, jurnalga yozing. Takroriy kod yozmang.
 
-**Katta chiqishlarni cheklang.** `git log`, `ls`, `npm run build` natijalarini
-`head` yoki `tail` bilan qisqartiring.
+**Javob berishda.** Ikki uch jumla. Kod nusxasini javobga ko'chirmang.
 
-**Topshiriq faylini bir marta o'qing** va undan ish rejasini tuzing. Har bir
-qadamda qayta ochmang.
+**To'xtash.** Uch marta urinib xato tuzatilmasa to'xtang va so'rang.
+Topshiriqda yo'q katta o'zgarish kerak bo'lsa, avval taklif qiling.
 
-### 8a.2 Yozishda
-
-**Kichik va aniq tahrirlar qiling.** Butun faylni qayta yozish o'rniga faqat
-o'zgargan qismni almashtiring.
-
-**Bir vaqtda bitta masalani hal qiling.** Yo'l-yo'lakay ko'zga tashlangan
-boshqa kamchilikni darhol tuzatmang, uni jurnalga yozib qo'ying.
-
-**Takroriy kod yozmang.** Bir xil mantiq ikkinchi marta kerak bo'lsa, uni
-umumiy funksiyaga chiqaring. Uchinchi marta yozilayotgan bo'lsa, bu xato.
-
-### 8a.3 Javob berishda
-
-**Uzun tushuntirish yozmang.** Nima qilganingizni ikki uch jumlada ayting.
-Kod nusxasini javobga ko'chirmang, fayl nomi va qator raqami yetarli.
-
-**Bajarilgan ishni qayta sanab bermang.** Foydalanuvchi jarayonni kuzatib
-turadi.
-
-### 8a.4 Qachon to'xtash kerak
-
-Uch marta urinib xato tuzatilmasa, davom etmang. To'xtang, nima
-sinaganingizni va nima natija berganini yozing, foydalanuvchidan so'rang.
-
-Topshiriqda yozilmagan katta o'zgarish kerak bo'lib qolsa, o'z bilganingizcha
-boshlamang. Avval taklif qiling.
-
-### 8a.5 Kod sifati
-
-Tezlik sifat hisobiga bo'lmasin. Quyidagilar hech qanday holatda
-o'tkazib yuborilmaydi.
-
-Kiruvchi ma'lumot tekshiruvi. Xato holatlarini qayta ishlash.
-`tsc` va `build` toza bo'lishi. Topshiriqdagi qabul mezonlarini haqiqatan
-bajarib ko'rish.
-
-Vaqt yetmasa, ishning **hajmini** qisqartiring, sifatini emas. Yarim
-bajarilgan lekin to'g'ri ishlaydigan qism, to'liq lekin tekshirilmagan
-ishdan yaxshiroq.
+**Chegara.** Tezlik sifat hisobiga bo'lmasin. Kiruvchi ma'lumot tekshiruvi,
+xato holatlari, `tsc` va `build` tozaligi, qabul mezonlarini haqiqatan bajarish —
+bular hech qachon o'tkazib yuborilmaydi. Vaqt yetmasa hajmni qisqartiring.
 
 ---
 
 ## 9. Ish jurnali — `docs/JOURNAL.md`
 
-Kontekst siqilganda (compaction) yoki yangi sessiya boshlanganda, sizdan oldin nima qilinganini
-**faqat shu fayl biladi**. Git tarixi "nima o'zgardi" ni ko'rsatadi, jurnal esa "nega, nima
-tekshirildi, nima qolib ketdi" ni saqlaydi.
+Sessiyalar orasidagi yagona xotira. Git "nima o'zgardi" ni, jurnal "nega va
+nima tekshirildi" ni saqlaydi.
 
-### 9.1 Ish boshlashda — majburiy
+**Boshlashda.** `docs/JOURNAL.md` ni o'qing, avval "HOZIRGI HOLAT" ni.
+"Kim nima ustida ishlayapti" jadvaliga qarang, boshqa sessiya siz tegmoqchi
+bo'lgan fayllarda ishlayotgan bo'lsa boshlamang. O'zingizni jadvalga qo'shing.
+`git status` va `git log --oneline -5` bilan jurnal haqiqatga mos ekanini
+tekshiring, mos kelmasa foydalanuvchidan so'rang.
 
-1. `docs/JOURNAL.md` ni o'qing. Avval **"HOZIRGI HOLAT"** blokini — u eng muhim qismi.
-2. **"HOZIRDA KIM NIMA USTIDA ISHLAYAPTI"** jadvaliga qarang. Agar boshqa sessiya siz
-   tegmoqchi bo'lgan fayllar ustida ishlayotgan bo'lsa — **boshlamang**, foydalanuvchidan so'rang.
-3. O'zingizni o'sha jadvalga qo'shing: sessiya nomi, topshiriq, tegilayotgan fayllar, sana.
-4. `git status` va `git log --oneline -5` bilan jurnal haqiqatga mos ekanini tekshiring.
-   Mos kelmasa — foydalanuvchini ogohlantiring, o'zingiz taxmin qilib tuzatmang.
+**Tugatganda.** Kommitdan keyin "HOZIRGI HOLAT" ni to'liq yangilang.
+"YOZUVLAR" tepasiga yangi yozuv qo'shing: sana, kommit, nima qilindi,
+**nima tekshirildi va qanday**, **nima tekshirilmadi**, qabul qilingan
+qarorlar va sabablari. O'zingizni jadvaldan o'chiring.
 
-### 9.2 Ish tugaganda — majburiy
+**Qoidalar.** "HOZIRGI HOLAT" doim joriy bo'lsin. Yozuv 25 qatordan oshmasin.
+Yozuvlar tahrirlanmaydi va o'chirilmaydi, faqat yangisi qo'shiladi.
+Jurnal 250 qatordan oshsa, eng eskisidan boshlab
+`docs/journal-archive/YYYY-MM.md` ga ko'chiring. Tekshirilmagan narsani
+"tayyor" deb yozmang. Jurnal ishning o'zi bilan birga kommit qilinsin.
 
-Kommit qilgandan **keyin**, quyidagilarni bajaring:
-
-1. **"HOZIRGI HOLAT"** blokini yangilang — eskisini o'chirib, o'rniga joriy holatni yozing:
-   HEAD, push qilinganmi, nima ishlaydi, nima ishlamaydi, keyingi qadam, ochiq savollar.
-2. **"YOZUVLAR"** bo'limining **eng tepasiga** yangi yozuv qo'shing:
-   - Sana, kim (Claude Code / PM sessiyasi), kommit hash'lari.
-   - Nima qilindi — qisqa, fayl nomlari bilan.
-   - **Nima tekshirildi va qanday** — "tsc toza", "haqiqiy HTTP so'rov bilan 200 olindi".
-   - **Nima tekshirilmadi** — buni yashirmang.
-   - Spetsifikatsiyada yo'q, lekin yo'l-yo'lakay topilgan narsalar.
-   - Qabul qilingan qarorlar va **sababi** (masalan: "bcryptjs emas, PBKDF2 — Workers'da sekin").
-3. O'zingizni **"KIM NIMA USTIDA ISHLAYAPTI"** jadvalidan o'chiring.
-
-### 9.3 Jurnal qoidalari
-
-- **"HOZIRGI HOLAT" doim joriy bo'lsin** — u tarix emas, snapshot. Eskirgan ma'lumot
-  jurnalni foydasiz qiladi.
-- **Yozuvlar qisqa bo'lsin.** Har biri 20–30 qatordan oshmasin. Kod nusxasini yozmang —
-  fayl nomi va kommit hash'i yetarli.
-- **Yozuvlar hech qachon tahrirlanmaydi va o'chirilmaydi** — faqat yangisi qo'shiladi.
-  Xato qilgan bo'lsangiz, keyingi yozuvda tuzating.
-- Jurnal 400 qatordan oshsa, eng eski yozuvlarni `docs/journal-archive/YYYY-MM.md` ga
-  ko'chiring va jurnalda faqat havola qoldiring.
-- **Tekshirilmagan narsani "tayyor" deb yozmang.** Bu 7-bo'lim qoidasining davomi.
-- Jurnal kommitga kirsin — alohida `docs:` kommit qilmang, ishning o'zi bilan birga ketsin.
-
-### 9.4 Bir vaqtda bir nechta sessiya ishlaganda
-
-- Bitta faylni ikki sessiya bir vaqtda tahrirlamasin — jadval shuning uchun.
-- Boshqa sessiya kommit qilgan bo'lsa, ishni davom ettirishdan oldin `git log` ni qayta o'qing.
-- Konflikt chiqsa — o'zingiz hal qilmang, foydalanuvchidan so'rang.
+**Parallel sessiyalar.** Bitta faylni ikki sessiya bir vaqtda tahrirlamasin.
+Konflikt chiqsa o'zingiz hal qilmang, so'rang.
