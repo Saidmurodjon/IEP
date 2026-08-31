@@ -10,6 +10,48 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 });
 
+/**
+ * `/api/files/<key>` uchun TO'LIQ manzil quradi.
+ *
+ * `POST /api/uploads` javobi nisbiy manzil qaytaradi (`/api/files/<key>`).
+ * Nisbiy manzil lokalda Vite proksisi orqali ishlaydi (`vite.config.ts`),
+ * lekin production'da frontend (Cloudflare Pages) va API (Workers) BOSHQA
+ * domenda turadi — nisbiy so'rov Pages domenining o'ziga tushadi va
+ * `_redirects` dagi SPA qoidasi (`/* /index.html 200`) uni ushlab, fayl
+ * o'rniga sahifaning o'zini qaytaradi.
+ *
+ * Qabul qilinadigan shakllar — bazada uch xili ham uchrashi mumkin:
+ *  - yalang'och kalit (masalan `Document.fileKey`):  `abc123.pdf`
+ *  - eski nisbiy manzil (bu tuzatishdan oldin yozilgan):
+ *    `/api/files/abc123.pdf`
+ *  - to'liq manzil (shu funksiya avval ishlagan bo'lsa):
+ *    `https://.../api/files/abc123.pdf` — o'zgarishsiz qaytadi
+ *
+ * `VITE_API_URL` bo'sh bo'lsa (lokal, same-origin/Vite proksi) natija ham
+ * nisbiy qoladi — bu holatda nisbiy manzilning o'zi to'g'ri ishlaydi.
+ */
+export function fileUrl(value: string | null | undefined): string {
+  if (!value) return '';
+  if (/^https?:\/\//i.test(value)) return value;
+  const path = value.startsWith('/api/files/') ? value : `/api/files/${value}`;
+  return `${API_URL}${path}`;
+}
+
+/**
+ * Berilgan manzil bizning API omborimizdagi (`/api/files/`) fayldanmi?
+ *
+ * Server saqlashdan oldin tozalagan HTML (`sanitizeHtml`) ichidagi `<img>`
+ * manzillarini tekshirish uchun (`apps/web/src/lib/sanitize.ts`) — tashqi
+ * manba ham, boshqa domendagi taqlid ham qabul qilinmasin.
+ *
+ * Ikkala shaklga ham ruxsat: eski nisbiy (`fileUrl()` izohiga qarang — buni
+ * tahrirlagich hali ham shu ko'rinishda yozadi) va yangi to'liq manzil.
+ */
+export function isOwnFileUrl(src: string): boolean {
+  if (src.startsWith('/api/files/')) return true;
+  return API_URL.length > 0 && src.startsWith(`${API_URL}/api/files/`);
+}
+
 // Attach JWT token if present
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('admin_token');

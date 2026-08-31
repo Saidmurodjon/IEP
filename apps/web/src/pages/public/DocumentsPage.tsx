@@ -5,7 +5,7 @@ import type { Lang } from '@energetika/shared';
 import SeoHead from '@/components/SeoHead';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import EmptyState from '@/components/EmptyState';
-import { documentsApi } from '@/lib/api';
+import { documentsApi, fileUrl } from '@/lib/api';
 import { localized } from '@/lib/employee';
 import { formatDate } from '@/lib/date';
 
@@ -71,7 +71,7 @@ export default function DocumentsPage() {
                   </div>
                 </div>
                 <a
-                  href={`/api/files/${item.fileKey}`}
+                  href={fileUrl(item.fileKey)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-secondary gap-2 flex-shrink-0 text-sm px-3 py-2"

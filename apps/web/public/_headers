@@ -6,6 +6,11 @@
 # `Content-Security-Policy-Report-Only` ni `Content-Security-Policy` ga
 # almashtiring. Xato sozlangan CSP butun saytni ishlatmay qo'yishi mumkin —
 # shoshilmang.
+#
+# API/fayl manzili — HOZIRCHA https://energetika-api.saidmurodjon1020.workers.dev
+# (`CLAUDE.md`, 1-bo'lim). Bu manzil pastdagi CSP qatorida `img-src` va
+# `connect-src` ikkalasida ham TAKRORLANADI (statik `_headers` faylida
+# o'zgaruvchi bo'lmaydi) — `iep.uz` ulanganda ikkalasini ham birga yangilang.
 
 /*
   Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -13,4 +18,4 @@
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://energetika-api.saidmurodjon1020.workers.dev; object-src 'none'; base-uri 'self'; frame-ancestors 'none'
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://energetika-api.saidmurodjon1020.workers.dev; connect-src 'self' https://energetika-api.saidmurodjon1020.workers.dev; form-action 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'

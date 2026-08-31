@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
-import { pubsApi } from '@/lib/api';
+import { pubsApi, fileUrl } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { BookOpen, Download, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
@@ -105,7 +105,7 @@ export default function PublicationsPage() {
                   )}
                   {pub.fileUrl && (
                     <a
-                      href={pub.fileUrl as string}
+                      href={fileUrl(pub.fileUrl as string)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="p-2 text-gray-500 hover:text-primary-700 transition-colors"

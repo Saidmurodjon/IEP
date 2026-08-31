@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+import { isOwnFileUrl } from '@/lib/api';
 
 /**
  * Brauzer tomonidagi HTML tozalash.
@@ -18,11 +19,16 @@ const ALLOWED_TAGS = [
 
 const ALLOWED_ATTR = ['href', 'title', 'target', 'rel', 'src', 'alt', 'width', 'height', 'start'];
 
-/** Rasm faqat o'z omborimizdan — tashqi manba ham, `data:` ham emas. */
+/**
+ * Rasm faqat o'z API omborimizdagi `/api/files/` dan — tashqi manba ham,
+ * `data:` ham emas. `isOwnFileUrl()` (`lib/api.ts`) eski nisbiy shaklni
+ * (tahrirlagich hali ham shuni yozadi) va yangi to'liq manzilni ikkalasini
+ * ham qabul qiladi — qat'iylik faqat DOMEN bo'yicha, shakl bo'yicha emas.
+ */
 function pruneDisallowedSources(root: Document | DocumentFragment | HTMLElement) {
   root.querySelectorAll('img').forEach((img) => {
     const src = img.getAttribute('src') ?? '';
-    if (!src.startsWith('/api/files/')) img.remove();
+    if (!isOwnFileUrl(src)) img.remove();
   });
   root.querySelectorAll('a').forEach((anchor) => {
     const href = anchor.getAttribute('href')?.trim().toLowerCase() ?? '';

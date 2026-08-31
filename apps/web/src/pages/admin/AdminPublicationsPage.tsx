@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { pubsApi } from '@/lib/api';
+import { pubsApi, fileUrl } from '@/lib/api';
 import { Plus, Pencil, Trash2, X, BookOpen } from 'lucide-react';
 import clsx from 'clsx';
 import FileUploadField from '@/components/admin/FileUploadField';
@@ -167,11 +167,17 @@ export default function AdminPublicationsPage() {
                   </div>
                 </div>
 
+                {/*
+                  Server `fileUrl` ni TO'LIQ manzil deb talab qiladi
+                  (`z.string().url()`), yuklash javobi esa nisbiy manzil
+                  qaytaradi (`/api/files/<key>`) — shuning uchun saqlashdan
+                  oldin `fileUrl()` orqali to'liqlantiriladi (`lib/api.ts`).
+                */}
                 <FileUploadField
                   kind="document"
                   label="Nashr fayli (PDF, DOC, XLS)"
-                  value={watch('fileUrl') ?? null}
-                  onChange={(url) => setValue('fileUrl', url ?? '', { shouldDirty: true })}
+                  value={watch('fileUrl') ? fileUrl(watch('fileUrl')) : null}
+                  onChange={(url) => setValue('fileUrl', url ? fileUrl(url) : '', { shouldDirty: true })}
                   ownerType="publication"
                   ownerId={editItem?.id}
                 />

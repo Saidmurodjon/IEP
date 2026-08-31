@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Pencil, Trash2, X, Eye, EyeOff } from 'lucide-react';
 import clsx from 'clsx';
-import { documentsApi } from '@/lib/api';
+import { documentsApi, fileUrl } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import FileUploadField from '@/components/admin/FileUploadField';
 import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTabs';
@@ -32,9 +32,23 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 type DocumentItem = FormData & { id: string; isActive: boolean; order: number };
 
-/** `/api/files/<key>` ↔ `<key>` — bazada kalit, yuklashda to'liq manzil. */
-const toUrl = (key?: string | null) => (key ? `/api/files/${key}` : null);
-const toKey = (url: string | null) => (url ? url.replace('/api/files/', '') : '');
+/**
+ * `fileKey` ↔ ko'rinadigan manzil. Bazada YALANG'OCH kalit saqlanadi
+ * (`Document.fileKey`), `FileUploadField` esa ko'rsatish/yuklash uchun
+ * TO'LIQ manzil kutadi (`fileUrl()` — `lib/api.ts`, production'da API boshqa
+ * domenda turadi).
+ *
+ * `toKey` eski nisbiy manzilni ham (`/api/files/<key>`, bu tuzatishdan oldin
+ * yozilgan bo'lishi mumkin) to'g'ri o'qiydi — prefiksdan keyingi qismini,
+ * qolgan manzildan qat'i nazar, kalit deb oladi.
+ */
+const toUrl = (key?: string | null) => (key ? fileUrl(key) : null);
+const toKey = (url: string | null) => {
+  if (!url) return '';
+  const marker = '/api/files/';
+  const index = url.indexOf(marker);
+  return index === -1 ? url : url.slice(index + marker.length);
+};
 
 export default function AdminDocumentsPage() {
   const { t } = useTranslation();
