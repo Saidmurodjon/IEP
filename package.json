@@ -13,6 +13,8 @@
     "db:migrate": "npm run migrate --workspace=packages/db",
     "db:seed": "npm run seed --workspace=packages/db",
     "db:demo": "npm run demo --workspace=packages/db",
+    "db:test": "npm run test-content --workspace=packages/db",
+    "db:test:clean": "npm run test-content:clean --workspace=packages/db",
     "demo:build": "npm run build --workspace=apps/web",
     "demo": "npm run demo:build && concurrently -n api,web -c blue,green \"npm run dev:workers --workspace=apps/api\" \"npm run preview --workspace=apps/web\""
   },

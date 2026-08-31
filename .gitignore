@@ -18,5 +18,9 @@ apps/web/vite.config.d.ts
 
 # Maxfiy — ochiq repoga tushmasin
 *.docx
+
+# 14-topshiriq: test ma'lumotlari uchun yuklangan fayl manzillari keshi
+# (faqat lokal baza uchun, `packages/db/src/test-content.ts`).
+packages/db/.test-media.json
 ~$*
 docs/reference/

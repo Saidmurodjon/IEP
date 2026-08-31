@@ -21,6 +21,22 @@ tuzatishi (pastga qarang) HALI PUSH QILINMAGAN.**
 (2026-08-31) — lokal `wrangler dev` va testlar endi HAQIQIY production ma'lumotiga
 o'qiydi/yozadi. Migratsiya/seed ehtiyotkorlik bilan bajarilsin.
 
+**⏸️ PRODUCTION MIGRATSIYASI TO'XTATILGAN (yarim yo'lda, foydalanuvchi so'rovi bilan).**
+Production Neon sxemasi faqat `0_init` darajasida ekani aniqlandi (`_prisma_migrations`da
+bitta yozuv, boshqa nom bilan: `20260423052242_init`). Bajarildi: `prisma migrate resolve
+--applied 0_init` — bazaviy nuqta to'g'ri belgilandi (SQL qayta ishga tushirilmadi, faqat
+`_prisma_migrations`ga yozuv qo'shildi — bu XAVFSIZ va allaqachon production'da amalga
+oshgan). **BAJARILMAGAN:** `prisma migrate deploy` (1–7 migratsiyalarni qo'llash) — Claude
+Code'ning auto-mode klassifikatori production DB ustidagi sxema o'zgarishini bloklaydi,
+buni faqat foydalanuvchi o'zi (`!` prefiksi bilan) yoki Bash ruxsat qoidasi qo'shilgandan
+keyin bajarish mumkin. Barcha 7 migratsiya xavfsizlik uchun oldindan tekshirilgan (faqat
+`ADD COLUMN`/`CREATE TABLE`, 6-migratsiya `read` ustunini backfill'dan keyin o'chiradi —
+ma'lumot yo'qolmaydi). Buyruq va Neon URL foydalanuvchiga alohida xabarda berilgan.
+**14-topshiriq (test ma'lumotlari, LOKAL bazada) endi BAJARILDI** — batafsil pastdagi
+14-yozuvda. Shu ish uchun `apps/api/.dev.vars` vaqtincha LOKAL bazaga qaytarilgan edi
+(yuqoridagi production-ogohlantirish shu sababli hozircha amal qilmaydi — foydalanuvchi
+production'ga qaytishni xohlasa, qayta almashtirish kerak).
+
 ### Nima ishlaydi
 - **09, 10A va 10B PM tomonidan QABUL QILINDI.**
 - **10C — xavfsizlik sarlavhalari tayyor.** Frontend: `apps/web/public/_headers`
@@ -56,10 +72,8 @@ o'qiydi/yozadi. Migratsiya/seed ehtiyotkorlik bilan bajarilsin.
   production Neon'da ham yangilandi).
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **13-navbar TUGALLANMAGAN, lekin commit qilingan** (foydalanuvchi so'rovi bilan — desktop qismi
-  sinovdan o'tgan, xavfsiz to'xtash nuqtasi). Desktop mega-menyudagi flicker xatosi HAL QILINDI
-  (batafsil: pastdagi 13-yozuv). Qolgan: mobil akkordeon menyu (Bosqich C, hali yozilmagan —
-  vaqtincha tekis ro'yxat) va `routes.ts`ni `navigation.ts`dan generatsiya qilish (Bosqich D qoldig'i).
+- **13-navbar TO'LIQ BAJARILDI — commit qilinmagan, ishchi nusxada.** Bosqich A/B/C/D barchasi
+  tayyor va sinovdan o'tgan (batafsil: pastdagi 13-yozuv). PM tekshiruvini kutmoqda.
 - **CSP hali Report-Only** — production'da bir necha kun kuzatilib, keyin haqiqiy
   rejimga (`Content-Security-Policy`) o'tkazilishi kerak.
 - **Admin panelda YANGI axe-core topilmalari bor** (10C tekshiruvida aniqlandi,
@@ -81,12 +95,22 @@ o'qiydi/yozadi. Migratsiya/seed ehtiyotkorlik bilan bajarilsin.
 - Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda.
 
 ### Keyingi qadam
-1. 10C ni PM tekshirsin — bu 10-topshiriqning oxirgi qismi.
-2. Production'ga chiqishdan oldin: CSP'ni bir necha kun Report-Only rejimida
-   kuzatish, keyin haqiqiy rejimga o'tkazish; R2 bucket; migratsiyalar 2–7;
-   Resend secret'lari; `.env` (root) production Neon'ga qarayotgani hali
-   tuzatilmagan (faqat `apps/api/.dev.vars` tuzatilgan edi — 10A yozuviga qarang).
-3. Yangi topshiriq taklifi: admin panel accessibility (yuqoridagi axe topilmalari).
+1. **14-topshiriq TAYYOR (lokal baza, TO'LIQ hajm)** — batafsil yuqoridagi 14-yozuvda.
+   Foydalanuvchi o'z `npm run dev`ida `npm run db:test` ishga tushirsin (lokal baza
+   hozir bo'sh — sabab yuqoridagi yozuvda).
+2. Production migratsiyasini yakunlash (`prisma migrate deploy`, 1–7) — foydalanuvchi
+   ruxsati bilan to'xtatilgan, yuqoriga qarang.
+3. 10C va 13-navbar'ni PM tekshirsin.
+4. Yangi topshiriq takliflari (14-yozuvda aniqlangan): (a) `apps/api/src/lib/*.ts`da
+   Prisma `updateMany`/`upsert` ishlatilgan joylar `PrismaNeonHTTP` bilan mos
+   kelishini tekshirish (HTTP rejimida ikkalasi ham "Transactions are not supported"
+   bilan yiqiladi); (b) `AdminNewsPage`da `imageUrl` uchun `fileUrl()` o'ramini
+   qo'shish (`AdminPublicationsPage`dagi kabi) — `.url()` validatsiyasi nisbiy
+   manzilni rad etadi; (c) admin panel accessibility (yuqoridagi axe topilmalari).
+5. Production'ga chiqishdan oldin: CSP'ni bir necha kun Report-Only rejimida
+   kuzatish, keyin haqiqiy rejimga o'tkazish; R2 bucket; Resend secret'lari;
+   `wrangler deploy` va Cloudflare Pages qayta deploy (hozirgi live sayt ESKI
+   kodni ishlatadi — `/api/employees` 404 qaytaradi).
 
 ### Ochiq savollar
 - Yopilgan murojaatlarni qancha muddat saqlash kerak? **Yuriskonsult javobi kutilmoqda.**
@@ -112,7 +136,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 10A | Sayt bo'ylab qidiruv | ✅ **Qabul qilindi** |
 | 10B | Imkoniyati cheklanganlar uchun qulayliklar | ✅ **Qabul qilindi** |
 | 10C | Xavfsizlik sarlavhalari va CSP | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 13 | Ikki darajali mega-menyu | 🟠 Qisman — desktop tayyor va sinovdan o'tgan, mobil akkordeon va routes.ts qoldi |
+| 13 | Ikki darajali mega-menyu | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 14 | Test ma'lumotlari (lokal baza) | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
 
@@ -135,6 +160,128 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-31 · 14 — Test ma'lumotlari (lokal baza, TO'LIQ hajm)
+
+**Kim:** Claude Code (Opus 5) · **Kommit yo'q** — hali commit qilinmagan.
+
+**Nima qilindi.** `packages/db/src/test-content.ts` (generatsiya) va
+`src/test-content-clean.ts` (tozalash) yozildi — `npm run db:test` /
+`db:test:clean`. Ikkalasi ham FAQAT lokal bazada ishlaydi: `DATABASE_URL`
+`localhost`/`127.0.0.1`/`iep-pg`/`iep-neon-proxy` bo'lmasa va
+`ALLOW_REMOTE_TEST_CONTENT=yes` berilmasa xato tashlaydi — test ma'lumoti
+production Neon'ga hech qachon tushmaydi. Hajm topshiriqda ko'rsatilgandek
+TO'LIQ bajarildi (8 ta emas): **29 xodim** (12 rasmli/17 rasmsiz, boshqaruv +
+laboratoriya + ma'muriy bo'linmalar bo'yicha taqsimlangan), **8 hamkor**
+(SVG logotiplar), **12 yangilik** (10 e'lon qilingan + 2 qoralama, sahifalash
+tekshiruvi uchun yetarli), **15 nashr** (kategoriyalar aralash), **10 hujjat**
+(qo'lda yasalgan minimal PDF), **5 murojaat** (5 xil holat — yangi/jarayonda/
+javob berilgan/yopilgan/rad etilgan), **3 xatolik yozuvi**. Rus/ingliz/o'zbek
+uch tilda lorem matn (kirill uchun alohida), qidiruv indeksi oxirida qayta
+hisoblanadi.
+
+**Aniqlangan haqiqiy nuqson (Prisma + `PrismaNeonHTTP`).** `updateMany()` VA
+`upsert()`ning CREATE tarmog'i (agar yozuv topilmasa) "Transactions are not
+supported in HTTP mode" bilan yiqiladi — bu HTTP rejimidagi Neon drayverining
+hujjatlanmagan cheklovi (`lib/db.ts` ham shu drayverdan foydalanadi, demak
+production kodda ham potentsial xavf bor joylarda `updateMany`/`upsert`
+ishlatilsa). Alohida diagnostika bilan aniq chegara chizildi: `update()`,
+`delete()`, `deleteMany()`, `upsert()`ning UPDATE tarmog'i — ishlaydi;
+`updateMany()` va `upsert()`ning CREATE tarmog'i — ishlamaydi. Ikkala
+skriptda ham chetlab o'tildi (`update()` unique kalit bo'yicha,
+`createIfMissing()` yordamchisi `findUnique`+`create` bilan, ommaviy
+egasizlashtirish uchun xom SQL). **`apps/api/src/lib/*.ts` ichida
+`updateMany`/`upsert` ishlatilgan joylar bormi — TEKSHIRILMADI, alohida
+topshiriq sifatida tavsiya etiladi** (production buzilishi mumkin).
+
+**8-bo'lim (`News.imageUrl` nuqsoni) holati: QISMAN tasdiqlandi.** API
+darajasida to'liq tasdiqlangan (`POST /api/news` nisbiy `imageUrl` bilan
+400 qaytaradi, `.url()` validatsiyasi mutlaq manzil talab qiladi — xuddi
+avval tuzatilgan `AdminPublicationsPage` nuqsoni kabi). Admin panel
+darajasida (rasm yuklab, saqlashda haqiqatan shu 400 qaytishini to'liq
+avtomatik brauzer sinovi bilan) faqat QISMAN — bitta diagnostik ishga
+tushirishda rasm oldindan ko'rish nisbiy manzil shaklida ekani tasdiqlandi,
+lekin to'liq "yuklash → saqlash → 400 ushlash" avtomatlashtirilgan zanjiri
+bir necha urinishda beqaror chiqdi (Docker/ARM ostida headless Chrome
+vaqt sinxronizatsiyasi shubha ostida) va uch marta muvaffaqiyatsiz
+urinishdan keyin CLAUDE.md 8a-bo'limiga ko'ra to'xtatildi. **Nuqson
+tuzatilmagan — alohida topshiriq sifatida tavsiya etiladi**
+(`AdminPublicationsPage`dagi bilan bir xil `fileUrl()` o'ramini
+`AdminNewsPage`ga ham qo'shish kifoya qiladi, deb taxmin qilinadi, lekin
+bu tasdiqlanmagan).
+
+**Tekshirildi (Docker: `postgres:16`+`local-neon-http-proxy` (5433/4444),
+`node:20` fake-R2 bilan `app.fetch()` chaqiruvchi qo'lda yozilgan server,
+`ghcr.io/puppeteer/puppeteer`).** Ikki marta ketma-ket ishga tushirish
+bir xil sonlarni berdi (idempotentlik — mavjud yozuvlar qayta yaratilmaydi).
+Puppeteer bilan: bosh sahifa hamkorlar karuseli, `/employees` (29/12 rasm),
+`/management` (4 karta), `/news` (sahifalash, qoralama yashirilgan),
+`/publications` (kategoriya xilma-xilligi), `/documents` (10 yuklab olish
+havolasi), `/search?q=lorem` (20 natija, faqat yangilik+hujjat, `<mark>`
+ajratish, kirill parchalar to'g'ri), `/admin/messages` (5 qator, "Javobsiz
+murojaatlar: 3"), 375px'da gorizontal scroll yo'q — hammasi 0 konsol
+xatosi bilan o'tdi. `tsc --noEmit` (uch paket) va
+`npm test --workspace=apps/api` (43/43) toza.
+
+**Qaror — lokal baza bo'sh holatda qoldirildi.** Yuklangan fayl baytlari
+faqat vaqtinchalik test konteynerining xotirasidagi soxta R2'da mavjud
+edi (konteyner endi olib tashlangan); agar to'ldirilgan baza shu holida
+qolsa, foydalanuvchi o'zining haqiqiy `npm run dev`ida ochganda rasm/PDF
+havolalari 404 qaytaradi. Shuning uchun `test-content-clean.ts` oxirida
+ishga tushirilib, hamma test yozuvi va `.test-media.json` keshi
+o'chirildi. **Foydalanuvchi o'z muhitida to'liq ishlaydigan holat olish
+uchun `npm run dev`ni ishga tushirib, so'ng `npm run db:test`ni o'zi
+bajarishi kerak** — shunda fayllar haqiqiy R2 simulyatoriga yoziladi va
+havolalar ishlaydi.
+
+**TEKSHIRILMADI:** production migratsiya holati (14-topshiriqdan
+mustaqil, hali to'xtatilgan — yuqoriga qarang); CSP `unsafe-inline`
+qarori (ProseMirror tahrirlagichi uchun, foydalanuvchi javobi kutilmoqda).
+
+### 2026-08-31 · 13 — Ikki darajali mega-menyu, Bosqich C va D (TO'LIQ)
+
+**Kim:** Claude Code (Sonnet 5) · **Kommit yo'q** — hali commit qilinmagan.
+
+**Nima qilindi.** Bosqich A/B (desktop mega-menyu, flicker tuzatishi) ilgari `70f1e6e` bilan
+commit qilingan edi (batafsil: pastdagi eski 13-yozuv). Shu sessiyada qolgan ikki bosqich
+yozildi:
+
+- **Bosqich C — mobil akkordeon.** `components/nav/MobileNav.tsx` (yangi): to'liq ekranli
+  panel, guruhlar akkordeon (bir vaqtda bittasi ochiq), panel ochilganda joriy sahifaga
+  tegishli guruh avtomatik yoyilgan holda chiqadi (`isGroupActive` orqali), har bir tugma/
+  havola kamida 44px balandlikda, `useFocusTrap` bilan fokus tuzog'i, `document.body.style.
+  overflow='hidden'` bilan orqa fon scroll bloklanadi (yopilganda tiklanadi). Pastda til
+  tanlash (uz/en/ru) va telefon/pochta (`config/contact.ts` dan — bu safar `useSettings`
+  emas, chunki aloqa boshqa sessiya tomonidan statik qilingan edi). `Header.tsx` dagi
+  vaqtinchalik tekis ro'yxat olib tashlandi, marshrut o'zgarganda mobil menyu ham yopiladi
+  (`useEffect` `[location.pathname]`).
+- **Bosqich D qoldig'i.** `lib/routes.ts`: `PUBLIC_ROUTES`ning statik qismi endi
+  `flattenVisibleLinks()` orqali `navigation.ts`dan generatsiya qilinadi (`NAV_ROUTES`),
+  faqat dinamik (`laboratories/:id`, `news/:slug`) va menyusiz (`search`) yo'llar qo'lda
+  qo'shiladi — bitta manzil endi ikki joyda saqlanmaydi.
+- **`CLAUDE.md`ga qoida qo'shildi** (4.3, yangi 16-band, qolganlari +1 siljidi): menyu
+  havolalari faqat `navigation.ts`da yozilishi, yangi sahifa avval daraxtda joy topishi.
+
+**Tekshirildi (Docker: `node:20` — `tsc`/`build`; `ghcr.io/puppeteer/puppeteer:23.11.1`).**
+`tsc --noEmit` va `vite build` toza. To'liq puppeteer sinovi **50/50 o'tdi** — avvalgi 40
+tekshiruvga (desktop, joylashuv, hover-intent, klaviatura, flicker yo'qligi) qo'shimcha:
+375px va 768px da mobil menyu ochilishi, joriy guruh avtomatik yoyilishi, orqa fon scroll
+bloklanishi, barcha teginish nishonlari ≥44px, akkordeonda bir vaqtda bittasi ochiqligi,
+havolaga bosilganda menyu yopilib scroll tiklanishi, `/about` (prefikssiz) `/uz/about`ga
+yo'naltirilishi va `/uzbekistan` uchun 404 (bosh sahifaga yashirin yo'naltirilmasligi).
+
+**Qarorlar.** Mobil panel BUTUN ekranni qoplaydi (headerni ham) — o'zining yopish (X)
+tugmasi bilan, chunki header ostidagi balandlik responsiv (768px chegarasida topbar
+qo'shiladi/olinadi) va aniq `top` qiymatini hisoblash keraksiz murakkablik qo'shardi;
+"to'liq ekran" talabi vazifa faylida ham aynan shunday yozilgan. Panel doim DOM da
+turadi (texnik cheklov 8) — `tabIndex`/`pointer-events` bilan yashiriladi, shu bilan
+CSS o'tish animatsiyasi ishlaydi va alohida "mount qilingandan keyin animatsiya
+qo'shish" murakkabligi kerak bo'lmaydi (xuddi desktop panellari kabi).
+
+**TEKSHIRILMADI:** haqiqiy skrinrider; Lighthouse ko'rsatkichi; production build/deploy;
+`docs/tasks/13-navbar.md` "Qabul mezonlari" ro'yxati band-band birma-bir belgilanmadi
+(ko'p bandlar yuqoridagi avtomatlashtirilgan 50 tekshiruv bilan qoplangan, lekin ro'yxat
+o'zi qo'lda tekshirilmadi).
 
 ### 2026-08-31 · API `dev` skripti tuzatildi — lokal ishlashda ham Neon ishlatiladi
 
