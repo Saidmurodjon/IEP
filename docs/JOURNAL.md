@@ -161,6 +161,59 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-08-31 · Lokal `wrangler dev` bazaga ulanmasligi tuzatildi
+
+**Kim:** Claude Code (Opus 5) · **Kommit yo'q** — hali commit qilinmagan.
+
+**Muammo.** Foydalanuvchi mashinasida `npm run dev`dan keyin sayt bo'sh
+ko'rinardi. Ildiz sabab ikkita mustaqil narsaning ustma-ust tushishi edi:
+
+1. **Port 3000 ikki marta band edi.** `open-webui` (aloqasiz Docker konteyner,
+   15 soatdan beri ishlab turgan) va bundan tashqari — **avvalgi (10-oldingi)
+   sessiyadan qolib ketgan, unutilgan test-harness jarayoni**
+   (`node_modules/.iep-harness/server.mjs`, PPID 1 ga qayta ulangan, 27-avgust
+   09:11'dan beri orqa fonda ishlab, doim `{"data":[]}` bo'sh javob qaytarib
+   turgan). Ikkalasi ham to'xtatildi/o'chirildi, `wrangler dev --port 3000`
+   endi haqiqatan ko'tariladi.
+2. **Haqiqiy bug — `apps/api/src/lib/db.ts`.** `getDb()` `PrismaNeonHTTP`ni
+   hech qanday `neonConfig` sozlamasiz chaqirar edi. Bu ishlaydi FAQAT
+   haqiqiy Neon (`*.neon.tech`, HTTPS/443) bilan — lokal Postgres'ga esa
+   drayver "Network connection lost" bilan yiqiladi, chunki u manzilni
+   ulanish satridan o'zi hisoblab HTTPS/443'ni taxmin qiladi.
+   `packages/db/src/test-content.ts` buni allaqachon hal qilgan edi
+   (`neonConfig.fetchEndpoint` qo'lda `local-neon-http-proxy`ga
+   ko'rsatiladi), lekin bu tuzatish haqiqiy ilova kodiga (`db.ts`) hech
+   qachon ko'chirilmagan edi — shuning uchun `test-content.ts` ishlagan,
+   lekin `wrangler dev` orqali haqiqiy API ishlamagan. **Tuzatildi:** `db.ts`
+   endi host `neon.tech` bo'lmasa xuddi shu naqshni qo'llaydi. Bundan
+   tashqari `.dev.vars`dagi `DATABASE_URL` xato portga (`5433` — xom
+   Postgres) qarab turgan edi, proksi porti (`4444`)ga to'g'irlandi — bu
+   ham allaqachon `.dev.vars` ichidagi izohda yozilgan edi, lekin qiymatning
+   o'ziga qo'llanilmagan edi (avvalgi sessiyada yarim qolgan).
+3. **Foydalanuvchi mashinasida `node`/`npm`/`bun` PATH'da yo'q edi** — nvm
+   orqali Node o'rnatilgan, lekin faqat interaktiv `.zshrc`da sozlangan,
+   shuning uchun bu sessiyaning (va fon jarayonlarining) non-interaktiv
+   shell'lari ko'rmayotgan edi. `node`/`npm`/`npx` (`~/.nvm/versions/node/
+   v24.20.0/bin/`dan) va yangi o'rnatilgan `bun` (`~/.bun/bin/bun`)
+   `~/.local/bin/`ga symlink qilindi (bu papka allaqachon `$PATH`da birinchi
+   turadi) — endi har qanday shell turi ko'radi. `nvm alias default` ham
+   o'rnatildi.
+
+**Tekshirildi.** `apps/api` `tsc --noEmit` toza. `npm run dev` ishga
+tushirilgach: `GET /api/employees` va `/api/settings` 200 qaytardi (avval
+500 — "Network connection lost"). `npm run db:seed` (admin hisobi, 17
+tarkibiy bo'linma, sozlamalar) va `npm run db:test` (14-topshiriq to'liq
+hajmi) ikkalasi ham muvaffaqiyatli o'tdi haqiqiy `wrangler dev` fonida —
+avval bular faqat qo'lda yozilgan Node harness orqali sinalgan edi (Docker
+sandbox'da haqiqiy `wrangler dev` lokal bazaga ulanolmagan edi — bu xuddi
+shu ildiz sababdan ekan). Brauzerda `localhost:5173` ochib, `/employees`da
+29 xodim ko'rinishi tasdiqlandi.
+
+**TEKSHIRILMADI:** production'dagi `db.ts` yo'lini bu o'zgarish
+buzmasligi — kod shart `neon.tech` hostini alohida ajratadi, production
+`DATABASE_URL` doim shu domenda, shuning uchun nazariy jihatdan xavfsiz,
+lekin haqiqiy production'ga qarshi ishga tushirib ko'rilmadi.
+
 ### 2026-08-31 · 14 — Test ma'lumotlari (lokal baza, TO'LIQ hajm)
 
 **Kim:** Claude Code (Opus 5) · **Kommit yo'q** — hali commit qilinmagan.
