@@ -210,6 +210,13 @@ npm run db:seed
 npm run dev                 # web :5173, api :3000
 ```
 
+**API `dev` skripti `wrangler dev` ishlatadi, bare `bun run` EMAS.** Hono `c.env` orqali
+Workers bog'lanishlarini (`DATABASE_URL`, `JWT_SECRET`, ...) o'qiydi; bu faqat `wrangler dev`
+(yoki haqiqiy Workers) ishga tushirilganda to'g'ri to'ldiriladi va `apps/api/.dev.vars`ni
+o'qiydi. Bare `bun run src/index.ts` chaqirilsa, Bun `app.fetch()`ga o'zining `Server`
+obyektini uzatadi — `c.env.DATABASE_URL` shunda doim `undefined` bo'ladi, DB ulanmaydi
+(2026-08-31 da tasdiqlangan xato). Shu sababli `dev` skripti `dev:workers` bilan bir xil.
+
 Deploy:
 ```bash
 cd apps/api && wrangler deploy          # secret'lar oldindan o'rnatilgan bo'lsin
