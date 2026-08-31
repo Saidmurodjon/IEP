@@ -11,6 +11,11 @@ import { useAccessibility } from '@/hooks/useAccessibility';
 import { splitLangPrefix } from '@/lib/routes';
 import { useCurrentLang } from '@/hooks/useLocalizedPath';
 import A11yImage from '@/components/A11yImage';
+import DesktopNav from '@/components/nav/DesktopNav';
+import { flattenVisibleLinks } from '@/config/navigation';
+
+// VAQTINCHA — 13-navbar Bosqich C da to'liq akkordeon mobil menyuga almashadi.
+const MOBILE_NAV_LINKS = flattenVisibleLinks();
 
 const LANGS = [
   { code: 'uz', label: "O'zbekcha" },
@@ -22,6 +27,7 @@ export default function Header() {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [activeGroupId, setActiveGroupId] = useState<string | null>(null);
   const [a11yOpen, setA11yOpen] = useState(false);
   const { changed: a11yChanged } = useAccessibility();
   const location = useLocation();
@@ -33,30 +39,32 @@ export default function Header() {
   const phone = value('phone');
   const email = value('email');
 
-  const navLinks = [
-    { to: '/', label: t('nav.home') },
-    { to: '/about', label: t('nav.about') },
-    { to: '/management', label: t('nav.management') },
-    { to: '/structure', label: t('nav.structure') },
-    { to: '/laboratories', label: t('nav.labs') },
-    { to: '/employees', label: t('nav.employees') },
-    { to: '/news', label: t('nav.news') },
-    { to: '/publications', label: t('nav.publications') },
-    { to: '/contact', label: t('nav.contact') },
-  ];
-
-  // `Escape` ochiq menyuni va til ro'yxatini yopadi. Oyna (`AccessibilityPanel`)
-  // o'z `Escape` ini `useFocusTrap` ichida ushlaydi.
+  // `Escape` ochiq menyuni, til ro'yxatini va mega-menyu panelini yopadi.
+  // Guruh panelining o'zi ham `Escape` ni ushlaydi (fokusni tugmaga
+  // qaytarish uchun) — bu yerdagi handler qolgan holatlar uchun zaxira.
   useEffect(() => {
-    if (!menuOpen && !langOpen) return;
+    if (!menuOpen && !langOpen && !activeGroupId) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
       setMenuOpen(false);
       setLangOpen(false);
+      setActiveGroupId(null);
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [menuOpen, langOpen]);
+  }, [menuOpen, langOpen, activeGroupId]);
+
+  // Til dropdowni ochilsa mega-menyu yopiladi va aksincha — bir vaqtda
+  // faqat bitta panel ochiq bo'lishi kerak.
+  const toggleLangOpen = useCallback(() => {
+    setLangOpen((prev) => !prev);
+    setActiveGroupId(null);
+  }, []);
+
+  const handleActiveGroupChange = useCallback((id: string | null) => {
+    setActiveGroupId(id);
+    if (id !== null) setLangOpen(false);
+  }, []);
 
   // Til almashtirilganda foydalanuvchi JORIY sahifada qoladi — faqat prefiks
   // o'zgaradi. `i18next` ni bevosita o'zgartirmaymiz: manzil asosiy manba,
@@ -77,8 +85,8 @@ export default function Header() {
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
-      {/* Top bar — yengil variant (to'q blok emas) */}
-      <div className="bg-primary-50 text-primary-800 text-xs py-1.5 border-b border-primary-100">
+      {/* Top bar — yengil variant (to'q blok emas). 768px dan tor ekranda butunlay yashirin. */}
+      <div className="hidden md:block bg-primary-50 text-primary-800 text-xs py-1.5 border-b border-primary-100">
         <div className="container flex justify-between items-center">
           <span>{t('common.academy')}</span>
           <div className="flex items-center gap-4">
@@ -116,7 +124,8 @@ export default function Header() {
               height={40}
               className="h-9 w-9 sm:h-10 sm:w-10 object-contain flex-shrink-0"
             />
-            <div className="hidden sm:block">
+            {/* 768px dan tor ekranda faqat emblema qoladi. */}
+            <div className="hidden md:block">
               <div className="text-sm font-bold text-primary-900 leading-tight">
                 {t('common.institute_name_line1')}
               </div>
@@ -124,26 +133,8 @@ export default function Header() {
             </div>
           </LocalizedLink>
 
-          {/* Desktop nav */}
-          <nav aria-label={t('a11y.main_nav')} className="hidden lg:flex items-center gap-0.5">
-            {navLinks.map((link) => (
-              <LocalizedNavLink
-                key={link.to}
-                to={link.to}
-                end={link.to === '/'}
-                className={({ isActive }) =>
-                  clsx(
-                    'px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    isActive
-                      ? 'text-primary-700 bg-primary-50'
-                      : 'text-gray-600 hover:text-primary-700 hover:bg-gray-50'
-                  )
-                }
-              >
-                {link.label}
-              </LocalizedNavLink>
-            ))}
-          </nav>
+          {/* Desktop nav — ikki darajali mega-menyu, `config/navigation.ts` dan */}
+          <DesktopNav activeGroupId={activeGroupId} onActiveGroupChange={handleActiveGroupChange} />
 
           {/* Qidiruv + til + mobil menyu */}
           <div className="flex items-center gap-2">
@@ -170,7 +161,7 @@ export default function Header() {
             {/* Language */}
             <div className="relative">
               <button
-                onClick={() => setLangOpen(!langOpen)}
+                onClick={toggleLangOpen}
                 aria-label={t('common.language')}
                 aria-expanded={langOpen}
                 aria-haspopup="true"
@@ -208,21 +199,21 @@ export default function Header() {
               aria-label={menuOpen ? t('a11y.close_menu') : t('a11y.open_menu')}
               aria-expanded={menuOpen}
               aria-controls="mobile-nav"
-              className="lg:hidden p-2 text-gray-600 hover:text-primary-700 hover:bg-gray-50 rounded-md transition-colors"
+              className="xl:hidden p-2 text-gray-600 hover:text-primary-700 hover:bg-gray-50 rounded-md transition-colors"
             >
               {menuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile nav */}
+        {/* Mobil menyu — VAQTINCHA tekis ro'yxat, Bosqich C da akkordeonga almashadi */}
         {menuOpen && (
-          <nav id="mobile-nav" aria-label={t('a11y.main_nav')} className="lg:hidden border-t border-gray-100 py-3 space-y-1">
-            {navLinks.map((link) => (
+          <nav id="mobile-nav" aria-label={t('a11y.main_nav')} className="xl:hidden border-t border-gray-100 py-3 space-y-1">
+            {MOBILE_NAV_LINKS.map((link) => (
               <LocalizedNavLink
-                key={link.to}
-                to={link.to}
-                end={link.to === '/'}
+                key={link.id}
+                to={link.path}
+                end={link.path === '/'}
                 onClick={() => setMenuOpen(false)}
                 className={({ isActive }) =>
                   clsx(
@@ -233,14 +224,27 @@ export default function Header() {
                   )
                 }
               >
-                {link.label}
+                {t(link.i18nKey)}
               </LocalizedNavLink>
             ))}
           </nav>
         )}
       </div>
 
-      {/* Close lang dropdown on outside click */}
+      {/*
+        Tashqariga bosilganda til dropdownini yopadi. FAQAT `langOpen` uchun —
+        mega-menyu uchun EMAS: `<header>` `sticky` + `z-40` bo'lgani uchun o'z
+        stacking context'ini yaratadi, shu ichida ushbu `fixed z-30` overlay
+        `NavGroupButton`ning `z-index: auto` qatlamidan HAMON yuqorida chiziladi
+        (stacking context ICHIDA aniq raqamli z-index avtomatikdan doim ustun,
+        `position: fixed` bunga ta'sir qilmaydi — u faqat joylashuvga, stacking
+        context'ga emas). Natijada guruh ochilgach overlay xuddi shu tugmani
+        bosib qolar, kursor "chiqib ketgan" deb hisoblanib yopilar, overlay
+        yo'qolgach kursor yana tugmada "kirgan" deb hisoblanib ochilar — davri
+        ~300ms bo'lgan cheksiz aylanma (kursor umuman qimirlamasa ham).
+        Mega-menyuning tashqariga bosishni ushlashi endi `DesktopNav.tsx` da
+        `pointerdown` orqali, overlaysiz amalga oshiriladi.
+      */}
       {langOpen && (
         <div aria-hidden="true" className="fixed inset-0 z-30" onClick={() => setLangOpen(false)} />
       )}

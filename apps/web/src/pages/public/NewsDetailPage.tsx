@@ -62,7 +62,7 @@ export default function NewsDetailPage() {
             to="/news"
             className="flex items-center gap-1 text-primary-200 hover:text-white text-sm mb-4 transition-colors"
           >
-            <ArrowLeft className="h-4 w-4" /> {t('nav.news')}
+            <ArrowLeft className="h-4 w-4" /> {t('nav.info.items.news')}
           </LocalizedLink>
           <h1 className="text-2xl font-bold max-w-3xl">{getField('title')}</h1>
           <time className="flex items-center gap-1 text-primary-200 text-sm mt-3">

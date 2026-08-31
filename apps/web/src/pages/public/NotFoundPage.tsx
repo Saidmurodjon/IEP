@@ -6,14 +6,16 @@ import SeoHead from '@/components/SeoHead';
 import LocalizedLink from '@/components/LocalizedLink';
 import { useLocalizedPath } from '@/hooks/useLocalizedPath';
 import { MIN_QUERY_LENGTH } from '@/lib/search';
+import { findNavLink } from '@/config/navigation';
 
-/** 404 da ko'rsatiladigan asosiy bo'limlar. Admin havolasi ATAYLAB yo'q. */
-const SECTIONS = [
-  { to: '/', key: 'nav.home' },
-  { to: '/about', key: 'nav.about' },
-  { to: '/news', key: 'nav.news' },
-  { to: '/contact', key: 'nav.contact' },
-];
+/**
+ * 404 da ko'rsatiladigan asosiy bo'limlar — `config/navigation.ts` dan
+ * `id` bo'yicha olinadi, manzil yoki matn bu yerda qo'lda yozilmaydi.
+ * Admin havolasi ATAYLAB yo'q.
+ */
+const SECTIONS = ['home', 'institute-about', 'info-news', 'contact']
+  .map((id) => findNavLink(id))
+  .filter((link): link is NonNullable<typeof link> => link !== undefined);
 
 export default function NotFoundPage() {
   const { t } = useTranslation();
@@ -61,13 +63,13 @@ export default function NotFoundPage() {
 
           <div className="text-sm font-medium text-gray-700 mb-4">{t('notFound.sections')}</div>
           <div className="flex flex-wrap justify-center gap-2">
-            {SECTIONS.map(({ to, key }) => (
+            {SECTIONS.map((link) => (
               <LocalizedLink
-                key={to}
-                to={to}
+                key={link.id}
+                to={link.path}
                 className="px-4 py-2 rounded-full text-sm font-medium border border-gray-200 text-gray-600 bg-white hover:border-primary-300 hover:text-primary-700 transition-colors"
               >
-                {t(key)}
+                {t(link.i18nKey)}
               </LocalizedLink>
             ))}
           </div>

@@ -47,7 +47,7 @@ export default function EmployeesPage() {
   );
 
   const groups = [
-    ...(management.length ? [{ id: 'management', name: t('nav.management'), members: management }] : []),
+    ...(management.length ? [{ id: 'management', name: t('nav.institute.items.management'), members: management }] : []),
     ...byUnit,
     ...(others.length ? [{ id: 'others', name: t('employees.no_unit'), members: others }] : []),
   ];

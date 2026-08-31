@@ -5,6 +5,9 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { useSettings, telHref } from '@/hooks/useSettings';
 import { formatDate } from '@/lib/date';
 import A11yImage from '@/components/A11yImage';
+import { flattenVisibleLinks } from '@/config/navigation';
+
+const FOOTER_LINKS = flattenVisibleLinks();
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -53,24 +56,13 @@ export default function Footer() {
               {t('footer.pages')}
             </h3>
             <ul className="space-y-2">
-              {[
-                { to: '/', label: t('nav.home') },
-                { to: '/about', label: t('nav.about') },
-                { to: '/management', label: t('nav.management') },
-                { to: '/structure', label: t('nav.structure') },
-                { to: '/employees', label: t('nav.employees') },
-                { to: '/news', label: t('nav.news') },
-                { to: '/publications', label: t('nav.publications') },
-                { to: '/documents', label: t('nav.documents') },
-                { to: '/contact', label: t('nav.contact') },
-                { to: '/appeal-status', label: t('nav.appeal_status') },
-              ].map((link) => (
-                <li key={link.to}>
+              {FOOTER_LINKS.map((link) => (
+                <li key={link.id}>
                   <LocalizedLink
-                    to={link.to}
+                    to={link.path}
                     className="text-sm text-gray-400 hover:text-white transition-colors"
                   >
-                    {link.label}
+                    {t(link.i18nKey)}
                   </LocalizedLink>
                 </li>
               ))}

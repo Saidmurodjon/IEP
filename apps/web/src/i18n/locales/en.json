@@ -1,17 +1,51 @@
 {
   "nav": {
     "home": "Home",
-    "about": "About Institute",
-    "structure": "Institute Structure",
-    "labs": "Scientific Laboratories",
-    "news": "News",
-    "publications": "Publications",
     "contact": "Contact",
-    "management": "Management",
-    "employees": "Staff",
-    "documents": "Documents",
-    "appeal_status": "Appeal status",
-    "search": "Search"
+    "institute": {
+      "label": "Institute",
+      "items": {
+        "about": "About the Institute",
+        "history": "History",
+        "management": "Management",
+        "structure": "Institute Structure",
+        "employees": "Staff",
+        "documents": "Regulatory Documents",
+        "partners": "Partners",
+        "vacancies": "Vacancies"
+      }
+    },
+    "science": {
+      "label": "Research",
+      "items": {
+        "labs": "Scientific Laboratories",
+        "research": "Research Areas",
+        "projects": "Projects and Grants",
+        "publications": "Publications",
+        "patents": "Patents",
+        "council": "Scientific Council",
+        "phd": "Doctoral Studies"
+      }
+    },
+    "info": {
+      "label": "Media",
+      "items": {
+        "news": "News",
+        "announcements": "Announcements",
+        "events": "Conferences and Events",
+        "gallery": "Photo Gallery",
+        "video": "Video Materials"
+      }
+    },
+    "openness": {
+      "label": "Openness",
+      "items": {
+        "appealStatus": "Check Appeal Status",
+        "openData": "Open Data",
+        "anticorruption": "Anti-Corruption",
+        "faq": "FAQ"
+      }
+    }
   },
   "home": {
     "hero_title": "Academy of Sciences of the Republic of Uzbekistan",

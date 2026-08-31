@@ -13,8 +13,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-31
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06, 07, 08, 09, 10A, 10B va 10C
-kommitlari lokal (`origin/master` = `69b6548`).
+**Branch:** `master` · **Push qilinganmi:** ✅ ha — `09`, `10A`, `10B`, `10C` va `fix(files)`
+(fayl havolalari + CSP) `origin/master` ga yuborilgan (`878b06b..4233d8d`). `13-navbar` shu
+sessiyada ustiga qo'shilib commit va push qilinmoqda.
 
 ### Nima ishlaydi
 - **09, 10A va 10B PM tomonidan QABUL QILINDI.**
@@ -39,6 +40,10 @@ kommitlari lokal (`origin/master` = `69b6548`).
   bosilgan tugmada qoladi, panelning boshiga sakramaydi.
 
 ### Nima hali ishlamaydi / bajarilmagan
+- **13-navbar TUGALLANMAGAN, lekin commit qilingan** (foydalanuvchi so'rovi bilan — desktop qismi
+  sinovdan o'tgan, xavfsiz to'xtash nuqtasi). Desktop mega-menyudagi flicker xatosi HAL QILINDI
+  (batafsil: pastdagi 13-yozuv). Qolgan: mobil akkordeon menyu (Bosqich C, hali yozilmagan —
+  vaqtincha tekis ro'yxat) va `routes.ts`ni `navigation.ts`dan generatsiya qilish (Bosqich D qoldig'i).
 - **CSP hali Report-Only** — production'da bir necha kun kuzatilib, keyin haqiqiy
   rejimga (`Content-Security-Policy`) o'tkazilishi kerak.
 - **Admin panelda YANGI axe-core topilmalari bor** (10C tekshiruvida aniqlandi,
@@ -91,6 +96,7 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 10A | Sayt bo'ylab qidiruv | ✅ **Qabul qilindi** |
 | 10B | Imkoniyati cheklanganlar uchun qulayliklar | ✅ **Qabul qilindi** |
 | 10C | Xavfsizlik sarlavhalari va CSP | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 13 | Ikki darajali mega-menyu | 🟠 Qisman — desktop tayyor va sinovdan o'tgan, mobil akkordeon va routes.ts qoldi |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
 
@@ -113,6 +119,77 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-31 · 13 — Ikki darajali mega-menyu — TUGALLANMAGAN, foydalanuvchi so'rovi bilan to'xtatildi
+
+**Kim:** Claude Code (Sonnet 5) · **Kommit:** `feat(nav): two-level mega menu (desktop, partial)`
+— ish yozilgan sessiyada commit qilinmagan edi, keyingi sessiya (foydalanuvchi tasdig'i bilan)
+commit va push qildi.
+
+**Nima qilindi (Bosqich A va B, qisman C/D).** `apps/web/src/config/navigation.ts` — menyu daraxti
+yagona manbada (`NAV_ITEMS`, `isNavGroup`, `flattenVisibleLinks`, `findNavLink`). `/partners` foydalanuvchi
+tasdig'i bilan `hidden: true` qilib qo'yildi (ochiq sahifa hali yo'q — faqat admin CRUD va bosh sahifa
+lentasi bor). Uchala i18n faylida `nav.*` ichki guruhlarga ko'chirildi (`nav.institute.label` /
+`nav.institute.items.*` va hokazo), eski tekis kalitlar (`nav.about`, `nav.structure`, `nav.labs`,
+`nav.management`, `nav.employees`, `nav.documents`, `nav.appeal_status`, `nav.publications`, `nav.news`,
+`nav.search`) o'chirildi; `nav.home`/`nav.contact` guruhsiz yakka element sifatida saqlanib qoldi.
+`EmployeesPage.tsx` va `NewsDetailPage.tsx` dagi eski kalit ishlatilishlari yangi joyga ko'chirildi.
+Desktop mega-menyu: `components/nav/{navActive.ts, NavGroupButton.tsx, NavPanel.tsx, DesktopNav.tsx}` —
+WAI-ARIA Disclosure naqshi, hover-intent (100ms ochish / 200ms yopish, guruhdan guruhga kechikishsiz),
+klaviatura (`ArrowDown`/`ArrowUp`/`Escape`/`Tab`-chiqishda yopilish — `focusout` orqali), marshrut/scroll
+o'zgarganda yopilish. `Header.tsx` ga ulandi, til dropdowni bilan o'zaro eksklyuziv. `Footer.tsx` va
+`NotFoundPage.tsx` endi `navigation.ts` dan oziqlanadi (qo'lda yozilgan havola yo'q).
+
+**Muhim qaror — gamburger chegarasi 1024px dan 1280px ga ko'tarildi.** 1024–1279px oraliqidagi
+"kichraytirilgan" oraliq bosqich (14→10px padding, 15→14px shrift) amalda ruscha matnlar bilan
+SIG'MAYDI — bu vazifa faylining o'zida oldindan ko'zda tutilgan zaxira yechim edi ("1024px da
+sig'masa... gamburger chegarasini 1280px ga ko'tarish", 13-navbar.md 6-bo'lim). Shu bosqich butunlay
+olib tashlandi: `xl:hidden`/`xl:flex` — mega-menyu FAQAT ≥1280px da, 1024–1279 oralig'ida ham gamburger
+chiqadi. Ruscha "Ilmiy faoliyat" yorlig'i ham `Наука`ga qisqartirildi (avvalgi variant 1280px'da ham
+sig'mas edi).
+
+**✅ FLICKER XATOSI HAL QILINDI — sabab foydalanuvchi (PM) tomonidan aniqlandi, mendan emas.**
+Mening birinchi gipotezam (panel transformidagi vaqtinchalik siljish) NOTO'G'RI edi va tuzatmadi.
+**Haqiqiy sabab:** `Header.tsx` dagi tashqi bosishni ushlovchi to'liq ekranli overlay
+(`{(langOpen || activeGroupId) && <div className="fixed inset-0 z-30" .../>}`) `<header>` ichida
+edi. `<header>` `sticky` + `z-40` bo'lgani uchun O'Z STACKING CONTEXTINI yaratadi — shu context
+ICHIDA `fixed z-30` overlay `NavGroupButton`ning `z-index: auto` qatlamidan BARIBIR yuqorida
+chiziladi (aniq raqamli z-index context ichida avtomatikdan doim ustun, `position: fixed`
+buni o'zgartirmaydi). Guruh ochilgach overlay xuddi shu tugmani bosib qolar, brauzer hit-test'ni
+qayta hisoblab tugmada "mouseleave" deb topar → 200ms dan keyin yopilar → overlay yo'qolar →
+kursor yana tugmada "mouseenter" deb topilar → qaytadan ochilar. Davri ~300ms, kursor umuman
+qimirlamasa ham davom etardi. **Bu bilan bog'liq YANA IKKI ASORAT ham hal bo'ldi:** (a) avval
+"guruhdan guruhga o'tish sekin (~300ms)" deb o'ylagan CDP-emulyatsiya sekinligiga yozgan
+narsam aslida XUDDI SHU overlay xatosi edi — tuzatilgandan keyin o'tish 13ms da bo'ladi;
+(b) panel ochiq turganda qidiruv, til, maxsus imkoniyatlar tugmalari overlay tomonidan bosilib
+qolib ishlamas edi.
+
+**Tuzatish.** `Header.tsx`: overlay endi FAQAT `langOpen` uchun (`activeGroupId` olib tashlandi).
+`DesktopNav.tsx`: mega-menyuning tashqariga-bosish-bilan-yopilishi endi hujjat darajasidagi
+`pointerdown` orqali (`buttonRefs`/`panelRefs` bilan solishtirilib, ichkarida bo'lmasa `closeNow()`),
+overlaysiz.
+
+**Tekshirildi (Docker: `node:20` — `tsc`/`build`; `ghcr.io/puppeteer/puppeteer:23.11.1`, amd64
+emulyatsiyada arm64 Mac'da sekin ishlaydi).** `tsc --noEmit` va `vite build` toza. To'liq puppeteer
+sinovi **40/40 o'tdi**: 1024/1280/1440px uz/ru/en joylashuv va gorizontal scroll yo'qligi,
+topbar/gamburger to'g'ri almashishi, 375px topbar/logotip matni yashirinligi, hover-intent 100/200ms
+kechikishlari, guruhdan guruhga kechikishsiz o'tish (13ms), guruh panelidan sichqoncha bilan
+chiqib-kirish, `ArrowDown`/`ArrowUp`/`Escape` klaviatura navigatsiyasi va fokus qaytishi,
+`/news/:slug`da ikkala daraja faolligi, `prefers-reduced-motion`, **statsionar hoverda 20/20 barqaror
+(flicker yo'q)**, tashqariga bosilganda panel yopilishi, **panel ochiq turganda maxsus imkoniyatlar
+tugmasi ishlashi** (overlay olib tashlangani tasdiqlandi). `/api/settings` backend yo'qligi uchun
+`request interception` bilan soxtalashtirildi.
+
+**Hali TUGALLANMAGAN (Bosqich C va D qoldi).**
+1. **Bosqich C — mobil akkordeon menyu.** Hozir `Header.tsx` da `MOBILE_NAV_LINKS` bilan VAQTINCHA
+   tekis ro'yxat turibdi (guruhlash, akkordeon, joriy guruhning ochiq holda kelishi — hali yo'q).
+2. **Bosqich D qoldig'i.** `lib/routes.ts` dagi `PUBLIC_ROUTES` hali `navigation.ts`dan mustaqil,
+   qo'lda saqlanmoqda — ikkilanish bor (Footer/NotFoundPage allaqachon `navigation.ts`dan oziqlanadi).
+3. `docs/tasks/13-navbar.md` "Qabul mezonlari" ro'yxati oxirigacha bandma-band tekshirilmagan
+   (Lighthouse, real skrinrider, 768px akkordeon va h.k.).
+
+**TEKSHIRILMADI:** mobil akkordeon (hali yozilmagan); haqiqiy skrinrider; Lighthouse ko'rsatkichi;
+production build/deploy.
 
 ### 2026-08-31 · 10C — Xavfsizlik sarlavhalari va CSP (+ uchta qolib ketgan tuzatish)
 

@@ -1,17 +1,51 @@
 {
   "nav": {
     "home": "Bosh sahifa",
-    "about": "Institut haqida",
-    "structure": "Institut tuzilmasi",
-    "labs": "Ilmiy laboratoriyalar",
-    "news": "Yangiliklar",
-    "publications": "Nashrlar",
     "contact": "Aloqa",
-    "management": "Rahbariyat",
-    "employees": "Xodimlar",
-    "documents": "Hujjatlar",
-    "appeal_status": "Murojaat holati",
-    "search": "Qidiruv"
+    "institute": {
+      "label": "Institut",
+      "items": {
+        "about": "Institut haqida",
+        "history": "Tarix",
+        "management": "Rahbariyat",
+        "structure": "Institut tuzilmasi",
+        "employees": "Xodimlar",
+        "documents": "Me'yoriy hujjatlar",
+        "partners": "Hamkorlar",
+        "vacancies": "Vakansiyalar"
+      }
+    },
+    "science": {
+      "label": "Ilmiy faoliyat",
+      "items": {
+        "labs": "Ilmiy laboratoriyalar",
+        "research": "Tadqiqot yo'nalishlari",
+        "projects": "Loyihalar va grantlar",
+        "publications": "Nashrlar",
+        "patents": "Patentlar",
+        "council": "Ilmiy kengash",
+        "phd": "Doktorantura"
+      }
+    },
+    "info": {
+      "label": "Axborot xizmati",
+      "items": {
+        "news": "Yangiliklar",
+        "announcements": "E'lonlar",
+        "events": "Konferensiya va tadbirlar",
+        "gallery": "Foto galereya",
+        "video": "Videomateriallar"
+      }
+    },
+    "openness": {
+      "label": "Ochiqlik",
+      "items": {
+        "appealStatus": "Murojaat holatini tekshirish",
+        "openData": "Ochiq ma'lumotlar",
+        "anticorruption": "Korrupsiyaga qarshi kurash",
+        "faq": "Savol-javob"
+      }
+    }
   },
   "home": {
     "hero_title": "O'zbekiston Respublikasi Fanlar akademiyasi",
