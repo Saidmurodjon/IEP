@@ -10,6 +10,7 @@ import {
 import { newsApi, pubsApi } from '@/lib/api';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
+import A11yImage from '@/components/A11yImage';
 
 export default function HomePage() {
   const { t, i18n } = useTranslation();
@@ -51,7 +52,7 @@ export default function HomePage() {
 
       {/* Hero — rasm + qoplama (yagona to'q seksiya) */}
       <section className="relative text-white overflow-hidden">
-        <img
+        <A11yImage
           src="/images/hero-solar.jpg"
           alt=""
           aria-hidden="true"
@@ -89,7 +90,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map(({ value, label, icon: Icon }) => (
               <div key={label} className="text-center">
-                <Icon className="h-7 w-7 text-accent-500 mx-auto mb-2" strokeWidth={1.75} />
+                <Icon className="h-7 w-7 text-accent-700 mx-auto mb-2" strokeWidth={1.75} />
                 <div className="text-3xl font-bold text-primary-800 mb-1">{value}</div>
                 <div className="text-sm text-primary-600">{label}</div>
               </div>
@@ -103,7 +104,7 @@ export default function HomePage() {
         <div className="container">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div>
-              <p className="text-accent-600 text-sm font-semibold uppercase tracking-wider mb-3">
+              <p className="text-accent-700 text-sm font-semibold uppercase tracking-wider mb-3">
                 {t('home.about_kicker')}
               </p>
               <h2 className="text-2xl sm:text-3xl font-bold text-primary-900 mb-5 leading-tight">
@@ -117,7 +118,7 @@ export default function HomePage() {
               </LocalizedLink>
             </div>
             <div className="relative">
-              <img
+              <A11yImage
                 src="/images/about-wind.jpg"
                 alt={t('home.about_img_alt')}
                 loading="lazy"
@@ -151,7 +152,7 @@ export default function HomePage() {
               {news.map((item: Record<string, string>) => (
                 <article key={item.id} className="card hover:shadow-md transition-shadow flex flex-col">
                   {item.imageUrl ? (
-                    <img
+                    <A11yImage
                       src={item.imageUrl}
                       alt={getTitle(item)}
                       className="w-full aspect-[16/9] object-cover"
@@ -162,7 +163,7 @@ export default function HomePage() {
                     </div>
                   )}
                   <div className="p-5 flex flex-col flex-1">
-                    <time className="text-xs text-gray-400 flex items-center gap-1 mb-2">
+                    <time className="text-xs text-gray-500 flex items-center gap-1 mb-2">
                       <Calendar className="h-3 w-3" />
                       {formatDate(item.publishedAt)}
                     </time>

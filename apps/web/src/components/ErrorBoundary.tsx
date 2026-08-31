@@ -53,7 +53,7 @@ function ErrorScreen({ incidentId, scope }: { incidentId: string | null; scope: 
         </div>
 
         {incidentId && (
-          <p className="mt-6 text-xs text-gray-400">
+          <p className="mt-6 text-xs text-gray-500">
             {t('errorBoundary.incident')}: <span className="font-mono">{incidentId}</span>
           </p>
         )}

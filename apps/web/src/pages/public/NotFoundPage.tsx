@@ -34,16 +34,16 @@ export default function NotFoundPage() {
           */}
           <div className="mb-10">
             <div className="relative">
-              <Search className="h-4 w-4 text-gray-300 absolute left-4 top-1/2 -translate-y-1/2" />
+              <Search className="h-4 w-4 text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" />
               <input
                 type="search"
                 disabled
                 aria-label={t('common.search')}
                 placeholder={t('notFound.search_placeholder')}
-                className="input w-full pl-11 bg-gray-50 text-gray-400 cursor-not-allowed"
+                className="input w-full pl-11 bg-gray-50 text-gray-500 cursor-not-allowed"
               />
             </div>
-            <p className="text-xs text-gray-400 mt-2">{t('notFound.search_soon')}</p>
+            <p className="text-xs text-gray-500 mt-2">{t('notFound.search_soon')}</p>
           </div>
 
           <div className="text-sm font-medium text-gray-700 mb-4">{t('notFound.sections')}</div>

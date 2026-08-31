@@ -77,12 +77,12 @@ export default function PublicationsPage() {
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 mb-1">{getTitle(pub as Record<string, string>)}</h3>
+                  <h2 className="font-semibold text-gray-900 mb-1">{getTitle(pub as Record<string, string>)}</h2>
                   <p className="text-sm text-gray-500 mb-2">
                     <span className="font-medium text-gray-700">{t('publications.authors')}:</span>{' '}
                     {pub.authors as string}
                   </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
                     {pub.journal && (
                       <span>
                         <span className="font-medium">{t('publications.journal')}:</span> {pub.journal as string}
@@ -98,7 +98,7 @@ export default function PublicationsPage() {
                       href={`https://doi.org/${pub.doi}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 text-gray-400 hover:text-primary-700 transition-colors"
+                      className="p-2 text-gray-500 hover:text-primary-700 transition-colors"
                     >
                       <ExternalLink className="h-4 w-4" />
                     </a>
@@ -108,7 +108,7 @@ export default function PublicationsPage() {
                       href={pub.fileUrl as string}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-2 text-gray-400 hover:text-primary-700 transition-colors"
+                      className="p-2 text-gray-500 hover:text-primary-700 transition-colors"
                     >
                       <Download className="h-4 w-4" />
                     </a>
@@ -120,23 +120,25 @@ export default function PublicationsPage() {
         </div>
 
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-10">
+          <nav aria-label={t('a11y.pagination')} className="flex items-center justify-center gap-3 mt-10">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
+              aria-label={t('a11y.prev_page')}
               className="btn-secondary px-3 py-2 disabled:opacity-40"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </button>
             <span className="text-sm text-gray-600">{page} / {totalPages}</span>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
+              aria-label={t('a11y.next_page')}
               className="btn-secondary px-3 py-2 disabled:opacity-40"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </button>
-          </div>
+          </nav>
         )}
       </div>
     </>

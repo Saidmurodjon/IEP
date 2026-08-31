@@ -61,7 +61,7 @@ export default function DocumentsPage() {
                 <div className="min-w-0 flex-1">
                   <h2 className="font-semibold text-gray-900 leading-snug">{title}</h2>
                   {description && <p className="text-sm text-gray-500 mt-1">{description}</p>}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 mt-2">
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 mt-2">
                     {item.documentNumber && (
                       <span>{t('documents.number')}: {item.documentNumber}</span>
                     )}

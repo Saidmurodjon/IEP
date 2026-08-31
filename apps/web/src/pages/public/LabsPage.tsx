@@ -45,7 +45,7 @@ export default function LabsPage() {
 
         {!isLoading && labs.length === 0 && (
           <div className="text-center py-12">
-            <Beaker className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+            <Beaker className="h-12 w-12 text-gray-500 mx-auto mb-4" />
             <p className="text-gray-500">{t('common.not_found')}</p>
           </div>
         )}
@@ -60,13 +60,13 @@ export default function LabsPage() {
               <div className="bg-emerald-100 text-emerald-700 p-3 rounded-xl w-12 h-12 flex items-center justify-center mb-4">
                 <Beaker className="h-6 w-6" />
               </div>
-              <h3 className="font-bold text-gray-900 mb-2">{getName(lab)}</h3>
+              <h2 className="font-bold text-gray-900 mb-2">{getName(lab)}</h2>
               {getDesc(lab) && (
                 <p className="text-sm text-gray-500 mb-4 line-clamp-3">{getDesc(lab)}</p>
               )}
               {typeof lab.staffCount === 'number' && (
                 <div className="flex items-center gap-2 text-sm text-gray-600 border-t border-gray-100 pt-3 mt-3">
-                  <Users className="h-4 w-4 text-gray-400" />
+                  <Users className="h-4 w-4 text-gray-500" />
                   <span>{lab.staffCount} {t('labs.staff')}</span>
                 </div>
               )}

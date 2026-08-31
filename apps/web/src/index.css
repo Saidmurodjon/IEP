@@ -96,3 +96,150 @@
     display: none;
   }
 }
+
+/* ==========================================================================
+   Imkoniyati cheklangan foydalanuvchilar uchun qulayliklar
+   (373-son qaror, 11-band; topshiriq 10B).
+
+   Sozlamalar `html` elementiga sinf sifatida qo'yiladi (`lib/a11y.ts`),
+   qiymatlar CSS o'zgaruvchilarida. Saytning ALOHIDA versiyasi yaratilmaydi.
+   ========================================================================== */
+
+:root {
+  --a11y-font-scale: 1;
+  --a11y-letter-spacing: normal;
+  --a11y-word-spacing: normal;
+  --a11y-line-height: 1.5;
+}
+
+/*
+  `100%` — brauzerdagi asosiy shrift o'lchami. Foydalanuvchi uni brauzerda
+  kattalashtirgan bo'lsa, bizning koeffitsiyent ustiga qo'shiladi.
+  Tailwind `rem` bilan ishlagani uchun butun sayt bir yo'la kattalashadi.
+*/
+html {
+  font-size: calc(100% * var(--a11y-font-scale));
+}
+
+html.a11y-font-large { --a11y-font-scale: 1.25; }
+html.a11y-font-xlarge { --a11y-font-scale: 1.5; }
+
+html.a11y-spacing {
+  --a11y-letter-spacing: 0.09em;
+  --a11y-word-spacing: 0.16em;
+  --a11y-line-height: 1.8;
+}
+
+html.a11y-spacing body {
+  letter-spacing: var(--a11y-letter-spacing);
+  word-spacing: var(--a11y-word-spacing);
+  line-height: var(--a11y-line-height);
+}
+
+/*
+  Yuqori kontrast: oq fon, qora matn. Rangli bezaklar (gradientlar, soyalar,
+  rangli fonlar) soddalashtiriladi — matnni o'qish uchun kerak bo'lmagan
+  hamma narsa olib tashlanadi.
+*/
+html.a11y-contrast body,
+html.a11y-contrast body * {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+html.a11y-contrast a,
+html.a11y-contrast button {
+  text-decoration: underline;
+}
+
+html.a11y-contrast mark {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/*
+  Tanlangan holat FAQAT rang bilan ko'rsatilmasin — yuqori kontrastda hamma
+  fon oq bo'lgani uchun bosilgan tugma teskari rangda chiziladi.
+*/
+html.a11y-contrast [aria-pressed='true'],
+html.a11y-contrast [aria-selected='true'] {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+html.a11y-contrast .skip-link {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+/* Rasm o'chirilmagan bo'lsa ham, yuqori kontrastda u chalg'itmasin. */
+html.a11y-contrast img {
+  filter: grayscale(1) contrast(1.15);
+}
+
+html.a11y-contrast :focus-visible {
+  outline: 3px solid #000000 !important;
+  outline-offset: 2px;
+}
+
+/*
+  Rasmlar o'chirilganda: React komponentlari `A11yImage` orqali o'zi hal
+  qiladi, bu qoida esa boy matn (`prose-content`) va boshqa qolgan rasmlar
+  uchun zaxira.
+*/
+html.a11y-no-images img {
+  display: none !important;
+}
+
+/* Rasm o'rniga chiqadigan tavsif. */
+.a11y-alt {
+  display: block;
+  font-style: italic;
+  color: #374151;
+  border-left: 3px solid #9ca3af;
+  padding-left: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+/*
+  «Asosiy mazmunga o'tish» havolasi. Odatda ko'rinmaydi, klaviatura fokusi
+  tushganda paydo bo'ladi.
+*/
+.skip-link {
+  /* `fixed` — `absolute` bo'lsa `top: -100%` ota blok balandligiga bog'lanib
+     qolardi va turli sahifada turlicha ishlardi. */
+  position: fixed;
+  left: 1rem;
+  top: -5rem;
+  z-index: 100;
+  padding: 0.6rem 1rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  background-color: #1a3a5f;
+  color: #ffffff;
+  font-weight: 600;
+  transition: top 0.15s ease-in-out;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/*
+  Fokus HAMMA JOYDA ko'rinadi. `focus-visible` — sichqoncha bilan bosilganda
+  halqa chiqmaydi, klaviatura bilan yurilganda chiqadi.
+*/
+:focus-visible {
+  outline: 2px solid #28466a;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* `main` ga fokus dasturiy ravishda beriladi — halqa kerak emas. */
+main:focus {
+  outline: none;
+}
+

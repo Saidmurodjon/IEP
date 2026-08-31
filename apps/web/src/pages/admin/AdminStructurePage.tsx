@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { structureApi } from '@/lib/api';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
 import clsx from 'clsx';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 const schema = z.object({
   nameUz: z.string().min(1), nameEn: z.string().min(1), nameRu: z.string().min(1),
@@ -56,6 +57,13 @@ export default function AdminStructurePage() {
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); };
 
+
+  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
+
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(formRef, showForm, closeForm);
+
   const openEdit = (item: UnitItem) => {
     setEditItem(item);
     (Object.keys(schema.shape) as (keyof FormData)[]).forEach((k) => {
@@ -83,10 +91,17 @@ export default function AdminStructurePage() {
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl w-full max-w-xl my-4">
+            <div
+              className="bg-white rounded-2xl w-full max-w-xl my-4"
+              ref={formRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="admin-form-title"
+              tabIndex={-1}
+            >
               <div className="flex items-center justify-between p-5 border-b">
-                <h2 className="font-semibold text-gray-900">{editItem ? 'Tahrirlash' : 'Yangi bo\'lim'}</h2>
-                <button onClick={closeForm} className="text-gray-400 hover:text-gray-700"><X className="h-5 w-5" /></button>
+                <h2 id="admin-form-title" className="font-semibold text-gray-900">{editItem ? 'Tahrirlash' : 'Yangi bo\'lim'}</h2>
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700"><X className="h-5 w-5" /></button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
                 <div className="flex gap-1 border-b mb-4">

@@ -77,7 +77,7 @@ export default function EmployeesPage() {
             <section key={group.id}>
               <div className="flex items-baseline justify-between gap-4 mb-5 pb-2 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">{group.name}</h2>
-                <span className="text-sm text-gray-400 flex-shrink-0">
+                <span className="text-sm text-gray-500 flex-shrink-0">
                   {group.members.length} {t('employees.count')}
                 </span>
               </div>

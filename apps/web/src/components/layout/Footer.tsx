@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { useSettings, telHref } from '@/hooks/useSettings';
 import { formatDate } from '@/lib/date';
+import A11yImage from '@/components/A11yImage';
 
 export default function Footer() {
   const { t } = useTranslation();
@@ -28,7 +29,7 @@ export default function Footer() {
                 logotip oq maydonchada turadi, aks holda yozuv ko'rinmaydi.
               */}
               <div className="bg-white rounded-lg p-2 flex-shrink-0">
-                <img
+                <A11yImage
                   src="/images/logo-full.png"
                   alt={t('common.institute_name')}
                   width={72}
@@ -121,11 +122,12 @@ export default function Footer() {
       */}
       <div className="border-t border-primary-800/70">
         <div className="container py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-          <p className="text-xs text-gray-500 leading-relaxed max-w-2xl">
+          {/* To'q footer fonida `gray-500` 3.1:1 beradi — `gray-400` 5.9:1 (10B4). */}
+          <p className="text-xs text-gray-400 leading-relaxed max-w-2xl">
             {t('footer.usage_terms')}
           </p>
           {lastUpdatedAt && (
-            <p className="text-xs text-gray-500 flex-shrink-0">
+            <p className="text-xs text-gray-400 flex-shrink-0">
               {t('footer.last_updated')}: <time dateTime={lastUpdatedAt}>{formatDate(lastUpdatedAt)}</time>
             </p>
           )}
@@ -134,13 +136,13 @@ export default function Footer() {
 
       <div className="border-t border-primary-800">
         <div className="container py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-400">
             © {year} {t('common.institute_name')}. {t('footer.rights')}.
           </p>
           {/* Admin — ATAYLAB til prefiksisiz: admin marshrutlari o'zgarmaydi. */}
           <Link
             to="/admin"
-            className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+            className="text-xs text-gray-400 hover:text-white transition-colors"
           >
             Admin
           </Link>

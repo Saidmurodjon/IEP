@@ -84,13 +84,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             <div className="min-w-0 flex-1">
               <p className="text-sm text-gray-800 leading-relaxed">{item.text}</p>
               {item.code && (
-                <p className="mt-1 text-[11px] font-mono text-gray-400">{item.code}</p>
+                <p className="mt-1 text-[11px] font-mono text-gray-500">{item.code}</p>
               )}
             </div>
             <button
               onClick={() => remove(item.id)}
               aria-label={t('common.close')}
-              className="text-gray-300 hover:text-gray-600 flex-shrink-0"
+              className="text-gray-500 hover:text-gray-600 flex-shrink-0"
             >
               <X className="h-4 w-4" />
             </button>

@@ -9,6 +9,7 @@ import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
 import LocalizedLink from '@/components/LocalizedLink';
 import { useToast } from '@/components/Toast';
 import { useSettings, telHref } from '@/hooks/useSettings';
+import FieldError from '@/components/FieldError';
 
 type FormData = {
   name: string;
@@ -193,29 +194,36 @@ export default function ContactPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">{t('contact.name')} *</label>
+                    <label htmlFor="contact-name" className="label">{t('contact.name')} *</label>
                     <input
+                      id="contact-name"
                       {...register('name')}
                       className="input"
                       placeholder={t('contact.name_placeholder')}
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={errors.name ? 'contact-name-error' : undefined}
                     />
-                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                    <FieldError id="contact-name-error" message={errors.name?.message} />
                   </div>
                   <div>
-                    <label className="label">{t('contact.email')} *</label>
+                    <label htmlFor="contact-email" className="label">{t('contact.email')} *</label>
                     <input
+                      id="contact-email"
                       {...register('email')}
                       type="email"
                       className="input"
                       placeholder="email@example.com"
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? 'contact-email-error' : undefined}
                     />
-                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                    <FieldError id="contact-email-error" message={errors.email?.message} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">{t('contact.phone')}</label>
+                    <label htmlFor="contact-phone" className="label">{t('contact.phone')}</label>
                     <input
+                      id="contact-phone"
                       {...register('phone')}
                       type="tel"
                       className="input"
@@ -223,24 +231,30 @@ export default function ContactPage() {
                     />
                   </div>
                   <div>
-                    <label className="label">{t('contact.subject')} *</label>
+                    <label htmlFor="contact-subject" className="label">{t('contact.subject')} *</label>
                     <input
+                      id="contact-subject"
                       {...register('subject')}
                       className="input"
                       placeholder={t('contact.subject_placeholder')}
+                      aria-invalid={Boolean(errors.subject)}
+                      aria-describedby={errors.subject ? 'contact-subject-error' : undefined}
                     />
-                    {errors.subject && <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>}
+                    <FieldError id="contact-subject-error" message={errors.subject?.message} />
                   </div>
                 </div>
                 <div>
-                  <label className="label">{t('contact.message')} *</label>
+                  <label htmlFor="contact-message" className="label">{t('contact.message')} *</label>
                   <textarea
+                    id="contact-message"
                     {...register('message')}
                     rows={5}
                     className="input resize-none"
                     placeholder={t('contact.message_placeholder')}
+                    aria-invalid={Boolean(errors.message)}
+                    aria-describedby={errors.message ? 'contact-message-error' : undefined}
                   />
-                  {errors.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
+                  <FieldError id="contact-message-error" message={errors.message?.message} />
                 </div>
                 <button
                   type="submit"

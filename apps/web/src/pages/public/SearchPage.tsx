@@ -101,7 +101,7 @@ export default function SearchPage() {
       <div className="container py-10">
         {/* Qidiruv maydoni */}
         <div className="relative max-w-2xl">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-500 pointer-events-none" />
           <label htmlFor="search-input" className="sr-only">
             {t('search.title')}
           </label>
@@ -203,7 +203,7 @@ export default function SearchPage() {
                 <section key={group.type} className="mb-8">
                   <h2 className="text-lg font-semibold text-gray-900 mb-3">
                     {t(`search.types.${group.type}`)}{' '}
-                    <span className="text-sm font-normal text-gray-400">({group.total})</span>
+                    <span className="text-sm font-normal text-gray-500">({group.total})</span>
                   </h2>
                   <ul className="space-y-3">
                     {group.items.map((item) => (
@@ -215,7 +215,7 @@ export default function SearchPage() {
                           {item.title}
                         </LocalizedLink>
                         {item.date && (
-                          <time className="block text-xs text-gray-400 mt-0.5">
+                          <time className="block text-xs text-gray-500 mt-0.5">
                             {formatDate(item.date)}
                           </time>
                         )}
@@ -230,14 +230,14 @@ export default function SearchPage() {
               ))}
 
               {result.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-3 mt-10">
+                <nav aria-label={t('a11y.pagination')} className="flex items-center justify-center gap-3 mt-10">
                   <button
                     onClick={() => updateParam('page', String(page - 1))}
                     disabled={page <= 1}
-                    aria-label={t('common.back')}
+                    aria-label={t('a11y.prev_page')}
                     className="btn-secondary px-3 py-2 disabled:opacity-40"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                   </button>
                   <span className="text-sm text-gray-600">
                     {page} / {result.totalPages}
@@ -245,12 +245,12 @@ export default function SearchPage() {
                   <button
                     onClick={() => updateParam('page', String(page + 1))}
                     disabled={page >= result.totalPages}
-                    aria-label={t('search.submit')}
+                    aria-label={t('a11y.next_page')}
                     className="btn-secondary px-3 py-2 disabled:opacity-40"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-4 w-4" aria-hidden="true" />
                   </button>
-                </div>
+                </nav>
               )}
             </>
           )}

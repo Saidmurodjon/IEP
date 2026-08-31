@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import type { Employee } from '@/lib/employee';
 import { type Unit } from '@/lib/structure';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 const schema = z.object({
   fullNameUz: z.string().min(1, 'Ism kiriting'),
@@ -78,6 +79,13 @@ export default function AdminEmployeesPage() {
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
 
+
+  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
+
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(formRef, showForm, closeForm);
+
   const createMutation = useMutation({
     mutationFn: (values: FormData) => employeesApi.create(values),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_saved')); closeForm(); },
@@ -125,12 +133,19 @@ export default function AdminEmployeesPage() {
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl w-full max-w-3xl my-4">
+            <div
+              className="bg-white rounded-2xl w-full max-w-3xl my-4"
+              ref={formRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="admin-form-title"
+              tabIndex={-1}
+            >
               <div className="flex items-center justify-between p-5 border-b">
-                <h2 className="font-semibold text-gray-900">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900">
                   {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.employees')}
                 </h2>
-                <button onClick={closeForm} className="text-gray-400 hover:text-gray-700">
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
                   <X className="h-5 w-5" />
                 </button>
               </div>

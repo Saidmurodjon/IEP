@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import { ToastProvider } from '@/components/Toast';
+import { AccessibilityProvider } from '@/hooks/useAccessibility';
 import { installClientLogger } from '@/lib/client-logger';
 import ErrorBoundary from '@/components/ErrorBoundary';
 import './i18n';
@@ -24,13 +25,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          {/* Admin paneldagi barcha xabarlar shu provayder orqali ko'rsatiladi */}
-          <ToastProvider>
-            {/* Eng tashqi chegara — marshrutlashdan oldingi xatolar uchun */}
-            <ErrorBoundary scope="public">
-              <App />
-            </ErrorBoundary>
-          </ToastProvider>
+          {/* Ko'rinish sozlamalari (shrift, kontrast, rasmlar) — butun sayt uchun */}
+          <AccessibilityProvider>
+            {/* Admin paneldagi barcha xabarlar shu provayder orqali ko'rsatiladi */}
+            <ToastProvider>
+              {/* Eng tashqi chegara — marshrutlashdan oldingi xatolar uchun */}
+              <ErrorBoundary scope="public">
+                <App />
+              </ErrorBoundary>
+            </ToastProvider>
+          </AccessibilityProvider>
         </BrowserRouter>
       </QueryClientProvider>
     </HelmetProvider>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -13,6 +13,7 @@ import FileUploadField from '@/components/admin/FileUploadField';
 import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTabs';
 import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/date';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 const schema = z.object({
   titleUz: z.string().min(1, 'Nomini kiriting'),
@@ -55,6 +56,13 @@ export default function AdminDocumentsPage() {
   const values = watch();
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
+
+
+  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
+
+  const formRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(formRef, showForm, closeForm);
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ['admin-documents'] });
     qc.invalidateQueries({ queryKey: ['documents'] });
@@ -121,12 +129,19 @@ export default function AdminDocumentsPage() {
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div className="bg-white rounded-2xl w-full max-w-2xl my-4">
+            <div
+              className="bg-white rounded-2xl w-full max-w-2xl my-4"
+              ref={formRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="admin-form-title"
+              tabIndex={-1}
+            >
               <div className="flex items-center justify-between p-5 border-b">
-                <h2 className="font-semibold text-gray-900">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900">
                   {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.documents')}
                 </h2>
-                <button onClick={closeForm} className="text-gray-400 hover:text-gray-700">
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
                   <X className="h-5 w-5" />
                 </button>
               </div>

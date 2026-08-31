@@ -9,11 +9,15 @@ import { Calendar, ArrowLeft } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import { sanitizeHtml } from '@/lib/sanitize';
 import type { Lang } from '@energetika/shared';
+import A11yImage from '@/components/A11yImage';
+import { useAccessibility } from '@/hooks/useAccessibility';
+import { replaceImagesWithAlt } from '@/lib/a11y';
 
 export default function NewsDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { t, i18n } = useTranslation();
   const lang = i18n.language.substring(0, 2) as Lang;
+  const { settings } = useAccessibility();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['news', slug],
@@ -41,6 +45,10 @@ export default function NewsDetailPage() {
     );
   }
 
+  const cleanContent = sanitizeHtml(getField('content'));
+  const contentHtml =
+    settings.images === 'off' ? replaceImagesWithAlt(cleanContent) : cleanContent;
+
   const sourceName = (item as Record<string, string>).sourceName ?? '';
   const sourceUrl = (item as Record<string, string>).sourceUrl ?? '';
 
@@ -67,7 +75,7 @@ export default function NewsDetailPage() {
       <div className="container py-10">
         <div className="max-w-3xl mx-auto">
           {(item as Record<string, string>).imageUrl && (
-            <img
+            <A11yImage
               src={(item as Record<string, string>).imageUrl}
               alt={getField('title')}
               className="w-full rounded-xl mb-8 shadow-sm"
@@ -79,7 +87,9 @@ export default function NewsDetailPage() {
           <div
             className="prose-content"
             // Server saqlashdan oldin tozalagan; bu ikkinchi qatlam (CLAUDE.md 7-qoida).
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(getField('content')) }}
+            // Rasmlar o'chirilgan bo'lsa, matn ichidagi rasmlar `alt` tavsifiga
+            // almashadi. Almashtirish tozalashdan KEYIN (`lib/a11y.ts` izohi).
+            dangerouslySetInnerHTML={{ __html: contentHtml }}
           />
 
           {/*

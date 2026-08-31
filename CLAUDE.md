@@ -52,6 +52,8 @@ apps/
     src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Employees,
                         Partners, Documents, Settings, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
+    src/lib/a11y.ts     Ko'rinish sozlamalari (shrift, kontrast, rasmlar, oraliq)
+    src/hooks/          useAccessibility, useFocusTrap, useDebouncedValue, useLocalizedPath, ...
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API
     src/routes/         auth, news, publications, structure, settings, contact, employees,
@@ -124,23 +126,33 @@ packages/
     unga mos sinov ham yozing.
 19. **Admin paneldagi barcha xabarlar `useToast()` orqali.** Xato kodi API dan keladi,
     o'zbekcha matn `locales/*.json` dagi `errors.<KOD>` dan olinadi.
+20. **Maxsus imkoniyatlar majburiy** (373-son qaror, 11-band). Yangi ochiq sahifa yoki
+    komponent qo'shganda: sahifada **bitta `h1`** bo'lsin va sarlavha darajasi sakramasin;
+    har bir rasm ochiq qismda `A11yImage` orqali va **`alt` bilan** (bezak — bo'sh satr);
+    har bir forma maydonida `id` + `htmlFor` bo'lgan `label`, xato `FieldError` bilan
+    (`aria-invalid`, `aria-describedby`, ikonka + matn — faqat rang bilan emas);
+    faqat ikonkadan iborat tugmada `aria-label`; ochiladigan oyna `Escape` bilan yopilsin va
+    `useFocusTrap` ishlatilsin; dinamik natijalarda `aria-live`. Kontrast: oddiy matn
+    **4,5:1**, yirik matn va ikonka **3:1** (oq fonda `text-gray-400` va `text-accent-500`
+    YETMAYDI). Ko'rinish sozlamalari `lib/a11y.ts` da — saytning alohida versiyasi
+    yaratilmaydi.
 
 
 ### 4.4 Umumiy
 
-20. **Qidiruv indeksi kod bilan boshqariladi.** `searchVector` ustuni trigger bilan emas,
+21. **Qidiruv indeksi kod bilan boshqariladi.** `searchVector` ustuni trigger bilan emas,
     `lib/search-index.ts` dagi `reindex()` orqali yangilanadi. Yangi qidiriladigan model
     qo'shsangiz: (a) `VECTOR_SQL` ga ifoda yozing — sarlavha `A`, tavsif `B`, matn `C`
     vaznida, uchala til bitta vektorda; (b) migratsiyada ustun, GIN indeks va to'ldirish
     (backfill) yozing — ifoda `VECTOR_SQL` bilan **aynan bir xil** bo'lsin
     (`search-index.test.ts` shuni tekshiradi); (c) har bir `create`/`update` dan keyin
     `reindex()` chaqiring. Lug'at doim `simple` — PostgreSQL da o'zbek lug'ati yo'q.
-21. **IP bo'yicha cheklov `lib/rate-limit.ts` orqali.** Har bir endpoint uchun alohida
+22. **IP bo'yicha cheklov `lib/rate-limit.ts` orqali.** Har bir endpoint uchun alohida
     `createStore()`. O'z nusxangizni yozmang.
-22. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
-23. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
-24. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
-25. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+23. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
+24. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
+25. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
+26. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 
 ---
 

@@ -5,6 +5,7 @@ import { telHref } from '@/hooks/useSettings';
 import {
   initials, localized, orcidUrl, scopusUrl, type Employee,
 } from '@/lib/employee';
+import A11yImage from '@/components/A11yImage';
 
 interface Props {
   employee: Employee;
@@ -20,7 +21,7 @@ function Avatar({ name, photoUrl, size }: { name: string; photoUrl?: string | nu
   const box = size === 'lg' ? 'h-24 w-24 text-2xl' : 'h-16 w-16 text-lg';
   if (photoUrl) {
     return (
-      <img
+      <A11yImage
         src={photoUrl}
         alt={`${name} — ${t('employee.photo_alt')}`}
         className={`${box} rounded-full object-cover flex-shrink-0 bg-gray-100`}
@@ -92,10 +93,10 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-gray-900 leading-snug">{name}</h3>
           <p className="text-sm text-gray-600 mt-0.5">{position}</p>
-          {credentials && <p className="text-xs text-gray-400 mt-1">{credentials}</p>}
+          {credentials && <p className="text-xs text-gray-500 mt-1">{credentials}</p>}
           {researchArea && (
             <p className="text-xs text-gray-500 mt-2 flex items-start gap-1.5">
-              <BookOpen className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-gray-300" />
+              <BookOpen className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-gray-500" />
               {researchArea}
             </p>
           )}
@@ -120,9 +121,9 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
           {credentials && <p className="text-sm text-gray-500 mt-1">{credentials}</p>}
           {researchArea && (
             <p className="text-sm text-gray-600 mt-3 flex items-start gap-2">
-              <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-300" />
+              <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-500" />
               <span>
-                <span className="text-gray-400">{t('employee.research_area')}: </span>
+                <span className="text-gray-500">{t('employee.research_area')}: </span>
                 {researchArea}
               </span>
             </p>
@@ -131,16 +132,16 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
           <div className="mt-4 space-y-2 text-sm text-gray-600">
             {employee.officeRoom && (
               <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-300 flex-shrink-0" />
+                <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
                 <span>
-                  <span className="text-gray-400">{t('employee.office')}: </span>
+                  <span className="text-gray-500">{t('employee.office')}: </span>
                   {employee.officeRoom}
                 </span>
               </div>
             )}
             {employee.phone && (
               <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-300 flex-shrink-0" />
+                <Phone className="h-4 w-4 text-gray-500 flex-shrink-0" />
                 <a href={telHref(employee.phone)} className="text-primary-700 hover:underline">
                   {employee.phone}
                 </a>

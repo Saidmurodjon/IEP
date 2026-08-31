@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import type { Lang } from '@energetika/shared';
 import { partnersApi } from '@/lib/api';
 import { localized } from '@/lib/employee';
+import A11yImage from '@/components/A11yImage';
 
 interface Partner {
   id: string;
@@ -35,7 +36,7 @@ export default function PartnersStrip() {
   const renderLogo = (partner: Partner, clone: boolean) => {
     const name = localized(partner as unknown as Record<string, unknown>, 'name', lang);
     const logo = (
-      <img
+      <A11yImage
         src={partner.logoUrl}
         alt={name}
         loading="lazy"

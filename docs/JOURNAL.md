@@ -13,51 +13,51 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-31
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06, 07, 08, 09 va 10A
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06, 07, 08, 09, 10A va 10B
 kommitlari lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **09 PM tomonidan QABUL QILINDI.**
-- **10A — sayt bo'ylab to'liq matnli qidiruv tayyor.** `GET /api/search` (ochiq, IP bo'yicha
-  daqiqasiga 30 ta): `q` (≥2 belgi), `type`, `from`, `to`, `lang`, `page`, `limit`.
-  Natijalar bo'limlar bo'yicha guruhlanadi, topilgan so'z `<mark>` bilan belgilanadi.
-- **Baza:** migratsiya `7_search_vectors` — 5 jadvalda `searchVector tsvector` + GIN indeks.
-  Lug'at `simple` (o'zbek lug'ati yo'q), qidiruv prefiks bo'yicha (`so'z:*`), shuning uchun
-  o'zbek/rus qo'shimchalari ham topiladi. Vazn: sarlavha `A`, tavsif `B`, matn `C`.
-- **Indeks trigger bilan emas, kodda:** `packages/shared/src/search-vectors.ts` (yagona manba)
-  → `apps/api/src/lib/search-index.ts` `reindex()`, har bir `create`/`update` dan keyin.
-  Seed va demo skriptlari ham indeksni qayta quradi.
-- **Frontend:** `/search` sahifasi (so'rov va filtrlar manzilda), sarlavhada qidiruv maydoni
-  (mobil ko'rinishda ikonka), 300 ms kechikish, `↓`/`↑`/`Enter`/`Escape` klaviatura,
-  `aria-live`, parcha faqat `<mark>` bilan (DOMPurify).
-- **`apps/api/.dev.vars` endi LOKAL bazaga qaraydi.** Production nusxasi `.dev.vars.production`
-  da; ikkalasi ham `.gitignore` da (`.dev.vars`, `.dev.vars.*`).
+- **09 va 10A PM tomonidan QABUL QILINDI.**
+- **10B — maxsus imkoniyatlar tayyor.** Sarlavhadagi tugma ko'rinish panelini ochadi:
+  shrift uch daraja (16/20/24px), yuqori kontrast (oq fon, qora matn), rasmlarni o'chirish,
+  harflar oralig'i, «odatdagi ko'rinishga qaytarish». Tanlov `localStorage` da, `html`
+  elementiga sinf sifatida qo'llanadi (`lib/a11y.ts` + `index.css`). **Alohida sayt
+  versiyasi yo'q.**
+- **Klaviatura:** «Asosiy mazmunga o'tish» havolasi, fokus hamma joyda ko'rinadi,
+  `Escape` panel/menyu/til ro'yxatini yopadi, ochiq oynada fokus qamaladi
+  (`useFocusTrap` — ochiq saytda ham, admin paneldagi 6 ta oynada ham).
+- **Ekran o'qigichlar:** `header`/`nav`/`main`/`footer`, har sahifada bitta `h1` va daraja
+  sakramaydi, barcha rasmda `alt`, forma maydonlari `label` bilan bog'langan, xato
+  `FieldError` (ikonka + matn + `role="alert"`), ikonkali tugmalarda `aria-label`,
+  til almashganda `html lang` o'zgaradi, dinamik joylarda `aria-live`.
+- **Kontrast:** axe-core 14 ta sahifada **0 ta buzilish** (WCAG 2.0/2.1 A+AA), yuqori
+  kontrast rejimida ham 0.
+- **Qidiruv (10A)** va **murojaatlar (09)** avvalgidek ishlaydi.
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **10B (imkoniyati cheklanganlar) va 10C (xavfsizlik sarlavhalari) boshlanmagan.**
-- **Bu muhitda hostda `node`/`npm` PATH da yo'q.** Butun tekshiruv Docker orqali bajarildi:
-  `postgres:16` (5433), `node:20` konteyneri, `local-neon-http-proxy` (Prisma Neon HTTP
-  drayveri oddiy Postgres bilan gaplasha olmaydi), `puppeteer` konteyneri. Batafsil —
-  quyidagi yozuv.
-- **`RESEND_API_KEY` va `MAIL_FROM` o'rnatilmagan** — haqiqiy xat hali yuborilmadi.
-- **R2 bucket production'da yaratilmagan**, **migratsiyalar 2–7 production'ga qo'llanmagan.**
+- **10C (xavfsizlik sarlavhalari, CSP) boshlanmagan.**
+- **404 sahifasidagi qidiruv maydoni hali `disabled`** — 10A tugagach uni `/search` ga
+  ulash kerak edi, e'tibordan chetda qolgan (10C bilan birga qilinsin).
+- **Hostda `node`/`npm` PATH da yo'q.** Butun tekshiruv Docker orqali: `postgres:16` (5433),
+  `node:20`, `local-neon-http-proxy`, `puppeteer` + `axe-core`.
+- `apps/web` da birlik sinovlari yo'q (vitest faqat `apps/api` da) — `lib/a11y.ts`
+  brauzerda tekshirildi.
+- **`RESEND_API_KEY` va `MAIL_FROM` o'rnatilmagan**, **R2 bucket production'da yo'q**,
+  **migratsiyalar 2–7 production'ga qo'llanmagan.**
 - Murojaatlarni saqlash muddati yuriskonsultdan kutilmoqda. Cron sozlanmagan.
 - Throttle va rate limitlar izolyat xotirasida (KV/Durable Object kerak).
-- Testlar `redact.ts`, `rate-limit.ts` va `search-index.ts` ni qamraydi (43 ta), CI yo'q.
-- Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda
-  (`docs/kerakli-malumotlar.md`).
+- Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda.
 
 ### Keyingi qadam
-1. 10A ni PM tekshirsin.
-2. 10B — imkoniyati cheklangan shaxslar uchun qulayliklar (alohida kommit).
-3. 10C — xavfsizlik sarlavhalari va CSP (alohida kommit).
+1. 10B ni PM tekshirsin.
+2. 10C — xavfsizlik sarlavhalari va CSP (alohida kommit); shu bilan birga 404 dagi
+   qidiruv maydonini ulash.
 
 ### Ochiq savollar
 - Yopilgan murojaatlarni qancha muddat saqlash kerak? **Yuriskonsult javobi kutilmoqda.**
-- Murojaat bildirishnomalari uchun alohida pochta manzili bormi (`appeals_email` sozlamasi)?
+- Murojaat bildirishnomalari uchun alohida pochta manzili bormi (`appeals_email`)?
 - Throttle/rate limit uchun KV yoki Durable Object qachon ulanadi?
-- Nashrlar/hujjatlar/xodimlar uchun alohida sahifa yo'q — qidiruv natijasi ro'yxat
-  sahifasiga olib boradi. Alohida sahifalar kerakmi?
+- `apps/web` uchun vitest qo'shilsinmi (a11y va sanitizatsiya funksiyalari uchun)?
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -73,8 +73,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 07 | Fayl yuklash va tahrirlagich | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 08 | Xatoliklar jurnali | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 09 | Murojaatlar va Resend | ✅ **Qabul qilindi** |
-| 10A | Sayt bo'ylab qidiruv | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 10B | Imkoniyati cheklanganlar uchun qulayliklar | ⏳ Navbatda |
+| 10A | Sayt bo'ylab qidiruv | ✅ **Qabul qilindi** |
+| 10B | Imkoniyati cheklanganlar uchun qulayliklar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 10C | Xavfsizlik sarlavhalari va CSP | ⏳ Navbatda |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
@@ -98,6 +98,45 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-31 · 10B — Imkoniyati cheklangan shaxslar uchun qulayliklar
+
+**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(a11y): accessibility panel and keyboard navigation`
+
+**Nima qilindi.** `lib/a11y.ts` (sozlamalar, `localStorage`, `html` sinflari, boy matndagi
+rasmni `alt` ga almashtirish), `hooks/useAccessibility.tsx`, `hooks/useFocusTrap.ts`,
+`components/AccessibilityPanel.tsx`, `components/A11yImage.tsx`, `components/FieldError.tsx`.
+`index.css` ga CSS o'zgaruvchilari va `.a11y-*` sinflari, `.skip-link`, global
+`:focus-visible`. `PublicLayout` ga «Asosiy mazmunga o'tish» + `main#main-content`.
+`Header` ga panel tugmasi, `Escape`, `aria-*`, `nav` nomlari. Ochiq qismdagi 9 ta rasm
+`A11yImage` ga o'tkazildi. Sarlavha darajalari tuzatildi (Labs/News/Publications/Structure
+`h3` → `h2`). Formalar `id`+`htmlFor` bilan bog'landi. Kontrast: `text-gray-400`/`-300`
+(2.54:1 / 1.47:1) → `gray-500`, `accent-500/600` → `accent-700`, footer huquqiy matni
+to'q fonda `gray-500` (3.1:1) → `gray-400` (5.9:1). Admin paneldagi 6 ta oynaga
+`role="dialog"` + fokus qopqoni. i18n `a11y.*` — uchala tilda 351 kalit, farq yo'q.
+
+**Tekshirildi (headless Chrome + axe-core, Docker'da).** `tsc` (api+web) toza, vitest 43/43,
+`vite build` toza. **axe-core (WCAG 2.0/2.1 A+AA) 14 ta sahifada — 0 buzilish**, yuqori
+kontrast rejimida ham 0 (avval 42 ta `color-contrast` bor edi). Skip-link: `Tab` bosilganda
+ko'rinadi (`top ≥ 0`), `Enter` fokusni `#main-content` ga oladi, fokus ketgach yashirinadi.
+Panel: `role="dialog" aria-modal`, fokus ichida, **40 marta `Tab` dan keyin ham ichida**,
+`Escape` yopadi va fokus tugmaga qaytadi. Shrift 16→20→24px, kontrast `rgb(255,255,255)` fon
+va `rgb(0,0,0)` matn, `aria-pressed` teskari rangda; rasmlar o'chirilganda ko'rinadigan rasm 0
+va `.a11y-alt` matnlari chiqadi; oraliq 1.44px/2.56px/28.8px. Tanlov qayta yuklangandan keyin
+saqlanadi, «qaytarish» sinflarni tozalaydi. `html lang` uz/en/ru bo'yicha o'zgaradi.
+Bo'sh forma yuborilganda 4 maydonda `aria-invalid`, `aria-describedby`, `role="alert"` va
+ikonka; shu holatda ham axe toza. 60 marta `Tab` — tuzoq yo'q. Admin oynasi: dialog, fokus
+qamalgan, `Escape` yopadi. `replaceImagesWithAlt` brauzerda 6 holatda tekshirildi,
+`alt="<img onerror=...>"` matn sifatida chiqdi, rasm in'ektsiya qilinmadi.
+
+**TEKSHIRILMADI:** haqiqiy ekran o'qigich (NVDA/VoiceOver) bilan qo'lda; 404 sahifasidagi
+`disabled` qidiruv maydoni hali `/search` ga ulanmagan (10C ga qoldi).
+
+**Qarorlar.** Rasm almashtirish **DOM orqali**, regex bilan emas — `alt` ichida `>` bo'lsa
+regex tegni noto'g'ri joyda tugatardi; `textContent` o'zi ekranlaydi, qo'lda `escape` qilinsa
+`&amp;` `&amp;amp;` ga aylanardi. `.skip-link` `fixed` — `absolute` da `top: -100%` ota blok
+balandligiga bog'lanib qolardi. Yuqori kontrastda `aria-pressed`/`aria-selected` teskari
+rangda: hamma fon oq bo'lgani uchun holat faqat rang bilan bilinmay qolardi.
 
 ### 2026-08-31 · 10A — Sayt bo'ylab to'liq matnli qidiruv
 

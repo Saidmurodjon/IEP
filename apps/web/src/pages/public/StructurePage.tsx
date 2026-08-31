@@ -63,7 +63,7 @@ function StructureNode({ unit, lang, depth = 0 }: { unit: Unit; lang: string; de
                   {t('structure.advisory')}
                 </span>
               )}
-              <h3 className="font-semibold text-gray-900 text-sm">{name}</h3>
+              <h2 className="font-semibold text-gray-900 text-sm">{name}</h2>
             </div>
             {typeof unit.staffCount === 'number' && (
               <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
@@ -82,11 +82,13 @@ function StructureNode({ unit, lang, depth = 0 }: { unit: Unit; lang: string; de
           {hasChildren && (
             <button
               onClick={() => setExpanded(!expanded)}
-              className="flex-shrink-0 p-1 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              aria-label={expanded ? t('a11y.collapse') : t('a11y.expand')}
+              aria-expanded={expanded}
+              className="flex-shrink-0 p-1 rounded text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
             >
               {expanded
-                ? <ChevronDown className="h-4 w-4" />
-                : <ChevronRight className="h-4 w-4" />
+                ? <ChevronDown className="h-4 w-4" aria-hidden="true" />
+                : <ChevronRight className="h-4 w-4" aria-hidden="true" />
               }
             </button>
           )}
@@ -128,7 +130,7 @@ export default function StructurePage() {
 
       <div className="container py-12">
         {isLoading && <LoadingSpinner />}
-        {error && <p className="text-red-500 text-center">{t('common.error')}</p>}
+        {error && <p role="alert" className="text-red-600 text-center">{t('common.error')}</p>}
         {!isLoading && tree.length === 0 && (
           <p className="text-gray-500 text-center py-8">{t('common.not_found')}</p>
         )}

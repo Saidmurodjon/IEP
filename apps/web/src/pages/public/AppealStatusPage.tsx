@@ -8,6 +8,7 @@ import SeoHead from '@/components/SeoHead';
 import { contactApi } from '@/lib/api';
 import { toApiError } from '@/lib/api-error';
 import { formatDate } from '@/lib/date';
+import FieldError from '@/components/FieldError';
 
 interface AppealStatus {
   ticketNumber: string;
@@ -82,20 +83,31 @@ export default function AppealStatusPage() {
             <p className="text-sm text-gray-500">{t('appeal.hint')}</p>
 
             <div>
-              <label className="label">{t('appeal.ticket')} *</label>
+              <label htmlFor="appeal-ticket" className="label">{t('appeal.ticket')} *</label>
               <input
+                id="appeal-ticket"
                 {...register('ticket')}
                 className="input"
                 placeholder="M-2026-0001"
                 autoComplete="off"
+                aria-invalid={Boolean(errors.ticket)}
+                aria-describedby={errors.ticket ? 'appeal-ticket-error' : undefined}
               />
-              {errors.ticket && <p className="text-red-500 text-xs mt-1">{errors.ticket.message}</p>}
+              <FieldError id="appeal-ticket-error" message={errors.ticket?.message} />
             </div>
 
             <div>
-              <label className="label">{t('contact.email')} *</label>
-              <input {...register('email')} type="email" className="input" placeholder="email@example.com" />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+              <label htmlFor="appeal-email" className="label">{t('contact.email')} *</label>
+              <input
+                id="appeal-email"
+                {...register('email')}
+                type="email"
+                className="input"
+                placeholder="email@example.com"
+                aria-invalid={Boolean(errors.email)}
+                aria-describedby={errors.email ? 'appeal-email-error' : undefined}
+              />
+              <FieldError id="appeal-email-error" message={errors.email?.message} />
             </div>
 
             <button type="submit" disabled={loading} className="btn-primary gap-2 px-6 py-2.5">
@@ -125,11 +137,11 @@ export default function AppealStatusPage() {
                   </div>
                   <dl className="mt-4 space-y-1.5 text-sm">
                     <div className="flex gap-2">
-                      <dt className="text-gray-400">{t('appeal.received')}:</dt>
+                      <dt className="text-gray-500">{t('appeal.received')}:</dt>
                       <dd className="text-gray-700">{formatDate(result.createdAt)}</dd>
                     </div>
                     <div className="flex gap-2">
-                      <dt className="text-gray-400">{t('appeal.changed')}:</dt>
+                      <dt className="text-gray-500">{t('appeal.changed')}:</dt>
                       <dd className="text-gray-700">{formatDate(result.statusChangedAt)}</dd>
                     </div>
                   </dl>

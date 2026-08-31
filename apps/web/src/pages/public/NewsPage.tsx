@@ -8,6 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Calendar, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
+import A11yImage from '@/components/A11yImage';
 
 export default function NewsPage() {
   const { t, i18n } = useTranslation();
@@ -47,7 +48,7 @@ export default function NewsPage() {
           {news.map((item: Record<string, string>) => (
             <article key={item.id} className="card hover:shadow-md transition-shadow flex flex-col">
               {item.imageUrl && (
-                <img src={item.imageUrl} alt={getField(item, 'title')} className="w-full h-48 object-cover" />
+                <A11yImage src={item.imageUrl} alt={getField(item, 'title')} className="w-full h-48 object-cover" />
               )}
               {!item.imageUrl && (
                 <div className="w-full h-32 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
@@ -55,13 +56,13 @@ export default function NewsPage() {
                 </div>
               )}
               <div className="p-5 flex-1 flex flex-col">
-                <time className="text-xs text-gray-400 flex items-center gap-1 mb-2">
+                <time className="text-xs text-gray-500 flex items-center gap-1 mb-2">
                   <Calendar className="h-3 w-3" />
                   {formatDate(item.publishedAt)}
                 </time>
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 flex-1">
+                <h2 className="font-semibold text-gray-900 mb-2 line-clamp-2 flex-1">
                   {getField(item, 'title')}
-                </h3>
+                </h2>
                 <p className="text-sm text-gray-500 line-clamp-2 mb-4">
                   {getField(item, 'summary')}
                 </p>
@@ -78,13 +79,14 @@ export default function NewsPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-center gap-3 mt-10">
+          <nav aria-label={t('a11y.pagination')} className="flex items-center justify-center gap-3 mt-10">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
+              aria-label={t('a11y.prev_page')}
               className="btn-secondary px-3 py-2 disabled:opacity-40"
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
             </button>
             <span className="text-sm text-gray-600">
               {page} / {totalPages}
@@ -92,11 +94,12 @@ export default function NewsPage() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
+              aria-label={t('a11y.next_page')}
               className="btn-secondary px-3 py-2 disabled:opacity-40"
             >
-              <ChevronRight className="h-4 w-4" />
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
             </button>
-          </div>
+          </nav>
         )}
       </div>
     </>
