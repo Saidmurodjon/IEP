@@ -10,7 +10,8 @@
     "management": "Rahbariyat",
     "employees": "Xodimlar",
     "documents": "Hujjatlar",
-    "appeal_status": "Murojaat holati"
+    "appeal_status": "Murojaat holati",
+    "search": "Qidiruv"
   },
   "home": {
     "hero_title": "O'zbekiston Respublikasi Fanlar akademiyasi",
@@ -84,6 +85,36 @@
     "no_pubs": "Nashrlar topilmadi",
     "year": "Yil",
     "empty_hint": "Institut nashrlari ro'yxati to'ldirilmoqda."
+  },
+  "search": {
+    "title": "Qidiruv",
+    "subtitle": "Sayt bo'ylab yangiliklar, nashrlar, hujjatlar, xodimlar va bo'linmalar orasidan qidiring",
+    "placeholder": "Sayt bo'ylab qidirish...",
+    "open": "Qidiruvni ochish",
+    "close": "Qidiruvni yopish",
+    "submit": "Qidirish",
+    "clear": "Tozalash",
+    "min_length": "Kamida 2 ta belgi kiriting",
+    "results_for": "\"{{q}}\" bo'yicha natijalar",
+    "found": "{{count}} ta natija topildi",
+    "loading": "Qidirilmoqda...",
+    "error": "Qidiruvni bajarib bo'lmadi. Birozdan keyin qayta urinib ko'ring.",
+    "no_results": "\"{{q}}\" bo'yicha hech narsa topilmadi",
+    "no_results_hint": "Boshqa so'z bilan urinib ko'ring, so'zni qisqartiring yoki filtrlarni bekor qiling.",
+    "all_results": "Barcha natijalar",
+    "show_all": "Barcha natijalarni ko'rish",
+    "filters": "Filtrlar",
+    "date_from": "Sanadan",
+    "date_to": "Sanagacha",
+    "reset_filters": "Filtrlarni bekor qilish",
+    "types": {
+      "all": "Hammasi",
+      "news": "Yangiliklar",
+      "publications": "Nashrlar",
+      "documents": "Hujjatlar",
+      "employees": "Xodimlar",
+      "structure": "Bo'linmalar"
+    }
   },
   "contact": {
     "title": "Aloqa",

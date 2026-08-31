@@ -48,16 +48,16 @@ apps/
   web/          React + Vite frontend
     src/pages/public/   Ochiq sahifalar (Home, About, Management, Structure, Labs, LabDetail,
                         Employees, News, Publications, Documents, Contact, AppealStatus,
-                        NotFound)
+                        Search, NotFound)
     src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Employees,
                         Partners, Documents, Settings, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API
     src/routes/         auth, news, publications, structure, settings, contact, employees,
-                        partners, documents, uploads, files
+                        partners, documents, uploads, files, search
     src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media,
-                        redact, error-log, mail, mail-templates
+                        redact, error-log, mail, mail-templates, rate-limit, search-index
     src/lib/__tests__/  vitest birlik sinovlari (`npm test --workspace=apps/api`)
     src/middleware/     requireAuth
     src/lib/            db, jwt
@@ -80,7 +80,10 @@ packages/
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
    `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`,
-   `GET /api/contact/status`, `POST /api/logs/client`.
+   `GET /api/contact/status`, `GET /api/search`, `POST /api/logs/client`.
+   **`GET /api/search` nega ochiq:** qidiruv 373-son qarorning 11-bandi bo'yicha har qanday
+   tashrifchi uchun majburiy. Cheklov: IP bo'yicha daqiqasiga 30 ta, `q` kamida 2 belgi,
+   `zValidator`, faqat nashr etilgan/faol yozuvlar chiqadi.
    **`POST /api/logs/client` nega ochiq:** JavaScript xatosi tizimga kirmagan foydalanuvchida
    ham yuz beradi, shuning uchun uni `requireAuth` bilan yopib bo'lmaydi. Buning evaziga
    cheklovlar qattiq: IP bo'yicha daqiqasiga 10 ta, matn uzunligi cheklangan, `zValidator`.
@@ -125,10 +128,19 @@ packages/
 
 ### 4.4 Umumiy
 
-20. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
-21. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
-22. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
-23. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+20. **Qidiruv indeksi kod bilan boshqariladi.** `searchVector` ustuni trigger bilan emas,
+    `lib/search-index.ts` dagi `reindex()` orqali yangilanadi. Yangi qidiriladigan model
+    qo'shsangiz: (a) `VECTOR_SQL` ga ifoda yozing — sarlavha `A`, tavsif `B`, matn `C`
+    vaznida, uchala til bitta vektorda; (b) migratsiyada ustun, GIN indeks va to'ldirish
+    (backfill) yozing — ifoda `VECTOR_SQL` bilan **aynan bir xil** bo'lsin
+    (`search-index.test.ts` shuni tekshiradi); (c) har bir `create`/`update` dan keyin
+    `reindex()` chaqiring. Lug'at doim `simple` — PostgreSQL da o'zbek lug'ati yo'q.
+21. **IP bo'yicha cheklov `lib/rate-limit.ts` orqali.** Har bir endpoint uchun alohida
+    `createStore()`. O'z nusxangizni yozmang.
+22. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
+23. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
+24. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
+25. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 
 ---
 
@@ -147,7 +159,7 @@ Ustuvorlik tartibida. Batafsil topshiriqlar: `docs/tasks/`.
 | 7 | SSR/prerender va sitemap yo'q — SEO nolga teng | 🟠 Ochiq |
 | 8 | ~~Bazada faqat demo ma'lumot~~ — tuzilma rasmiy 2025 hujjatiga ko'chirildi (kod tayyor, lokal test bazada tasdiqlangan). Production seed foydalanuvchi tasdig'ini kutmoqda; demo nashrlar hali qolgan | 🟠 Qisman |
 | 9 | ~~Cloudflare Pages GitHub'ga ulanmagan~~ — GitHub Actions workflow yozildi (`.github/workflows/deploy.yml`), sozlash: `docs/deploy.md`. Secret'lar + baseline foydalanuvchi tomonidan kutilmoqda | 🟠 Qisman |
-| 10 | Test yo'q, CI yo'q — `redact.ts` uchun 23 ta vitest sinovi yozildi, qolgan modullar hali qamrab olinmagan, CI yo'q | 🟠 Qisman |
+| 10 | Test yo'q, CI yo'q — `redact.ts`, `rate-limit.ts` va `search-index.ts` uchun 43 ta vitest sinovi, qolgan modullar hali qamrab olinmagan, CI yo'q | 🟠 Qisman |
 | 11 | ~~`apps/api/src/lib/db.ts` — `PrismaNeon` HTTP drayveri bilan noto'g'ri ishlatilgan~~ — `PrismaNeonHTTP` ga o'tkazildi, haqiqiy Neon bilan tekshirildi | ✅ Tuzatildi |
 
 Muammoni tuzatganingizda shu jadvalni ham yangilang (🔴 → ✅).

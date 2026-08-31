@@ -171,3 +171,30 @@ export const contactApi = {
   status: (ticket: string, email: string) =>
     api.get('/api/contact/status', { params: { ticket, email } }),
 };
+
+// --- Qidiruv ---
+export interface SearchParams {
+  q: string;
+  type?: string;
+  from?: string;
+  to?: string;
+  lang?: string;
+  page?: number;
+  limit?: number;
+}
+
+export const searchApi = {
+  /** Sayt bo'ylab to'liq matnli qidiruv. Bo'sh maydonlar yuborilmaydi. */
+  query: (params: SearchParams) =>
+    api.get('/api/search', {
+      params: {
+        q: params.q,
+        type: params.type && params.type !== 'all' ? params.type : undefined,
+        from: params.from || undefined,
+        to: params.to || undefined,
+        lang: params.lang || undefined,
+        page: params.page || undefined,
+        limit: params.limit || undefined,
+      },
+    }),
+};

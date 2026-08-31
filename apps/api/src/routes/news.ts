@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
 import { sanitizeFields, CONTENT_FIELDS } from '../lib/sanitize';
 import { deleteOwnerFiles, replaceSingleFile, syncContentFiles } from '../lib/media';
+import { reindex } from '../lib/search-index';
 import type { AppContext } from '../index';
 
 export const newsRouter = new Hono<AppContext>();
@@ -82,6 +83,7 @@ newsRouter.post('/', requireAuth, zValidator('json', newsSchema), async (c) => {
   await syncContentFiles(c.env, db, 'news', item.id, [
     item.contentUz, item.contentEn, item.contentRu, item.imageUrl,
   ]);
+  await reindex(c, 'news', item.id);
   return c.json({ data: item }, 201);
 });
 
@@ -105,6 +107,7 @@ newsRouter.put('/:id', requireAuth, zValidator('json', newsSchema.partial()), as
   await syncContentFiles(c.env, db, 'news', item.id, [
     item.contentUz, item.contentEn, item.contentRu, item.imageUrl,
   ]);
+  await reindex(c, 'news', item.id);
   return c.json({ data: item });
 });
 

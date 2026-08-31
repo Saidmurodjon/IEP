@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
+import { reindex } from '../lib/search-index';
 import type { AppContext } from '../index';
 
 export const structureRouter = new Hono<AppContext>();
@@ -44,12 +45,14 @@ structureRouter.get('/:id', async (c) => {
 structureRouter.post('/', requireAuth, zValidator('json', unitSchema), async (c) => {
   const db = c.get('db');
   const unit = await db.structureUnit.create({ data: c.req.valid('json') });
+  await reindex(c, 'structure_units', unit.id);
   return c.json({ data: unit }, 201);
 });
 
 structureRouter.put('/:id', requireAuth, zValidator('json', unitSchema.partial()), async (c) => {
   const db = c.get('db');
   const unit = await db.structureUnit.update({ where: { id: c.req.param('id') }, data: c.req.valid('json') });
+  await reindex(c, 'structure_units', unit.id);
   return c.json({ data: unit });
 });
 

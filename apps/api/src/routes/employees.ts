@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
+import { reindex } from '../lib/search-index';
 import type { AppContext } from '../index';
 
 export const employeesRouter = new Hono<AppContext>();
@@ -66,6 +67,7 @@ employeesRouter.get('/:id', async (c) => {
 employeesRouter.post('/', requireAuth, zValidator('json', employeeSchema), async (c) => {
   const db = c.get('db');
   const item = await db.employee.create({ data: clean(c.req.valid('json')) });
+  await reindex(c, 'employees', item.id);
   return c.json({ data: item }, 201);
 });
 
@@ -75,6 +77,7 @@ employeesRouter.put('/:id', requireAuth, zValidator('json', employeeSchema.parti
     where: { id: c.req.param('id') },
     data: clean(c.req.valid('json')),
   });
+  await reindex(c, 'employees', item.id);
   return c.json({ data: item });
 });
 

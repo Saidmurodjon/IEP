@@ -3,6 +3,7 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
 import { fail } from '../lib/errors';
+import { clientIp, createStore, overLimit } from '../lib/rate-limit';
 import { cleanupOldLogs, recordError } from '../lib/error-log';
 import type { AppContext } from '../index';
 
@@ -29,34 +30,14 @@ const CLIENT_RATE_LIMIT = 10;
 const CLIENT_RATE_WINDOW_MS = 60_000;
 
 /**
- * IP bo'yicha hisoblagich. Auth'dagi rate limit bilan bir xil yondashuv:
- * izolyat xotirasida saqlanadi (TODO: KV yoki Durable Object).
+ * IP bo'yicha hisoblagich (`lib/rate-limit.ts`). Izolyat xotirasida saqlanadi
+ * (TODO: KV yoki Durable Object).
  */
-const clientHits = new Map<string, { count: number; resetAt: number }>();
-
-function clientIp(headers: Headers): string {
-  return headers.get('CF-Connecting-IP') ?? headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ?? 'unknown';
-}
-
-function overRateLimit(ip: string): boolean {
-  const now = Date.now();
-  const entry = clientHits.get(ip);
-  if (!entry || now > entry.resetAt) {
-    clientHits.set(ip, { count: 1, resetAt: now + CLIENT_RATE_WINDOW_MS });
-    return false;
-  }
-  entry.count += 1;
-  if (clientHits.size > 5000) {
-    for (const [key, value] of clientHits) {
-      if (now > value.resetAt) clientHits.delete(key);
-    }
-  }
-  return entry.count > CLIENT_RATE_LIMIT;
-}
+const clientHits = createStore();
 
 logsRouter.post('/client', zValidator('json', clientLogSchema), async (c) => {
   const ip = clientIp(c.req.raw.headers);
-  if (overRateLimit(ip)) {
+  if (overLimit(clientHits, ip, CLIENT_RATE_LIMIT, CLIENT_RATE_WINDOW_MS)) {
     return c.json({ error: { code: 'RATE_LIMITED', message: 'Too many log reports' } }, 429);
   }
 

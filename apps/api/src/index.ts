@@ -15,6 +15,7 @@ import { uploadsRouter } from './routes/uploads';
 import { filesRouter } from './routes/files';
 import { documentsRouter } from './routes/documents';
 import { logsRouter } from './routes/logs';
+import { searchRouter } from './routes/search';
 import { recordError } from './lib/error-log';
 import { redactStack } from './lib/redact';
 import type { PrismaClient } from '@prisma/client';
@@ -80,6 +81,7 @@ app.route('/api/documents', documentsRouter);
 app.route('/api/uploads', uploadsRouter);
 app.route('/api/files', filesRouter);
 app.route('/api/logs', logsRouter);
+app.route('/api/search', searchRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
 

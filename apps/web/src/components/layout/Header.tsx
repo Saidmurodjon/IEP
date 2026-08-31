@@ -5,6 +5,7 @@ import { Menu, X, Globe } from 'lucide-react';
 import clsx from 'clsx';
 import { useSettings, telHref } from '@/hooks/useSettings';
 import LocalizedLink, { LocalizedNavLink } from '@/components/LocalizedLink';
+import SearchBox from '@/components/SearchBox';
 import { splitLangPrefix } from '@/lib/routes';
 import { useCurrentLang } from '@/hooks/useLocalizedPath';
 
@@ -72,7 +73,8 @@ export default function Header() {
 
       {/* Main nav */}
       <div className="container">
-        <div className="flex items-center justify-between h-16">
+        {/* `relative` — mobil qidiruv paneli shu qatorga nisbatan ochiladi */}
+        <div className="relative flex items-center justify-between h-16">
           {/* Logo */}
           <LocalizedLink to="/" className="flex items-center gap-2 flex-shrink-0">
             {/*
@@ -118,8 +120,10 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* Language switcher + mobile menu */}
+          {/* Qidiruv + til + mobil menyu */}
           <div className="flex items-center gap-2">
+            <SearchBox />
+
             {/* Language */}
             <div className="relative">
               <button

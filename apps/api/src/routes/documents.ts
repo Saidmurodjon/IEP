@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
+import { reindex } from '../lib/search-index';
 import { fail } from '../lib/errors';
 import { deleteKeys } from '../lib/media';
 import type { AppContext } from '../index';
@@ -41,6 +42,7 @@ documentsRouter.post('/', requireAuth, zValidator('json', documentSchema), async
     where: { key: data.fileKey },
     data: { ownerType: 'document', ownerId: item.id },
   });
+  await reindex(c, 'documents', item.id);
   return c.json({ data: item }, 201);
 });
 
@@ -67,6 +69,7 @@ documentsRouter.put('/:id', requireAuth, zValidator('json', documentSchema.parti
       data: { ownerType: 'document', ownerId: id },
     });
   }
+  await reindex(c, 'documents', item.id);
   return c.json({ data: item });
 });
 

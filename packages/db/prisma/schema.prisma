@@ -42,6 +42,11 @@ model News {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
+  /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
+  searchVector  Unsupported("tsvector")?
+
+  @@index([searchVector], type: Gin)
   @@map("news")
 }
 
@@ -59,6 +64,11 @@ model Publication {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
+  /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
+  searchVector  Unsupported("tsvector")?
+
+  @@index([searchVector], type: Gin)
   @@map("publications")
 }
 
@@ -84,6 +94,11 @@ model StructureUnit {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
+  /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
+  /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
+  searchVector  Unsupported("tsvector")?
+
+  @@index([searchVector], type: Gin)
   @@map("structure_units")
 }
 
@@ -134,6 +149,11 @@ model Employee {
   updatedAt         DateTime @updatedAt
 
   @@index([unitId])
+  /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
+  /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
+  searchVector  Unsupported("tsvector")?
+
+  @@index([searchVector], type: Gin)
   @@map("employees")
 }
 
@@ -237,6 +257,11 @@ model Document {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 
+  /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
+  /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
+  searchVector  Unsupported("tsvector")?
+
+  @@index([searchVector], type: Gin)
   @@map("documents")
 }
 

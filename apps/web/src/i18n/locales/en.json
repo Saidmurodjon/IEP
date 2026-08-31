@@ -10,7 +10,8 @@
     "management": "Management",
     "employees": "Staff",
     "documents": "Documents",
-    "appeal_status": "Appeal status"
+    "appeal_status": "Appeal status",
+    "search": "Search"
   },
   "home": {
     "hero_title": "Academy of Sciences of the Republic of Uzbekistan",
@@ -84,6 +85,36 @@
     "no_pubs": "No publications found",
     "year": "Year",
     "empty_hint": "The list of the institute’s publications is being compiled."
+  },
+  "search": {
+    "title": "Search",
+    "subtitle": "Search across news, publications, documents, staff and units",
+    "placeholder": "Search the site...",
+    "open": "Open search",
+    "close": "Close search",
+    "submit": "Search",
+    "clear": "Clear",
+    "min_length": "Enter at least 2 characters",
+    "results_for": "Results for \"{{q}}\"",
+    "found": "{{count}} results found",
+    "loading": "Searching...",
+    "error": "Search failed. Please try again in a moment.",
+    "no_results": "Nothing found for \"{{q}}\"",
+    "no_results_hint": "Try a different word, shorten it, or clear the filters.",
+    "all_results": "All results",
+    "show_all": "See all results",
+    "filters": "Filters",
+    "date_from": "From",
+    "date_to": "To",
+    "reset_filters": "Clear filters",
+    "types": {
+      "all": "All",
+      "news": "News",
+      "publications": "Publications",
+      "documents": "Documents",
+      "employees": "Staff",
+      "structure": "Units"
+    }
   },
   "contact": {
     "title": "Contact",

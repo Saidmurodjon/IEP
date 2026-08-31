@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { hashPassword } from '@energetika/shared';
+import { SEARCH_TABLES, hashPassword, reindexAllSql } from '@energetika/shared';
 
 const prisma = new PrismaClient();
 
@@ -211,6 +211,13 @@ async function main() {
     });
   }
   console.log('✓ Site settings seeded');
+
+  // Qidiruv vektorlari. Prisma orqali yozilgan yozuvlarda `searchVector` bo'sh
+  // qoladi — indekslamasak, seed qilingan ma'lumot qidiruvda topilmaydi.
+  for (const table of SEARCH_TABLES) {
+    await prisma.$executeRawUnsafe(reindexAllSql(table));
+  }
+  console.log('✓ Search vectors rebuilt');
 
   console.log('\n✅ Seeding complete!');
 }

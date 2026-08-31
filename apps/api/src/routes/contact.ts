@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { PrismaClient } from '@prisma/client';
 import { requireAuth } from '../middleware/auth';
 import { fail } from '../lib/errors';
+import { clientIp, createStore, overLimit } from '../lib/rate-limit';
 import { logEvent } from '../lib/error-log';
 import { sendMail } from '../lib/mail';
 import {
@@ -39,36 +40,8 @@ const IP_LIMIT_PER_HOUR = 3;
 /** Holat tekshirish: bitta IP uchun daqiqasiga. */
 const STATUS_LIMIT_PER_MINUTE = 5;
 
-const submitHits = new Map<string, { count: number; resetAt: number }>();
-const statusHits = new Map<string, { count: number; resetAt: number }>();
-
-function clientIp(headers: Headers): string {
-  return (
-    headers.get('CF-Connecting-IP') ??
-    headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ??
-    'unknown'
-  );
-}
-
-/** Oddiy oyna asosidagi cheklov. TODO: KV yoki Durable Object. */
-function overLimit(
-  store: Map<string, { count: number; resetAt: number }>,
-  ip: string,
-  limit: number,
-  windowMs: number
-): boolean {
-  const now = Date.now();
-  const entry = store.get(ip);
-  if (!entry || now > entry.resetAt) {
-    store.set(ip, { count: 1, resetAt: now + windowMs });
-    return false;
-  }
-  entry.count += 1;
-  if (store.size > 5000) {
-    for (const [key, value] of store) if (now > value.resetAt) store.delete(key);
-  }
-  return entry.count > limit;
-}
+const submitHits = createStore();
+const statusHits = createStore();
 
 /**
  * Navbatdagi murojaat raqamini beradi: `M-YYYY-NNNN`.

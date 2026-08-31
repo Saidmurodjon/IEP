@@ -79,3 +79,15 @@ export function sanitizePastedHtml(input: string): string {
   });
   return wrapper.innerHTML;
 }
+
+/**
+ * Qidiruv parchasi (`snippet`).
+ *
+ * Server topilgan so'zni `<mark>` bilan belgilaydi va parchani HTML teglaridan
+ * tozalab yuboradi. Bu yerda faqat `<mark>` ga ruxsat beriladi — boshqa har
+ * qanday belgilash tashlanadi, atribut esa umuman qoldirilmaydi.
+ */
+export function sanitizeSnippet(input: string | null | undefined): string {
+  if (!input) return '';
+  return DOMPurify.sanitize(input, { ALLOWED_TAGS: ['mark'], ALLOWED_ATTR: [] });
+}

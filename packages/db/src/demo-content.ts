@@ -10,6 +10,7 @@
  * ism-sharif, ilmiy natija va o'ylab topilgan sana yo'q.
  */
 import { PrismaClient } from '@prisma/client';
+import { reindexAllSql } from '@energetika/shared';
 
 const prisma = new PrismaClient();
 
@@ -149,6 +150,11 @@ async function main() {
     });
   }
   console.log(`✓ ${news.length} ta yangilik tayyor (uch tilda)`);
+
+  // Prisma `searchVector` ni to'ldirmaydi — yangiliklar qidiruvda topilishi uchun
+  // indeks qo'lda qayta hisoblanadi.
+  await prisma.$executeRawUnsafe(reindexAllSql('news'));
+  console.log('✓ Qidiruv indeksi yangilandi');
 
   const total = await prisma.news.count();
   console.log(`\n✅ Bazada jami ${total} ta yangilik bor.`);

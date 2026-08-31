@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
+import { reindex } from '../lib/search-index';
 import type { AppContext } from '../index';
 
 export const publicationsRouter = new Hono<AppContext>();
@@ -43,12 +44,14 @@ publicationsRouter.post('/', requireAuth, zValidator('json', pubSchema), async (
   const item = await db.publication.create({
     data: { ...data, doi: data.doi || null, fileUrl: data.fileUrl || null, journal: data.journal || null },
   });
+  await reindex(c, 'publications', item.id);
   return c.json({ data: item }, 201);
 });
 
 publicationsRouter.put('/:id', requireAuth, zValidator('json', pubSchema.partial()), async (c) => {
   const db = c.get('db');
   const item = await db.publication.update({ where: { id: c.req.param('id') }, data: c.req.valid('json') });
+  await reindex(c, 'publications', item.id);
   return c.json({ data: item });
 });
 
