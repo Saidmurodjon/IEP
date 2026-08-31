@@ -13,9 +13,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-31
-**Branch:** `master` · **Push qilinganmi:** ✅ ha — `09`, `10A`, `10B`, `10C`, `fix(files)` va
-`13-navbar (qisman)` `origin/master` ga yuborilgan (`878b06b..70f1e6e`). Aloqa ma'lumotlarini
-statik qilish (pastga qarang) hali push qilinmagan.
+**Branch:** `master` · **Push qilinganmi:** ✅ qisman — `09`..`13-navbar (qisman)`
+`origin/master` ga yuborilgan (`878b06b..70f1e6e`). **Aloqa statik qilish va `dev` skripti
+tuzatishi (pastga qarang) HALI PUSH QILINMAGAN.**
 
 **⚠️ `apps/api/.dev.vars` foydalanuvchi tasdig'i bilan production Neon bazasiga qaraydi**
 (2026-08-31) — lokal `wrangler dev` va testlar endi HAQIQIY production ma'lumotiga
@@ -135,6 +135,32 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-31 · API `dev` skripti tuzatildi — lokal ishlashda ham Neon ishlatiladi
+
+**Kim:** Claude Code (Sonnet 5) · **Kommit:** `fix(api): use wrangler dev for local API server, not bare bun`
+
+**Topilgan xato.** `npm run dev`ning API qismi (`bun run --watch src/index.ts`) hech qachon
+bazaga ulanmagan — sabab konfiguratsiya emas, **runtime**: Hono `c.env` orqali Workers
+bog'lanishlarini o'qiydi, bare Bun esa `app.fetch()`ga o'zining `Server` obyektini uzatadi.
+Bun konteynerida tasdiqlandi: `c.env` bo'sh, `process.env.DATABASE_URL` esa to'g'ri.
+Ya'ni `.dev.vars`da qaysi DATABASE_URL turishidan qat'i nazar (lokal Postgres ham, Neon ham)
+API hech qachon unga ulanmagan.
+
+**Tuzatish.** `apps/api/package.json`: `dev` endi `dev:workers` bilan bir xil — `wrangler
+dev --port 3000`. `wrangler dev` `.dev.vars`ni to'g'ri o'qiydi va `c.env`ni haqiqiy Workers
+kabi to'ldiradi. Endi `.dev.vars`dagi Neon URL (foydalanuvchi tasdig'i bilan o'rnatilgan)
+lokal ishlashda ham amalda ishlaydi.
+
+**Tekshirildi:** `wrangler dev --port 3001` + `.dev.vars` (Neon) — `GET /api/settings` 200,
+haqiqiy Neon ma'lumoti bilan.
+
+**Yo'l-yo'lakay qayta tasdiqlangan (allaqachon ma'lum, 5-bo'lim — TUZATILMAGAN):**
+production Neon sxemasi eskirgan. Haqiqiy Neon ustida `GET /api/news`, `/employees`,
+`/structure`, `/documents`, `/partners` — barchasi 500 (`news.isPublished does not exist`,
+`error_logs does not exist`). Migratsiyalar 2–7 hali production'ga qo'llanmagan — bu
+yangi kashfiyot emas, lekin endi `wrangler dev` orqali haqiqiy production sxemasiga
+tegib ko'rilgani uchun aniq tasdiqlandi. Production sxemasiga tegilmadi.
 
 ### 2026-08-31 · Aloqa ma'lumotlari statik qilindi
 
