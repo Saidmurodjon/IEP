@@ -6,17 +6,21 @@ import { settingsApi } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { Save, CheckCircle } from 'lucide-react';
 
+/**
+ * Manzil, telefon va ish vaqti endi STATIK (`apps/web/src/config/contact.ts`)
+ * — shu ro'yxatda YO'Q, chunki bu yerda o'zgartirilsa ham saytda ko'rinmaydi.
+ * O'zgartirish kerak bo'lsa kod orqali (`config/contact.ts`).
+ *
+ * `email` bu yerda qoladi: sayt aloqa emaili emas, balki murojaat
+ * bildirishnomalari uchun ZAXIRA manzil (`appeals_email` bo'sh bo'lganda
+ * ishlatiladi — `apps/api/src/routes/contact.ts`).
+ */
 const SETTING_KEYS = [
   { key: 'site_name_uz', label: 'Sayt nomi (UZ)', group: 'general' },
   { key: 'site_name_en', label: 'Sayt nomi (EN)', group: 'general' },
   { key: 'site_name_ru', label: 'Sayt nomi (RU)', group: 'general' },
   { key: 'site_url', label: 'Sayt manzili (canonical/hreflang uchun)', group: 'general' },
-  { key: 'address_uz', label: 'Manzil (UZ)', group: 'contact' },
-  { key: 'address_en', label: 'Manzil (EN)', group: 'contact' },
-  { key: 'address_ru', label: 'Manzil (RU)', group: 'contact' },
-  { key: 'phone', label: 'Telefon', group: 'contact' },
-  { key: 'email', label: 'Email', group: 'contact' },
-  { key: 'working_hours', label: 'Ish vaqti', group: 'contact' },
+  { key: 'email', label: 'Murojaat bildirishnomalari uchun zaxira pochta', group: 'contact' },
   { key: 'appeals_email', label: 'Murojaat bildirishnomalari uchun pochta', group: 'contact' },
   { key: 'appeals_retention_days', label: 'Yopilgan murojaatlarni saqlash muddati (kun)', group: 'contact' },
 ];

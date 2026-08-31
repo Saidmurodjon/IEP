@@ -186,16 +186,10 @@ async function main() {
     // canonical / hreflang havolalari uchun asosiy manzil. Domen ulangach
     // (iep.uz) admin paneldan o'zgartiriladi — kodga yozilmaydi.
     { key: 'site_url', value: 'https://energetika-institute.pages.dev' },
-    // Manzil va pochta — foydalanuvchi tomonidan tasdiqlangan haqiqiy qiymatlar.
-    { key: 'address_uz', value: 'Toshkent shahri, Mirzo Ulug\'bek tumani, Do\'rmon yo\'li ko\'chasi, 40-uy' },
-    { key: 'address_en', value: '40 Dormon Yoli Street, Mirzo Ulugbek district, Tashkent' },
-    { key: 'address_ru', value: 'г. Ташкент, Мирзо-Улугбекский район, ул. Дурмон йули, 40' },
+    // Manzil, telefon va ish vaqti endi STATIK — `apps/web/src/config/contact.ts`.
+    // `email` shu yerda qoladi: sayt aloqa emaili emas, murojaat bildirishnomalari
+    // uchun ZAXIRA manzil (`appeals_email` bo'sh bo'lganda ishlatiladi).
     { key: 'email', value: 'energy@academy.uz' },
-    // Telefon va ish vaqti hali tasdiqlanmagan — BO'SH qoladi. Frontend bo'sh
-    // qiymatda o'sha qatorni umuman ko'rsatmaydi. Aniqlangach admin panel orqali
-    // kiritiladi; bu yerga taxminiy raqam yozilmaydi.
-    { key: 'phone', value: '' },
-    { key: 'working_hours', value: '' },
     // Murojaat bildirishnomalari uchun pochta. Bo'sh bo'lsa umumiy `email`
     // ishlatiladi. Institut alohida manzil bersa shu yerga kiritiladi.
     { key: 'appeals_email', value: '' },

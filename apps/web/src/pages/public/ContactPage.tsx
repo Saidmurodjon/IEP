@@ -8,8 +8,10 @@ import { useMemo, useRef, useState } from 'react';
 import { MapPin, Phone, Mail, Clock, Send, CheckCircle } from 'lucide-react';
 import LocalizedLink from '@/components/LocalizedLink';
 import { useToast } from '@/components/Toast';
-import { useSettings, telHref } from '@/hooks/useSettings';
+import { telHref } from '@/hooks/useSettings';
 import FieldError from '@/components/FieldError';
+import { CONTACT_INFO, localizedAddress, localizedWorkingHours } from '@/config/contact';
+import { useCurrentLang } from '@/hooks/useLocalizedPath';
 
 type FormData = {
   name: string;
@@ -32,12 +34,11 @@ export default function ContactPage() {
    * (09-topshiriq, 5-bo'lim). Serverda tekshiriladi.
    */
   const openedAt = useRef(Date.now());
-  // Aloqa ma'lumotlari `/api/settings` dan keladi — qattiq yozilgan qiymat yo'q.
-  const { value, localized } = useSettings();
-  const address = localized('address');
-  const phone = value('phone');
-  const email = value('email');
-  const workingHours = value('working_hours');
+  // Aloqa ma'lumotlari statik — `config/contact.ts` (bazadan olinmaydi).
+  const lang = useCurrentLang();
+  const address = localizedAddress(lang);
+  const { phone, email } = CONTACT_INFO;
+  const workingHours = localizedWorkingHours(lang);
 
   // Xato xabarlari ham tarjima qilinadi, shuning uchun sxema til bilan birga quriladi.
   const schema = useMemo(

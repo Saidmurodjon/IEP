@@ -3,7 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Globe, Accessibility } from 'lucide-react';
 import clsx from 'clsx';
-import { useSettings, telHref } from '@/hooks/useSettings';
+import { telHref } from '@/hooks/useSettings';
+import { CONTACT_INFO } from '@/config/contact';
 import LocalizedLink, { LocalizedNavLink } from '@/components/LocalizedLink';
 import SearchBox from '@/components/SearchBox';
 import AccessibilityPanel from '@/components/AccessibilityPanel';
@@ -34,10 +35,8 @@ export default function Header() {
   const navigate = useNavigate();
   // Ko'rsatiladigan til manzildan olinadi — `i18n.language` bilan farq qilmasin.
   const currentLang = useCurrentLang();
-  // Aloqa ma'lumotlari `/api/settings` dan keladi — kodda qattiq yozilmaydi.
-  const { value } = useSettings();
-  const phone = value('phone');
-  const email = value('email');
+  // Aloqa ma'lumotlari statik — `config/contact.ts` (bazadan olinmaydi).
+  const { phone, email } = CONTACT_INFO;
 
   // `Escape` ochiq menyuni, til ro'yxatini va mega-menyu panelini yopadi.
   // Guruh panelining o'zi ham `Escape` ni ushlaydi (fokusni tugmaga

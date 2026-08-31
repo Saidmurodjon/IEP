@@ -53,6 +53,8 @@ apps/
                         Partners, Documents, Settings, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
     src/lib/a11y.ts     Ko'rinish sozlamalari (shrift, kontrast, rasmlar, oraliq)
+    src/config/         navigation.ts (menyu daraxti), contact.ts (statik aloqa ma'lumotlari —
+                        manzil/telefon/pochta/ish vaqti, bazadan OLINMAYDI)
     src/hooks/          useAccessibility, useFocusTrap, useDebouncedValue, useLocalizedPath, ...
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API

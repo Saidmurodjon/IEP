@@ -6,18 +6,22 @@ import { useSettings, telHref } from '@/hooks/useSettings';
 import { formatDate } from '@/lib/date';
 import A11yImage from '@/components/A11yImage';
 import { flattenVisibleLinks } from '@/config/navigation';
+import { CONTACT_INFO, localizedAddress, localizedWorkingHours } from '@/config/contact';
+import { useCurrentLang } from '@/hooks/useLocalizedPath';
 
 const FOOTER_LINKS = flattenVisibleLinks();
 
 export default function Footer() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
-  // Aloqa ma'lumotlari `/api/settings` dan keladi — qattiq yozilgan qiymat yo'q.
-  const { value, localized, lastUpdatedAt } = useSettings();
-  const address = localized('address');
-  const phone = value('phone');
-  const email = value('email');
-  const workingHours = value('working_hours');
+  const lang = useCurrentLang();
+  // Aloqa ma'lumotlari statik — `config/contact.ts` (bazadan olinmaydi).
+  // `lastUpdatedAt` esa hali ham sozlamalardan keladi — 373-son qaror
+  // talabi (kontentning oxirgi yangilanish sanasi), aloqa bilan bog'liq emas.
+  const { lastUpdatedAt } = useSettings();
+  const address = localizedAddress(lang);
+  const { phone, email } = CONTACT_INFO;
+  const workingHours = localizedWorkingHours(lang);
 
   return (
     <footer className="bg-primary-950 text-gray-300">
