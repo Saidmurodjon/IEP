@@ -1,0 +1,16 @@
+# Xavfsizlik sarlavhalari — Cloudflare Pages buni avtomatik o'qiydi
+# (10-topshiriq, C qism; VM 373-son qarori bilan bog'liq emas, umumiy amaliyot).
+#
+# CSP hozircha FAQAT Report-Only rejimida. Bir necha kun brauzer konsolida
+# qanday buzilish (violation) chiqishini kuzating, keyin
+# `Content-Security-Policy-Report-Only` ni `Content-Security-Policy` ga
+# almashtiring. Xato sozlangan CSP butun saytni ishlatmay qo'yishi mumkin —
+# shoshilmang.
+
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://energetika-api.saidmurodjon1020.workers.dev; object-src 'none'; base-uri 'self'; frame-ancestors 'none'

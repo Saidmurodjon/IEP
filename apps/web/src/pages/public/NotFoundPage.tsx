@@ -1,7 +1,11 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FileQuestion, Search } from 'lucide-react';
 import SeoHead from '@/components/SeoHead';
 import LocalizedLink from '@/components/LocalizedLink';
+import { useLocalizedPath } from '@/hooks/useLocalizedPath';
+import { MIN_QUERY_LENGTH } from '@/lib/search';
 
 /** 404 da ko'rsatiladigan asosiy bo'limlar. Admin havolasi ATAYLAB yo'q. */
 const SECTIONS = [
@@ -13,6 +17,16 @@ const SECTIONS = [
 
 export default function NotFoundPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const localize = useLocalizedPath();
+  const [query, setQuery] = useState('');
+
+  const onSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    const trimmed = query.trim();
+    if (trimmed.length < MIN_QUERY_LENGTH) return;
+    navigate(localize(`/search?q=${encodeURIComponent(trimmed)}`));
+  };
 
   return (
     <>
@@ -28,23 +42,22 @@ export default function NotFoundPage() {
           <h1 className="text-xl font-semibold text-gray-900 mb-2">{t('notFound.title')}</h1>
           <p className="text-gray-500 mb-8">{t('notFound.text')}</p>
 
-          {/*
-            TODO (10-topshiriq): qidiruv tayyor bo'lgach shu maydon
-            `/search?q=` ga ulanadi. Hozircha faqat joyi ajratilgan.
-          */}
-          <div className="mb-10">
+          <form onSubmit={onSubmit} className="mb-10">
+            <label htmlFor="notfound-search" className="sr-only">
+              {t('search.title')}
+            </label>
             <div className="relative">
-              <Search className="h-4 w-4 text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" />
+              <Search className="h-4 w-4 text-gray-500 absolute left-4 top-1/2 -translate-y-1/2" aria-hidden="true" />
               <input
+                id="notfound-search"
                 type="search"
-                disabled
-                aria-label={t('common.search')}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
                 placeholder={t('notFound.search_placeholder')}
-                className="input w-full pl-11 bg-gray-50 text-gray-500 cursor-not-allowed"
+                className="input w-full pl-11"
               />
             </div>
-            <p className="text-xs text-gray-500 mt-2">{t('notFound.search_soon')}</p>
-          </div>
+          </form>
 
           <div className="text-sm font-medium text-gray-700 mb-4">{t('notFound.sections')}</div>
           <div className="flex flex-wrap justify-center gap-2">

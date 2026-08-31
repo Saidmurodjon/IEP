@@ -87,6 +87,14 @@ export default function AdminLayout() {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden">
+      {/*
+        Ochiq qismdagi bilan bir xil yondashuv (`PublicLayout`) — klaviatura
+        bilan yon menyudan o'tmasdan to'g'ridan-to'g'ri mazmunga o'tish uchun.
+      */}
+      <a href="#main-content" className="skip-link">
+        {t('a11y.skip_to_content')}
+      </a>
+
       {/* Desktop sidebar */}
       <div className="hidden md:flex flex-shrink-0">
         <Sidebar />
@@ -106,19 +114,24 @@ export default function AdminLayout() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Mobile header */}
         <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-          <button onClick={() => setSidebarOpen(true)} className="text-gray-600">
-            <Menu className="h-5 w-5" />
+          <button
+            onClick={() => setSidebarOpen(true)}
+            aria-label={t('a11y.open_menu')}
+            className="text-gray-600"
+          >
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
           <span className="text-sm font-semibold text-gray-800">Admin Panel</span>
           <div />
         </div>
 
-        <div className="flex-1 overflow-auto">
+        {/* `tabIndex={-1}` — skip-link havolasi shu elementga fokus beradi */}
+        <main id="main-content" tabIndex={-1} className="flex-1 overflow-auto focus:outline-none">
           {/* Sahifa yiqilsa yon menyu joyida qoladi */}
           <ErrorBoundary scope="admin">
             <Outlet />
           </ErrorBoundary>
-        </div>
+        </main>
       </div>
     </div>
   );

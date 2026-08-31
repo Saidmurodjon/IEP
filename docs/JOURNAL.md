@@ -13,35 +13,46 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-08-31
-**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06, 07, 08, 09, 10A va 10B
+**Branch:** `master` · **Push qilinganmi:** ❌ yo'q — 05, 12, 11, 06, 07, 08, 09, 10A, 10B va 10C
 kommitlari lokal (`origin/master` = `69b6548`).
 
 ### Nima ishlaydi
-- **09 va 10A PM tomonidan QABUL QILINDI.**
-- **10B — maxsus imkoniyatlar tayyor.** Sarlavhadagi tugma ko'rinish panelini ochadi:
-  shrift uch daraja (16/20/24px), yuqori kontrast (oq fon, qora matn), rasmlarni o'chirish,
-  harflar oralig'i, «odatdagi ko'rinishga qaytarish». Tanlov `localStorage` da, `html`
-  elementiga sinf sifatida qo'llanadi (`lib/a11y.ts` + `index.css`). **Alohida sayt
-  versiyasi yo'q.**
-- **Klaviatura:** «Asosiy mazmunga o'tish» havolasi, fokus hamma joyda ko'rinadi,
-  `Escape` panel/menyu/til ro'yxatini yopadi, ochiq oynada fokus qamaladi
-  (`useFocusTrap` — ochiq saytda ham, admin paneldagi 6 ta oynada ham).
-- **Ekran o'qigichlar:** `header`/`nav`/`main`/`footer`, har sahifada bitta `h1` va daraja
-  sakramaydi, barcha rasmda `alt`, forma maydonlari `label` bilan bog'langan, xato
-  `FieldError` (ikonka + matn + `role="alert"`), ikonkali tugmalarda `aria-label`,
-  til almashganda `html lang` o'zgaradi, dinamik joylarda `aria-live`.
-- **Kontrast:** axe-core 14 ta sahifada **0 ta buzilish** (WCAG 2.0/2.1 A+AA), yuqori
-  kontrast rejimida ham 0.
-- **Qidiruv (10A)** va **murojaatlar (09)** avvalgidek ishlaydi.
+- **09, 10A va 10B PM tomonidan QABUL QILINDI.**
+- **10C — xavfsizlik sarlavhalari tayyor.** Frontend: `apps/web/public/_headers`
+  (Cloudflare Pages) — HSTS (1 yil), `X-Content-Type-Options: nosniff`,
+  `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`,
+  `Permissions-Policy` (kamera/mikrofon/joylashuv o'chirilgan). API:
+  `apps/api/src/index.ts` ga xuddi shu uchtasini qo'shadigan oraliq qatlam —
+  `finally` bilan, xatoli javobda ham ishlaydi.
+- **CSP — FAQAT `Content-Security-Policy-Report-Only`.** `script-src`/`style-src` da
+  `unsafe-inline`/`unsafe-eval` yo'q (build inline skript yozmaydi — tekshirildi).
+  `connect-src` ga production API manzili qo'shildi, `style-src`/`font-src` ga
+  Google Fonts, `img-src` ga `self`+`data:`. Haqiqiy rejimga **hali o'tkazilmagan** —
+  bir necha kun konsolda kuzatilishi kerak.
+- **`FRONTEND_URL` bo'sh bo'lsa API fail closed** (`lib/env.ts`, `getFrontendUrl()`).
+  CORS endi shu qiymatdan olinadi, `localhost:5173` ga jimgina tushib qolish yo'q.
+- **404 sahifasidagi qidiruv maydoni endi ishlaydi** — `/search?q=` ga yo'naltiradi
+  (avvalgi `disabled` holat olib tashlandi, `search_soon` kaliti o'chirildi).
+- **Admin panelga ham `main#main-content` va skip-link qo'shildi** (`AdminLayout`).
+- **Header'dagi fokus xatosi tuzatildi:** `AccessibilityPanel`ga uzatilgan `onClose`
+  endi `useCallback` bilan barqaror — sozlama panelda o'zgartirilganda fokus endi
+  bosilgan tugmada qoladi, panelning boshiga sakramaydi.
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **10C (xavfsizlik sarlavhalari, CSP) boshlanmagan.**
-- **404 sahifasidagi qidiruv maydoni hali `disabled`** — 10A tugagach uni `/search` ga
-  ulash kerak edi, e'tibordan chetda qolgan (10C bilan birga qilinsin).
-- **Hostda `node`/`npm` PATH da yo'q.** Butun tekshiruv Docker orqali: `postgres:16` (5433),
-  `node:20`, `local-neon-http-proxy`, `puppeteer` + `axe-core`.
-- `apps/web` da birlik sinovlari yo'q (vitest faqat `apps/api` da) — `lib/a11y.ts`
-  brauzerda tekshirildi.
+- **CSP hali Report-Only** — production'da bir necha kun kuzatilib, keyin haqiqiy
+  rejimga (`Content-Security-Policy`) o'tkazilishi kerak.
+- **Admin panelda YANGI axe-core topilmalari bor** (10C tekshiruvida aniqlandi,
+  TUZATILMAGAN — jurnalga yozildi, 10-topshiriq doirasidan tashqarida):
+  `/admin/news` — 6 ta ikonka tugmada nom yo'q (`button-name`) + sana ustunida
+  kontrast; `/admin/employees` — bo'sh holat matni kontrasti; `/admin/messages` va
+  `/admin/logs` — filtr `<select>` larida nom yo'q (`select-name`), sana maydonida
+  `label` yo'q; dashboard'da sana kontrasti. Bular 373-son qaror doirasiga
+  kirmaydi (admin — ichki xodim vositasi), lekin qulaylik uchun alohida
+  topshiriq sifatida qilinishi tavsiya etiladi.
+- **Hostda `node`/`npm` PATH da yo'q.** Butun tekshiruv Docker orqali: `postgres:16`
+  (5433), `node:20`, `local-neon-http-proxy`, `puppeteer` + `axe-core`,
+  `wrangler pages dev` (CSP/sarlavha tekshiruvi uchun).
+- `apps/web` da birlik sinovlari yo'q (vitest faqat `apps/api` da).
 - **`RESEND_API_KEY` va `MAIL_FROM` o'rnatilmagan**, **R2 bucket production'da yo'q**,
   **migratsiyalar 2–7 production'ga qo'llanmagan.**
 - Murojaatlarni saqlash muddati yuriskonsultdan kutilmoqda. Cron sozlanmagan.
@@ -49,15 +60,19 @@ kommitlari lokal (`origin/master` = `69b6548`).
 - Xodimlar, hamkorlar va hujjatlar ro'yxati institutdan kutilmoqda.
 
 ### Keyingi qadam
-1. 10B ni PM tekshirsin.
-2. 10C — xavfsizlik sarlavhalari va CSP (alohida kommit); shu bilan birga 404 dagi
-   qidiruv maydonini ulash.
+1. 10C ni PM tekshirsin — bu 10-topshiriqning oxirgi qismi.
+2. Production'ga chiqishdan oldin: CSP'ni bir necha kun Report-Only rejimida
+   kuzatish, keyin haqiqiy rejimga o'tkazish; R2 bucket; migratsiyalar 2–7;
+   Resend secret'lari; `.env` (root) production Neon'ga qarayotgani hali
+   tuzatilmagan (faqat `apps/api/.dev.vars` tuzatilgan edi — 10A yozuviga qarang).
+3. Yangi topshiriq taklifi: admin panel accessibility (yuqoridagi axe topilmalari).
 
 ### Ochiq savollar
 - Yopilgan murojaatlarni qancha muddat saqlash kerak? **Yuriskonsult javobi kutilmoqda.**
 - Murojaat bildirishnomalari uchun alohida pochta manzili bormi (`appeals_email`)?
 - Throttle/rate limit uchun KV yoki Durable Object qachon ulanadi?
 - `apps/web` uchun vitest qo'shilsinmi (a11y va sanitizatsiya funksiyalari uchun)?
+- Admin panel accessibility alohida topshiriq sifatida navbatga qo'shilsinmi?
 
 ### TOPSHIRIQLAR NAVBATI
 
@@ -74,8 +89,8 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 08 | Xatoliklar jurnali | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 09 | Murojaatlar va Resend | ✅ **Qabul qilindi** |
 | 10A | Sayt bo'ylab qidiruv | ✅ **Qabul qilindi** |
-| 10B | Imkoniyati cheklanganlar uchun qulayliklar | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
-| 10C | Xavfsizlik sarlavhalari va CSP | ⏳ Navbatda |
+| 10B | Imkoniyati cheklanganlar uchun qulayliklar | ✅ **Qabul qilindi** |
+| 10C | Xavfsizlik sarlavhalari va CSP | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
 
@@ -98,6 +113,67 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-08-31 · 10C — Xavfsizlik sarlavhalari va CSP (+ uchta qolib ketgan tuzatish)
+
+**Kim:** Claude Code (Sonnet 5) · **Kommit:** `feat(security): security headers and content security policy`
+
+**Nima qilindi.** `apps/web/public/_headers`: HSTS (`max-age=31536000; includeSubDomains`),
+`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`,
+`Permissions-Policy` (kamera/mikrofon/joylashuv o'chirilgan), va
+`Content-Security-Policy-Report-Only` (`script-src`/`style-src` da `unsafe-inline`/
+`unsafe-eval` YO'Q; `style-src`/`font-src` — Google Fonts; `img-src 'self' data:`;
+`connect-src` ga production API qo'shildi; `object-src 'none'`, `frame-ancestors 'none'`).
+API (`index.ts`): uchta sarlavhani qo'shadigan oraliq qatlam (`finally` bilan — xatoli
+javobda ham ishlaydi), `lib/env.ts` ga `getFrontendUrl()` — `FRONTEND_URL` bo'sh bo'lsa
+`ConfigError` (fail closed), CORS shu funksiyadan oladi, hardcoded `localhost:5173`
+olib tashlandi.
+
+**Qolib ketgan uchta tuzatish (foydalanuvchi so'ragan):**
+1. 404 sahifasidagi qidiruv maydoni endi `disabled` emas — `Enter` `/search?q=` ga
+   olib boradi. `notFound.search_soon` kaliti (endi ishlatilmaydi) uchala tildan
+   o'chirildi.
+2. `AdminLayout` ga `main#main-content` va skip-link qo'shildi (`PublicLayout` bilan
+   bir xil andoza). Mobil menyu tugmasiga `aria-label` qo'shildi.
+3. `Header.tsx`: `AccessibilityPanel`ga uzatilgan `onClose` `useCallback` bilan
+   o'raldi. **Sabab:** `onClose` har render'da yangi funksiya edi; panelda sozlama
+   o'zgartirilganda `useAccessibility()` Header'ni qayta render qilardi →
+   `useFocusTrap`ning effekti (`onClose` dependency) qayta ishga tushardi →
+   `cleanup` `opener.focus()` ni chaqirib, keyin `setup` panelning BIRINCHI
+   elementiga fokus berardi — foydalanuvchi bosgan tugmadan fokus sakrardi.
+
+**Tekshirildi (Docker: `postgres:16`, `node:20`, `wrangler pages dev`, `puppeteer`).**
+`tsc` (api+web), vitest 43/43, `wrangler deploy --dry-run`, `vite build` — toza.
+**`curl -I` orqali (haqiqiy Hono javobi):** muvaffaqiyatli VA 404 javobida uchala
+sarlavha bor; ruxsat etilgan origin uchun `Access-Control-Allow-Origin` to'g'ri,
+ruxsat etilmagan origin uchun yo'q; `FRONTEND_URL=""` va `undefined` ikkalasida ham
+500 + `Server configuration error` (ichki tafsilot yo'q), sarlavhalar shu javobda
+ham bor. **`wrangler pages dev` + `curl -I`:** barcha 6 sarlavha ham `/` da, ham
+`/assets/*.js` da chiqadi (real Cloudflare Pages `_headers` mexanizmi). **Brauzerda
+(Report-Only rejimda haqiqiy sahifa):** bosh sahifa va `/uz/news` da **0 ta CSP
+buzilish xabari** — shrift, skript, uslub, API so'rovi hammasi siyosat bilan mos.
+**Uchta tuzatish:** 404 maydoni `Enter` bosilganda `/uz/search?q=energetika` ga
+o'tdi; admin sahifalarning barchasida skip-link `Tab` da ko'rinadi va
+`#main-content` ga fokus beradi; Header panelida "Katta" va "Yuqori kontrast"
+tugmalari ketma-ket bosilganda fokus har ikkalasida ham o'sha tugmaning o'zida
+qoldi (avval birinchi elementga sakrardi).
+
+**Yo'l-yo'lakay topilgan, TUZATILMAGAN (jurnalga yozildi — 8a-qoida):** admin
+panelda axe-core yangi topilmalar berdi — `/admin/news` da 6 ta ikonka tugmada
+nom yo'q, `/admin/messages` va `/admin/logs` da filtr `<select>` larida nom yo'q
+va sana maydonida `label` yo'q, bir nechta joyda `text-gray-400` kontrasti. Bular
+373-son qaror doirasiga kirmaydi (admin ichki vosita), alohida topshiriq sifatida
+navbatga qo'yish tavsiya etiladi.
+
+**TEKSHIRILMADI:** production'da haqiqiy sarlavhalar (`securityheaders.com`);
+CSP'ning bir necha kunlik real kuzatuvi (Report-Only endigina qo'yildi).
+
+**Qarorlar.** CSP **hali Report-Only** — vazifa shartiga ko'ra bir necha kun
+kuzatilmasdan haqiqiy rejimga o'tkazilmaydi. Sarlavha oraliq qatlami `try/finally`
+bilan — CORS middleware'i `ConfigError` tashlab qisqa tutashsa ham (`FRONTEND_URL`
+yo'q), xavfsizlik sarlavhalari baribir qo'shiladi. `getFrontendUrl()` boshqa
+secret'lar bilan bir xil naqshda (`ConfigError`, `middleware/auth.ts` bilan mos).
+
 
 ### 2026-08-31 · 10B — Imkoniyati cheklangan shaxslar uchun qulayliklar
 
@@ -172,71 +248,3 @@ so'rovi `energetikaning` ni topmasdi; har bir so'z qo'shtirnoqda (`'o''zbek':*`)
 apostrof va `&|!` `tsquery` ni buzmaydi. Hisoblar HAMMA bo'lim bo'yicha, natijalar tanlangani
 bo'yicha — filtrdagi sonlar sakramasin. `reindex()` xatosi so'rovni yiqitmaydi, jurnalga
 `SEARCH_INDEX_FAILED` tushadi. Sana SQL da ISO matnga o'giriladi.
-
-### 2026-08-27 · 09 — Murojaatlar tizimi va elektron xat yuborish
-
-**Kim:** Claude Code (Opus 5) · **Kommit:** `feat(contact): appeal tracking with email notifications`
-
-**Baza.** `ContactMessage` ga `ticketNumber` (unikal), `status`, `statusChangedAt`,
-`answeredAt`, `answerNote`, `notifiedAt` qo'shildi; `read` olib tashlandi. Migratsiya
-`6_contact_appeals` mavjud yozuvlarni ko'chiradi: `read = true` → `in_review`, aks holda `new`;
-raqamlar `createdAt` bo'yicha yil kesimida SQL oynali funksiya bilan beriladi.
-
-**Server.** `lib/mail.ts` (Resend HTTP API, hech qachon `throw` qilmaydi),
-`lib/mail-templates.ts` (uchta o'zbekcha shablon). `routes/contact.ts` qayta yozildi:
-ketma-ket raqam, spam himoyasi, ochiq `GET /status`, admin `PATCH`, `POST /cleanup`.
-`Env` ga `RESEND_API_KEY` va `MAIL_FROM` (ikkalasi ham ixtiyoriy) qo'shildi.
-
-**Frontend.** `AppealStatusPage` (raqam + pochta), `ContactPage` ga honeypot, forma ochilgan
-vaqt va murojaat raqamini ko'rsatish, `AdminMessagesPage` to'liq qayta yozildi,
-boshqaruv panelida javobsiz murojaatlar. `RATE_LIMITED` xato kodi qo'shildi (API va web).
-
-**Nima tekshirildi va qanday:**
-- `tsc` (api + web), `npm run build`, `wrangler deploy --dry-run` — toza. Birlik sinovlari
-  23/23. i18n uchala faylda 296 tadan, farq yo'q.
-- **Kalitsiz holat (curl):** murojaat saqlandi, `M-2026-0001` qaytdi, foydalanuvchi
-  muvaffaqiyat ko'rdi, jurnalda `warning` / `MAIL_NOT_CONFIGURED`.
-- **Holat tekshiruvi:** to'g'ri juftlik → holat; **begona pochta → 404**; faqat raqam → 400;
-  mavjud bo'lmagan raqam → **aynan o'sha 404 xabari** (farq yo'q, oracle bermaydi).
-  Javobda murojaat matni yo'q.
-- **Spam:** honeypot to'ldirilgan → 201 «muvaffaqiyat», bazaga **yozilmadi**; 1 soniyada
-  yuborilgan → xuddi shunday; IP bo'yicha 4-murojaat → **429**; bir xil matn takroran
-  yuborilganda **o'sha raqam** qaytdi va yangi yozuv yaratilmadi.
-- **Xatlar (soxta Resend serveri bilan, haqiqiy xat YUBORILMADI):** so'rov
-  `https://api.resend.com/emails` ga, `from` = `MAIL_FROM`, mavzu `Murojaatingiz qabul qilindi`.
-  Uchala shablonda **murojaat matni yo'q, telefon raqami yo'q**, raqam va holat havolasi bor,
-  xodim xatida admin havolasi bor, hammasi o'zbekcha.
-- **Brauzerda:** forma → raqam `M-2026-0001` ekranda «saqlab qo'ying» izohi bilan;
-  `/appeal-status` da to'g'ri juftlik → holat, begona pochta → «topilmadi»; uchala tilda
-  sahifa tarjima qilingan, ko'rinib qolgan kalit yo'q; admin ro'yxatida raqam va holat,
-  filtr ishladi; `answered` tugmasi **tasdiq so'radi** («Fuqaroga … xati yuboriladi.
-  Davom etasizmi?»), bekor qilinganda holat o'zgarmadi; boshqaruv panelida javobsiz
-  murojaatlar ko'rsatkichi.
-- **Honeypot** DOM tekshiruvi: `left: -9999px`, `tabIndex = -1`, `aria-hidden` ichida —
-  foydalanuvchi ko'rmaydi.
-
-**Nima TEKSHIRILMADI:**
-- **Haqiqiy xat yetib borishi** — `RESEND_API_KEY` yo'q va topshiriq chegarasi bo'yicha
-  haqiqiy fuqarolarga sinov xati yuborilmadi. Kalit o'rnatilgach o'z pochtangiz bilan
-  bir marta sinash kerak.
-- Saqlash muddati bo'yicha tozalash (`POST /api/contact/cleanup`) haqiqiy muddat bilan.
-- Rate limitning bir nechta Workers izolyati orasidagi xatti-harakati.
-
-**Qarorlar va sabablari:**
-- **Holat tekshiruvida sabab aytilmaydi.** «Raqam yo'q» va «pochta mos emas» javoblari farq
-  qilsa, raqamlar ketma-ket bo'lgani uchun ularni birma-bir sinab ko'rish mumkin bo'lardi.
-- **Spam rad etilganda «muvaffaqiyat» ko'rsatiladi** — robot rad etilganini bilmasligi kerak,
-  aks holda himoyani aylanib o'tishga urinadi.
-- **Honeypot `display: none` emas, ekrandan tashqarida** — ba'zi robotlar `hidden`
-  maydonlarni o'tkazib yuboradi.
-- **Xatlar murojaat saqlanganidan KEYIN va `waitUntil()` ichida yuboriladi** — xat
-  yuborilmagani uchun fuqaroning murojaati yo'qolmasligi kerak.
-- **Qabul qiluvchi manzil jurnal MATNIGA yozilmaydi** — `redact` uni niqoblasa ham,
-  umuman bo'lmagani xavfsizroq.
-
-**Eslatma:** ikki marta sinov shartimning o'zi noto'g'ri edi (honeypot uchun Playwright
-ekrandan tashqaridagi elementni ham «ko'rinadigan» deb hisoblaydi; tasdiq matnida
-«xat yuboriladi» o'rniga «xati yuboriladi» bor edi). Ikkalasi ham to'g'ridan-to'g'ri
-tekshirib tasdiqlandi, ilovada xato yo'q.
-
----

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Menu, X, Globe, Accessibility } from 'lucide-react';
@@ -67,6 +67,13 @@ export default function Header() {
     navigate(`/${code}${suffix}${location.search}${location.hash}`);
     setLangOpen(false);
   };
+
+  // `useCallback` — a11y sozlamasi o'zgarganda `useAccessibility()` Header'ni
+  // qayta render qiladi. Yangi `onClose` bo'lsa `useFocusTrap`ning effekti
+  // (dependency sifatida oladi) har safar qayta ishga tushib, panelning
+  // BIRINCHI elementiga fokusni qaytarib yuborardi — foydalanuvchi bosgan
+  // tugmadan fokus sakrab ketardi.
+  const closeA11yPanel = useCallback(() => setA11yOpen(false), []);
 
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
@@ -238,7 +245,7 @@ export default function Header() {
         <div aria-hidden="true" className="fixed inset-0 z-30" onClick={() => setLangOpen(false)} />
       )}
 
-      <AccessibilityPanel open={a11yOpen} onClose={() => setA11yOpen(false)} />
+      <AccessibilityPanel open={a11yOpen} onClose={closeA11yPanel} />
     </header>
   );
 }

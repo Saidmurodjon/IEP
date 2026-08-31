@@ -18,6 +18,7 @@ import { logsRouter } from './routes/logs';
 import { searchRouter } from './routes/search';
 import { recordError } from './lib/error-log';
 import { redactStack } from './lib/redact';
+import { ConfigError, getFrontendUrl } from './lib/env';
 import type { PrismaClient } from '@prisma/client';
 
 export interface Env {
@@ -58,14 +59,44 @@ app.use('*', async (c, next) => {
 
 app.use('*', logger());
 app.use('*', prettyJSON());
-app.use('*', async (c, next) =>
-  cors({
-    origin: ['http://localhost:5173', c.env.FRONTEND_URL ?? ''].filter(Boolean),
+
+// Xavfsizlik sarlavhalari (10-topshiriq, C3). CORS bilan CHALKASHTIRILMASIN:
+// bular brauzerga QANDAY ko'rsatish kerakligini aytadi, CORS esa KIM so'ray
+// oladi. Har bir javobga qo'shiladi — muvaffaqiyatli ham, xatoli ham.
+app.use('*', async (c, next) => {
+  // `finally` — downstream handler yiqilib `onError` ga tushsa ham (masalan
+  // ConfigError yoki kutilmagan xato), sarlavhalar baribir qo'shiladi.
+  try {
+    await next();
+  } finally {
+    c.header('X-Content-Type-Options', 'nosniff');
+    c.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+    c.header('X-Frame-Options', 'DENY');
+  }
+});
+
+app.use('*', async (c, next) => {
+  // `FRONTEND_URL` yo'q bo'lsa ilgari jimgina `localhost:5173` ga tushib
+  // qolardi — production'da bu CORS'ni noaniq holatga olib kelardi.
+  // Endi boshqa secret'lar kabi fail closed (CLAUDE.md 4.1, 1-qoida).
+  let frontendUrl: string;
+  try {
+    frontendUrl = getFrontendUrl(c.env);
+  } catch (err) {
+    if (err instanceof ConfigError) {
+      console.error(`CORS konfiguratsiya xatosi: ${err.message}`);
+      return c.json({ error: 'Server configuration error' }, 500);
+    }
+    throw err;
+  }
+
+  return cors({
+    origin: [frontendUrl],
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
-  })(c, next)
-);
+  })(c, next);
+});
 
 app.get('/', (c) => c.json({ status: 'ok', service: 'Energetika API', version: '1.0.0' }));
 

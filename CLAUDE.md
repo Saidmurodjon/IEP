@@ -95,6 +95,25 @@ packages/
    (`apps/api/src/lib/sanitize.ts`, allowlist), frontend ko'rsatishdan oldin ikkinchi marta
    tozalaydi (`apps/web/src/lib/sanitize.ts`, DOMPurify). Ruxsat etilgan teglar ro'yxatini
    kengaytirsangiz — **ikkala faylni ham** yangilang. `img` faqat `/api/files/` dan.
+8. **Xavfsizlik sarlavhalari ikkala tomonda ham bor.** Frontend:
+   `apps/web/public/_headers` (Cloudflare Pages avtomatik o'qiydi) —
+   `Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`,
+   `Referrer-Policy`, `Permissions-Policy`. API: `apps/api/src/index.ts` dagi
+   oraliq qatlam xuddi shu uchtasini (CORS'dan farqli, brauzerga qanday
+   ko'rsatishni aytadi) har bir javobga qo'shadi — muvaffaqiyatli ham, xatoli
+   ham (`finally` bilan).
+   **CSP hozircha `Content-Security-Policy-Report-Only` rejimida** —
+   `_headers` da. Bir necha kun konsolda buzilish (violation) kuzatilmasdan
+   haqiqiy `Content-Security-Policy` ga O'TKAZILMASIN: xato sozlangan CSP
+   butun saytni ishlamay qo'yishi mumkin. `script-src` da `unsafe-inline` va
+   `unsafe-eval` YO'Q — build inline skript yozmaydi (React + Vite), buni
+   buzmang. Yangi tashqi manba (shrift, rasm, API) qo'shsangiz CSP ga ham
+   qo'shing, aks holda Report-Only rejimida ham konsolda xato ko'rinadi.
+9. **`FRONTEND_URL` bo'sh bo'lsa API fail closed.** `lib/env.ts` dagi
+   `getFrontendUrl()` CORS `origin` uchun yagona manba — sozlanmagan bo'lsa
+   `ConfigError` (500), `localhost:5173` ga jimgina tushib qolish YO'Q.
+   Lokal ishlashda `.dev.vars` da `FRONTEND_URL="http://localhost:5173"`
+   o'rnatilgan bo'lishi shart.
 
 ### 4.2 Ma'lumotlar bazasi
 

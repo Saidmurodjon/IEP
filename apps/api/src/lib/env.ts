@@ -33,3 +33,21 @@ export function getJwtSecret(env: Env): string {
   }
   return secret;
 }
+
+/**
+ * Frontend manzili — CORS `origin` va CSP `connect-src`/xat shablonlaridagi
+ * havolalar shu qiymatdan olinadi.
+ *
+ * Ilgari bo'sh bo'lganda jimgina `http://localhost:5173` ga tushib qolardi —
+ * production'da bu CORS ni noto'g'ri (yoki noaniq) manzilga ochib qo'yardi.
+ * Endi boshqa secret'lar kabi fail closed: sozlanmagan bo'lsa xato tashlanadi.
+ * @throws {ConfigError} `FRONTEND_URL` o'rnatilmagan bo'lsa.
+ */
+export function getFrontendUrl(env: Env): string {
+  const url: unknown = env?.FRONTEND_URL;
+
+  if (typeof url !== 'string' || url.length === 0) {
+    throw new ConfigError('FRONTEND_URL is not configured');
+  }
+  return url;
+}
