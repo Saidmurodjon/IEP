@@ -1,4 +1,5 @@
 import type { Lang } from '@energetika/shared';
+import { flattenVisibleLinks } from '@/config/navigation';
 
 /** Manzilda ruxsat etilgan til prefikslari. Boshqa qiymat — 404. */
 export const SUPPORTED_LANGS = ['uz', 'en', 'ru'] as const;
@@ -26,21 +27,24 @@ export interface PublicRoute {
   dynamic: boolean;
 }
 
+/**
+ * Menyudagi statik havolalar `config/navigation.ts`dan olinadi — bitta
+ * manzil ikki joyda qo'lda yozilmasin (13-navbar, Bosqich D). Menyuda
+ * yo'q sahifalar (dinamik parametrli yoki menyusiz — masalan qidiruv)
+ * pastda alohida qo'shiladi.
+ */
+const NAV_ROUTES: PublicRoute[] = flattenVisibleLinks().map((link) => ({
+  pattern: link.path === '/' ? '' : link.path.slice(1),
+  key: link.id,
+  inAllLangs: true,
+  dynamic: false,
+}));
+
 export const PUBLIC_ROUTES: readonly PublicRoute[] = [
-  { pattern: '', key: 'home', inAllLangs: true, dynamic: false },
-  { pattern: 'about', key: 'about', inAllLangs: true, dynamic: false },
-  { pattern: 'structure', key: 'structure', inAllLangs: true, dynamic: false },
-  { pattern: 'management', key: 'management', inAllLangs: true, dynamic: false },
-  { pattern: 'employees', key: 'employees', inAllLangs: true, dynamic: false },
-  { pattern: 'laboratories', key: 'labs', inAllLangs: true, dynamic: false },
+  ...NAV_ROUTES,
   { pattern: 'laboratories/:id', key: 'lab-detail', inAllLangs: true, dynamic: true },
-  { pattern: 'news', key: 'news', inAllLangs: true, dynamic: false },
   { pattern: 'news/:slug', key: 'news-detail', inAllLangs: true, dynamic: true },
-  { pattern: 'publications', key: 'publications', inAllLangs: true, dynamic: false },
-  { pattern: 'documents', key: 'documents', inAllLangs: true, dynamic: false },
-  { pattern: 'contact', key: 'contact', inAllLangs: true, dynamic: false },
   { pattern: 'search', key: 'search', inAllLangs: true, dynamic: false },
-  { pattern: 'appeal-status', key: 'appeal-status', inAllLangs: true, dynamic: false },
 ] as const;
 
 /** Manzilni yo'l, so'rov va langar qismlariga ajratadi. */

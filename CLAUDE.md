@@ -136,18 +136,25 @@ packages/
     Admin marshrutlari (`/admin/...`) prefikssiz qoladi va oddiy `Link` bilan yoziladi.
     Yangi ochiq sahifa qo'shilganda u avval `src/lib/routes.ts` dagi `PUBLIC_ROUTES` ro'yxatiga
     yoziladi, keyin `App.tsx` ga.
-16. **Fayl yuklash faqat `POST /api/uploads` orqali.** Fayl turi **magic bayt** bo'yicha
+16. **Menyu havolalari faqat `src/config/navigation.ts` da yozilsin.** Sarlavha menyusi
+    (`components/nav/*`), mobil menyu, footerdagi «Sahifalar» ro'yxati, 404 sahifasidagi
+    «Asosiy bo'limlar» va `lib/routes.ts` dagi statik yo'llar shu fayldan oziqlanadi —
+    komponent ichida havola qo'lda yozilmaydi. Yangi ochiq sahifa avval shu fayldagi
+    daraxtda joy topsin (guruh ichida yoki yakka element sifatida); joy topilmaguncha
+    yoki sahifa hali tayyor bo'lmasa `hidden: true` bilan qo'shiladi, menyuga chiqarilmaydi.
+    `id` maydoni keyinchalik o'zgartirilmaydi (i18n kaliti va `aria-controls` shunga tayanadi).
+17. **Fayl yuklash faqat `POST /api/uploads` orqali.** Fayl turi **magic bayt** bo'yicha
     aniqlanadi (`lib/file-types.ts`) — `Content-Type` va kengaytmaga ishonilmaydi. SVG
     qabul qilinmaydi. Yangi format qo'shsangiz imzosini ham yozing.
-17. **Fayl o'chirish faqat `media_files` jadvalida qayd etilgan kalitlar bo'yicha.** Ombor
+18. **Fayl o'chirish faqat `media_files` jadvalida qayd etilgan kalitlar bo'yicha.** Ombor
     bo'ylab ommaviy o'chirish (`list()` + `delete`) hech qachon qilinmaydi.
-18. **Jurnalga yoziladigan har qanday ma'lumot `lib/redact.ts` dan o'tkazilsin.** Parol,
+19. **Jurnalga yoziladigan har qanday ma'lumot `lib/redact.ts` dan o'tkazilsin.** Parol,
     token, `Authorization`/`Cookie`, murojaat matni, telefon va ulanish satri hech qachon
     yozilmaydi; pochta niqoblanadi. Yangi maxfiy maydon qo'shsangiz — `redact.test.ts` ga
     unga mos sinov ham yozing.
-19. **Admin paneldagi barcha xabarlar `useToast()` orqali.** Xato kodi API dan keladi,
+20. **Admin paneldagi barcha xabarlar `useToast()` orqali.** Xato kodi API dan keladi,
     o'zbekcha matn `locales/*.json` dagi `errors.<KOD>` dan olinadi.
-20. **Maxsus imkoniyatlar majburiy** (373-son qaror, 11-band). Yangi ochiq sahifa yoki
+21. **Maxsus imkoniyatlar majburiy** (373-son qaror, 11-band). Yangi ochiq sahifa yoki
     komponent qo'shganda: sahifada **bitta `h1`** bo'lsin va sarlavha darajasi sakramasin;
     har bir rasm ochiq qismda `A11yImage` orqali va **`alt` bilan** (bezak — bo'sh satr);
     har bir forma maydonida `id` + `htmlFor` bo'lgan `label`, xato `FieldError` bilan
@@ -161,19 +168,19 @@ packages/
 
 ### 4.4 Umumiy
 
-21. **Qidiruv indeksi kod bilan boshqariladi.** `searchVector` ustuni trigger bilan emas,
+22. **Qidiruv indeksi kod bilan boshqariladi.** `searchVector` ustuni trigger bilan emas,
     `lib/search-index.ts` dagi `reindex()` orqali yangilanadi. Yangi qidiriladigan model
     qo'shsangiz: (a) `VECTOR_SQL` ga ifoda yozing — sarlavha `A`, tavsif `B`, matn `C`
     vaznida, uchala til bitta vektorda; (b) migratsiyada ustun, GIN indeks va to'ldirish
     (backfill) yozing — ifoda `VECTOR_SQL` bilan **aynan bir xil** bo'lsin
     (`search-index.test.ts` shuni tekshiradi); (c) har bir `create`/`update` dan keyin
     `reindex()` chaqiring. Lug'at doim `simple` — PostgreSQL da o'zbek lug'ati yo'q.
-22. **IP bo'yicha cheklov `lib/rate-limit.ts` orqali.** Har bir endpoint uchun alohida
+23. **IP bo'yicha cheklov `lib/rate-limit.ts` orqali.** Har bir endpoint uchun alohida
     `createStore()`. O'z nusxangizni yozmang.
-23. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
-24. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
-25. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
-26. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
+24. **TypeScript `strict`.** `any` ishlatmang; iloji bo'lmasa `unknown` + tekshiruv.
+25. **Build artefaktlarini commit qilmang** (`*.tsbuildinfo`, `dist/`, generatsiya qilingan `vite.config.js`).
+26. **Kommentlar o'zbekcha yoki inglizcha** — lekin loyiha bo'ylab bir xil bo'lsin. Yangi kod uchun: o'zbekcha.
+27. **Kommit xabarlari Conventional Commits**: `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`.
 
 ---
 

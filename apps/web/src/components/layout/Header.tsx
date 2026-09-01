@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import type { Lang } from '@energetika/shared';
 import { Menu, X, Globe, Accessibility } from 'lucide-react';
 import clsx from 'clsx';
 import { telHref } from '@/hooks/useSettings';
 import { CONTACT_INFO } from '@/config/contact';
-import LocalizedLink, { LocalizedNavLink } from '@/components/LocalizedLink';
+import LocalizedLink from '@/components/LocalizedLink';
 import SearchBox from '@/components/SearchBox';
 import AccessibilityPanel from '@/components/AccessibilityPanel';
 import { useAccessibility } from '@/hooks/useAccessibility';
@@ -13,12 +14,9 @@ import { splitLangPrefix } from '@/lib/routes';
 import { useCurrentLang } from '@/hooks/useLocalizedPath';
 import A11yImage from '@/components/A11yImage';
 import DesktopNav from '@/components/nav/DesktopNav';
-import { flattenVisibleLinks } from '@/config/navigation';
+import MobileNav from '@/components/nav/MobileNav';
 
-// VAQTINCHA — 13-navbar Bosqich C da to'liq akkordeon mobil menyuga almashadi.
-const MOBILE_NAV_LINKS = flattenVisibleLinks();
-
-const LANGS = [
+const LANGS: { code: Lang; label: string }[] = [
   { code: 'uz', label: "O'zbekcha" },
   { code: 'en', label: 'English' },
   { code: 'ru', label: 'Русский' },
@@ -53,6 +51,11 @@ export default function Header() {
     return () => document.removeEventListener('keydown', onKeyDown);
   }, [menuOpen, langOpen, activeGroupId]);
 
+  // Marshrut o'zgarganda mobil menyu ham majburan yopiladi.
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
   // Til dropdowni ochilsa mega-menyu yopiladi va aksincha — bir vaqtda
   // faqat bitta panel ochiq bo'lishi kerak.
   const toggleLangOpen = useCallback(() => {
@@ -68,7 +71,7 @@ export default function Header() {
   // Til almashtirilganda foydalanuvchi JORIY sahifada qoladi — faqat prefiks
   // o'zgaradi. `i18next` ni bevosita o'zgartirmaymiz: manzil asosiy manba,
   // `LanguageGuard` uni marshrutdan o'qib sinxronlaydi.
-  const changeLang = (code: string) => {
+  const changeLang = (code: Lang) => {
     const { rest } = splitLangPrefix(location.pathname);
     const suffix = rest === '/' ? '' : rest;
     navigate(`/${code}${suffix}${location.search}${location.hash}`);
@@ -204,31 +207,14 @@ export default function Header() {
             </button>
           </div>
         </div>
-
-        {/* Mobil menyu — VAQTINCHA tekis ro'yxat, Bosqich C da akkordeonga almashadi */}
-        {menuOpen && (
-          <nav id="mobile-nav" aria-label={t('a11y.main_nav')} className="xl:hidden border-t border-gray-100 py-3 space-y-1">
-            {MOBILE_NAV_LINKS.map((link) => (
-              <LocalizedNavLink
-                key={link.id}
-                to={link.path}
-                end={link.path === '/'}
-                onClick={() => setMenuOpen(false)}
-                className={({ isActive }) =>
-                  clsx(
-                    'block px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    isActive
-                      ? 'text-primary-700 bg-primary-50'
-                      : 'text-gray-600 hover:text-primary-700 hover:bg-gray-50'
-                  )
-                }
-              >
-                {t(link.i18nKey)}
-              </LocalizedNavLink>
-            ))}
-          </nav>
-        )}
       </div>
+
+      <MobileNav
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        currentLang={currentLang}
+        onChangeLang={changeLang}
+      />
 
       {/*
         Tashqariga bosilganda til dropdownini yopadi. FAQAT `langOpen` uchun —
