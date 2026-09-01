@@ -225,6 +225,7 @@
     "unanswered_msgs": "Unanswered appeals"
   },
   "common": {
+    "test_mode_banner": "The site is running in test mode",
     "loading": "Loading...",
     "error": "An error occurred",
     "not_found": "Not found",

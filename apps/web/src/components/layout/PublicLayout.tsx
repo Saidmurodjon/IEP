@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Header from './Header';
 import Footer from './Footer';
+import TestModeBanner from './TestModeBanner';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
 export default function PublicLayout() {
@@ -17,6 +18,7 @@ export default function PublicLayout() {
         {t('a11y.skip_to_content')}
       </a>
 
+      <TestModeBanner />
       <Header />
 
       {/* `tabIndex={-1}` — havola bosilganda `main` ning o'ziga fokus beriladi */}

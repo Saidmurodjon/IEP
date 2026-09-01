@@ -225,6 +225,7 @@
     "unanswered_msgs": "Javobsiz murojaatlar"
   },
   "common": {
+    "test_mode_banner": "Sayt test rejimida ishlamoqda",
     "loading": "Yuklanmoqda...",
     "error": "Xatolik yuz berdi",
     "not_found": "Topilmadi",

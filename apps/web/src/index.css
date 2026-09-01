@@ -82,6 +82,32 @@
 }
 
 /*
+  Test rejimi banneri — xuddi hamkorlar lentasi kabi CSS bilan uzluksiz
+  aylanadi (matn ikki marta chizilib, yarmiga siljitilganda boshlang'ich
+  holatga qaytadi).
+*/
+@keyframes test-banner-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.test-banner-track {
+  display: flex;
+  width: max-content;
+  animation: test-banner-scroll 40s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .test-banner-track {
+    animation: none;
+    transform: none;
+  }
+  .test-banner-track > [data-clone='true'] {
+    display: none;
+  }
+}
+
+/*
   Harakatni kamaytirish so'ralgan bo'lsa — animatsiya umuman yo'q va
   logotiplar oddiy setka bo'lib joylashadi.
 */
