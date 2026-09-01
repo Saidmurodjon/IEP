@@ -172,7 +172,7 @@ export default function DesktopNav({ activeGroupId, onActiveGroupChange }: Deskt
 
   return (
     <>
-      <nav aria-label={t('a11y.main_nav')} className="hidden xl:flex items-center gap-1">
+      <nav aria-label={t('a11y.main_nav')} className="hidden xl:flex flex-shrink-0 items-center gap-1">
         {NAV_ITEMS.map((item) => {
           if (isNavGroup(item)) {
             return (
@@ -201,7 +201,7 @@ export default function DesktopNav({ activeGroupId, onActiveGroupChange }: Deskt
               onMouseEnter={scheduleClose}
               className={({ isActive }) =>
                 clsx(
-                  'relative px-3.5 py-2.5 text-[15px] font-medium rounded-lg transition-colors',
+                  'relative flex-shrink-0 px-3.5 py-2.5 text-[15px] font-medium whitespace-nowrap rounded-lg transition-colors',
                   isActive
                     ? "text-primary-700 after:absolute after:left-3.5 after:right-3.5 after:-bottom-px after:h-0.5 after:bg-primary-700 after:content-['']"
                     : 'text-gray-600 hover:text-primary-700 hover:bg-gray-50'

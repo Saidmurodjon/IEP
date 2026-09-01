@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Lang } from '@energetika/shared';
-import { Menu, X, Globe, Accessibility } from 'lucide-react';
+import { Menu, X, Globe, Glasses } from 'lucide-react';
 import clsx from 'clsx';
 import { telHref } from '@/hooks/useSettings';
 import { CONTACT_INFO } from '@/config/contact';
@@ -108,7 +108,7 @@ export default function Header() {
 
       {/* Main nav */}
       <div className="container">
-        {/* `relative` — mobil qidiruv paneli shu qatorga nisbatan ochiladi */}
+        {/* `relative` — mega-menyu paneli (`DesktopNav`) shu qatorga nisbatan ochiladi */}
         <div className="relative flex items-center justify-between h-16">
           {/* Logo */}
           <LocalizedLink to="/" className="flex items-center gap-2 flex-shrink-0">
@@ -150,7 +150,7 @@ export default function Header() {
               aria-haspopup="dialog"
               className="relative p-2 text-gray-600 hover:text-primary-700 hover:bg-gray-50 rounded-md transition-colors"
             >
-              <Accessibility className="h-5 w-5" aria-hidden="true" />
+              <Glasses className="h-5 w-5" aria-hidden="true" />
               {/* Sozlama o'zgartirilgan bo'lsa — kichik belgi */}
               {a11yChanged && (
                 <span

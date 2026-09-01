@@ -32,7 +32,7 @@ const NavGroupButton = forwardRef<HTMLButtonElement, NavGroupButtonProps>(functi
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       className={clsx(
-        'relative flex items-center gap-1 px-3.5 py-2.5 text-[15px] font-medium rounded-lg transition-colors',
+        'relative flex flex-shrink-0 items-center gap-1 px-3.5 py-2.5 text-[15px] font-medium whitespace-nowrap rounded-lg transition-colors',
         open
           ? 'bg-primary-50 text-primary-700'
           : active

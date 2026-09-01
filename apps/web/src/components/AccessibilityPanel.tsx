@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Accessibility, X, RotateCcw } from 'lucide-react';
+import { Glasses, X, RotateCcw } from 'lucide-react';
 import clsx from 'clsx';
 import { useAccessibility } from '@/hooks/useAccessibility';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
@@ -80,7 +80,7 @@ export default function AccessibilityPanel({ open, onClose }: Props) {
       >
         <div className="flex items-start justify-between mb-5">
           <h2 id="a11y-panel-title" className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Accessibility className="h-5 w-5 text-primary-700" aria-hidden="true" />
+            <Glasses className="h-5 w-5 text-primary-700" aria-hidden="true" />
             {t('a11y.title')}
           </h2>
           <button
