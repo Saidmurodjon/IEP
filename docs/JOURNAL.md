@@ -12,10 +12,11 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
-**Oxirgi yangilanish:** 2026-08-31
-**Branch:** `master` · **Push qilinganmi:** ✅ qisman — `09`..`13-navbar (qisman)`
-`origin/master` ga yuborilgan (`878b06b..70f1e6e`). **Aloqa statik qilish va `dev` skripti
-tuzatishi (pastga qarang) HALI PUSH QILINMAGAN.**
+**Oxirgi yangilanish:** 2026-09-01
+**Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
+(`e177810..3a013da`), shu jumladan 13-navbar Bosqich C/D, test-rejim banneri va qidiruv/
+maxsus imkoniyatlar ikonka tuzatishlari (batafsil pastdagi 13-yozuv va undan keyingi
+yozuvlar).
 
 **⚠️ `apps/api/.dev.vars` foydalanuvchi tasdig'i bilan production Neon bazasiga qaraydi**
 (2026-08-31) — lokal `wrangler dev` va testlar endi HAQIQIY production ma'lumotiga
@@ -72,8 +73,8 @@ production'ga qaytishni xohlasa, qayta almashtirish kerak).
   production Neon'da ham yangilandi).
 
 ### Nima hali ishlamaydi / bajarilmagan
-- **13-navbar TO'LIQ BAJARILDI — commit qilinmagan, ishchi nusxada.** Bosqich A/B/C/D barchasi
-  tayyor va sinovdan o'tgan (batafsil: pastdagi 13-yozuv). PM tekshiruvini kutmoqda.
+- **13-navbar TO'LIQ BAJARILDI va PUSH QILINDI** (Bosqich A/B/C/D + qidiruv/maxsus imkoniyatlar
+  ikonka tuzatishlari — batafsil pastdagi yozuvlar). PM tekshiruvini kutmoqda.
 - **CSP hali Report-Only** — production'da bir necha kun kuzatilib, keyin haqiqiy
   rejimga (`Content-Security-Policy`) o'tkazilishi kerak.
 - **Admin panelda YANGI axe-core topilmalari bor** (10C tekshiruvida aniqlandi,
@@ -160,6 +161,40 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-09-01 · 13-navbar ustiga: test-rejim banneri, qidiruv ikonkaga o'tkazildi, a11y ikonka almashtirildi
+
+**Kim:** Claude Code (Sonnet 5) · **Kommitlar:** `feat(ui): scrolling test-mode banner`,
+`fix(nav): icon-only search and glasses a11y icon, no more nav text wrap` (ikkalasi ham push
+qilingan).
+
+**Nima qilindi.**
+1. **Test-rejim banneri.** Sahifa tepasida uzluksiz aylanadigan tasma — "Sayt test rejimida
+   ishlamoqda" (uchala tilda). Hamkorlar lentasidagi CSS marquee texnikasi qayta ishlatildi
+   (`index.css`, `.test-banner-track`), `prefers-reduced-motion`da to'xtaydi. Foydalanuvchi
+   so'rovi bilan tezlik 18s→40s (sekinroq) va matn oralig'i `px-6`→`px-14` (kengroq) qilindi.
+2. **Qidiruv — endi HAR DOIM ikonka.** Ilgari `md`dan boshlab doim ochiq maydon edi va
+   mega-menyuga joy qoldirmasdi — o'zbekcha "Ilmiy faoliyat" kabi guruh nomlari ikki qatorga
+   sinib qolardi (foydalanuvchi jonli sinovda payqadi). `SearchBox.tsx` qayta yozildi: ikonka
+   bosilganda o'ng tomonda panel ochiladi, `pointerdown` bilan tashqariga bosilganda yopiladi
+   (mega-menyudagi flicker sababi bo'lgan to'liq ekranli overlay naqshi ATAYLAB ishlatilmadi).
+3. **Maxsus imkoniyatlar ikonkasi** — nogironlar aravachasi (`Accessibility`) o'rniga ko'zoynak
+   (`Glasses`) ga almashtirildi (tugma va oyna sarlavhasi, ikkalasida ham).
+4. **Ildiz sabab tuzatildi:** `NavGroupButton.tsx` va `DesktopNav.tsx` dagi yakka havolalarga
+   `whitespace-nowrap` + `flex-shrink-0` qo'shildi — matn endi HECH QACHON ikki qatorga
+   sinmaydi, joy yetishmasa boshqa elementlar (logotip, o'ng blok) siqiladi.
+
+**Tekshirildi (Docker: `node:20` — `tsc`/`build`; `ghcr.io/puppeteer/puppeteer:23.11.1`).**
+`tsc --noEmit` va `vite build` toza. Puppeteer bilan: uz tilida barcha olti yuqori daraja
+elementi 1280px'da bir qatorda (43px balandlik — avval ba'zilari ikki qatorga sinib 60px+
+bo'lib qolardi); qidiruv ikonkasi bosilguncha `input[role="combobox"]` DOM'da yo'q, bosilgach
+paydo bo'ladi, tashqariga bosilganda yo'qoladi; a11y tugmasida `lucide-glasses` klassi bor
+(`lucide-accessibility` emas). Banner uchala tilda `role="status"` bilan render bo'lishi,
+header'dan oldin joylashishi va `prefers-reduced-motion`da `animationName: none` bo'lishi
+tasdiqlandi.
+
+**TEKSHIRILMADI:** haqiqiy skrinrider bilan banner/qidiruv e'lonlari; 1024-1279px oralig'ida
+(gamburger ko'rinadigan diapazon) qidiruv ikonkasi joylashuvi alohida sinalmadi (faqat 1280px).
 
 ### 2026-08-31 · Lokal `wrangler dev` bazaga ulanmasligi tuzatildi
 
@@ -293,7 +328,8 @@ qarori (ProseMirror tahrirlagichi uchun, foydalanuvchi javobi kutilmoqda).
 
 ### 2026-08-31 · 13 — Ikki darajali mega-menyu, Bosqich C va D (TO'LIQ)
 
-**Kim:** Claude Code (Sonnet 5) · **Kommit yo'q** — hali commit qilinmagan.
+**Kim:** Claude Code (Sonnet 5) · **Kommit:** `feat(nav): mobile accordion menu and
+navigation.ts-driven routes` (push qilingan).
 
 **Nima qilindi.** Bosqich A/B (desktop mega-menyu, flicker tuzatishi) ilgari `70f1e6e` bilan
 commit qilingan edi (batafsil: pastdagi eski 13-yozuv). Shu sessiyada qolgan ikki bosqich
