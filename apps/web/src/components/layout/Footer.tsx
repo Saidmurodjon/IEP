@@ -31,19 +31,17 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               {/*
-                Footerda to'liq logotip (emblema + yozuv). Logotip yozuvining
-                bir qismi to'q ko'k, footer foni ham to'q — shuning uchun
-                logotip oq maydonchada turadi, aks holda yozuv ko'rinmaydi.
+                Faqat emblema — Header'dagi bilan bir xil, fonsiz va yozuvsiz.
+                Institut nomi yonida matn sifatida allaqachon ko'rinadi.
               */}
-              <div className="bg-white rounded-lg p-2 flex-shrink-0">
-                <A11yImage
-                  src="/images/logo-full.png"
-                  alt={t('common.institute_name')}
-                  width={72}
-                  height={72}
-                  className="h-16 w-16 object-contain"
-                />
-              </div>
+              <A11yImage
+                src="/images/logo-emblem.png"
+                alt=""
+                aria-hidden="true"
+                width={56}
+                height={56}
+                className="h-12 w-12 object-contain flex-shrink-0"
+              />
               <div>
                 <div className="text-white font-bold">{t('common.institute_name')}</div>
                 <div className="text-xs text-gray-400">{t('common.academy')}</div>
