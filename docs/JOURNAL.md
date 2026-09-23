@@ -16,10 +16,11 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **🆕 16 — webname.uz hostingiga ko'chish.** SSH ishlaydi (`iepuz@web2.webspace.uz`, kalit
 `~/.ssh/iep_webname`). API Passenger'da ishlaydi va bazaga ulangan (`/api/news`, structure,
-search 200; login 401 noto'g'ri parolda), 45 media fayl `~/iep-media` da. **Qolgan:**
-(1) panelda `FRONTEND_URL` boshidagi bo'sh joyni olib tashlash — hozir CORS sarlavhasi chiqmaydi;
-(2) frontend'ni `public_html` ga yuklash (buyruq foydalanuvchida, auto-mode deploy'ni blokladi);
-(3) DNS (`iep.uz` hozir 91.212.89.6 ga qaraydi, server 95.46.96.12) + SSL + Force SSL.
+search 200; login 401 noto'g'ri parolda), 45 media fayl `~/iep-media` da. Frontend `public_html` da (SPA yo'llari, sarlavhalar, kesh
+tekshirildi), CORS `https://iep.uz` uchun ishlaydi. **Qolgan:** DNS (`iep.uz` hozir
+91.212.89.6 ga qaraydi, server 95.46.96.12) → SSL (`iep.uz`, `www`, `api`) → Force SSL →
+brauzerda to'liq tekshiruv. Hosting o'zi ham sarlavha qo'shadi (`X-Frame-Options: SAMEORIGIN`,
+`Permissions-Policy`, `CSP: block-all-mixed-content`) — bizniki bilan takrorlanadi, keyin ko'rilsin.
 Reja: `docs/tasks/16-webname-hosting.md`. **Push qilinmagan.**
 
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
@@ -171,6 +172,16 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-09-23 · 16 — C: frontend serverda, CORS tuzatildi
+
+**Qilindi (foydalanuvchi):** `dist-webname` `public_html` ga yuklandi (tar | ssh), panel
+namunasi `~/tmp/da-placeholder-index.html`; panelda `FRONTEND_URL` dagi bo'sh joy olib tashlandi.
+**Tekshirildi (`--resolve iep.uz:80:95.46.96.12`):** `/`, `/uz/news`, `/en/about` 200 (SPA
+fallback), `/_headers` 403, `robots.txt` 200; bizning sarlavhalar va CSP Report-Only bor;
+`/assets/*.js` `immutable`, `index.html` `no-cache`; API `Access-Control-Allow-Origin: https://iep.uz`.
+**Tekshirilmadi:** brauzerda render (API `https://api.iep.uz` DNS/SSL'siz ochilmaydi), HTTPS.
+**Topildi:** hosting o'z sarlavhalarini qo'shadi — `X-Frame-Options` ikki xil qiymat bilan keladi.
 
 ### 2026-09-23 · 16 — B + C (qisman): server'da API, media, frontend paketi
 
