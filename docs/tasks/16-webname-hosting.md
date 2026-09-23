@@ -1,6 +1,8 @@
 # 16 — webname.uz hostingiga ko'chish
 
-**Holat:** A bosqichi ✅ bajarildi va lokalda tekshirildi (2026-09-23). B–D kutilmoqda.
+**Holat:** A ✅, B ✅ (`.htaccess`, build), C qisman — API serverda ishlaydi, baza to'la,
+media yuklandi; frontend yuklash foydalanuvchida, `FRONTEND_URL` dagi bosh joy tuzatilishi
+kerak. D (DNS + SSL) kutilmoqda (2026-09-23).
 Ma'lumot manbasi: **docker'dagi `energetika_mig`** (foydalanuvchi tanlovi).
 
 **Qaror (2026-09-23, foydalanuvchi):** API webname'ning Node.js ilovasiga (cPanel +
@@ -48,7 +50,7 @@ Routelar o'zgarmaydi. Ko'chish tasdiqlanmaguncha Cloudflare zaxira bo'lib turadi
 **B. Frontend**
 7. `apps/web/public/.htaccess`: SPA fallback (`index.html`) va `_headers` dagi barcha
    sarlavhalar (CSP Report-Only ham). Apache `mod_headers`.
-8. `VITE_API_URL=https://api.iep.uz` bilan build qilinadi. CSP `connect-src` ga
+8. `VITE_API_URL=https://api.iep.uz npx vite build --outDir dist-webname` bilan build qilinadi. CSP `connect-src` ga
    `https://api.iep.uz` qo'shiladi.
 
 **C. Server (foydalanuvchi + Claude, SSH orqali)**
@@ -83,7 +85,8 @@ Routelar o'zgarmaydi. Ko'chish tasdiqlanmaguncha Cloudflare zaxira bo'lib turadi
 12. `dist/` `domains/iep.uz/public_html` ga yuklanadi. (Panel DirectAdmin uslubida: subdomen `api.iep.uz` hujjat ildizi — Standart `domains/api.iep.uz/public_html`; Node ilova root undan alohida `iep-api`.)
 13. Media fayllar: `media_files` da 45 ta yozuv, baytlari lokal wrangler R2 holatida
     (`.wrangler/state`). Ular `MEDIA_DIR/<key>` + `<key>.meta.json` shakliga eksport
-    qilinishi kerak — skript hali YOZILMAGAN.
+    qilinishi kerak — `npm run export:media --workspace=apps/api` → `deploy/iep-media.tar.gz`
+    (✅ 45 fayl serverga yuklandi, bayt bo'yicha tekshirildi).
 
 **D. Domen**
 14. `iep.uz` DNS A-yozuvlari webname serveriga qaratiladi (`@`, `www`, `api`).

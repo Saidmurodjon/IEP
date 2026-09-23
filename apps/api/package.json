@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "build:node": "node scripts/build-node.mjs",
+    "export:media": "node scripts/export-media.mjs",
     "start:node": "node deploy/iep-api/server.cjs"
   },
   "dependencies": {

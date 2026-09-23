@@ -27,3 +27,4 @@ docs/reference/
 
 # 16-topshiriq: webname uchun yig'ilgan Node paketi
 apps/api/deploy/
+apps/web/dist-webname/

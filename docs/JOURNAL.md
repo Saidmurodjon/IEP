@@ -14,12 +14,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-09-23
 
-**🆕 16 — webname.uz hostingiga ko'chish (API + frontend + PostgreSQL).** A bosqichi
-(Node kirish nuqtasi `apps/api/src/node.ts`, disk ombori `lib/fs-storage.ts`, deploy paketi
-`npm run build:node --workspace=apps/api`) bajarildi va lokalda haqiqiy HTTP bilan
-tekshirildi. Workers versiyasi o'zgarmadi. Kommitlar: `ac4a145` (15-topshiriq, lock fayli
-bilan), `48f1ca7` (16-A). **Push qilinmagan.** Keyingi: B (`.htaccess`), media eksport skripti, server sozlash.
-Reja: `docs/tasks/16-webname-hosting.md`.
+**🆕 16 — webname.uz hostingiga ko'chish.** SSH ishlaydi (`iepuz@web2.webspace.uz`, kalit
+`~/.ssh/iep_webname`). API Passenger'da ishlaydi va bazaga ulangan (`/api/news`, structure,
+search 200; login 401 noto'g'ri parolda), 45 media fayl `~/iep-media` da. **Qolgan:**
+(1) panelda `FRONTEND_URL` boshidagi bo'sh joyni olib tashlash — hozir CORS sarlavhasi chiqmaydi;
+(2) frontend'ni `public_html` ga yuklash (buyruq foydalanuvchida, auto-mode deploy'ni blokladi);
+(3) DNS (`iep.uz` hozir 91.212.89.6 ga qaraydi, server 95.46.96.12) + SSL + Force SSL.
+Reja: `docs/tasks/16-webname-hosting.md`. **Push qilinmagan.**
 
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
 (`e177810..3a013da`), shu jumladan 13-navbar Bosqich C/D, test-rejim banneri va qidiruv/
@@ -170,6 +171,22 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-09-23 · 16 — B + C (qisman): server'da API, media, frontend paketi
+
+**Kim:** Claude Code (Opus 5.5). SSH ochildi (DirectAdmin → SSH kalitlari, ed25519).
+**Qilindi:** `scripts/export-media.mjs` (`npm run export:media`) — miniflare R2 sqlite'dan
+`<key>` + `<key>.meta.json`, kalit `isValidKey` regex'i, hajm tekshiruvi, `COPYFILE_DISABLE`
+(macOS `._*` fayllari tushmasin — birinchi yuklashda tushgan, serverda o'chirildi).
+`apps/web/public/.htaccess` — SPA fallback, `_headers` dagi sarlavhalar (HSTS faqat HTTPS'da,
+CSP Report-Only `api.iep.uz` bilan), kesh; HTTPS redirect yo'q (sertifikat hali yo'q).
+**Serverda topildi:** `DATABASE_URL` `postgresql:/` (bitta slash) → 500; foydalanuvchi panelda
+tuzatdi. `FRONTEND_URL` boshida bo'sh joy → `Access-Control-Allow-Origin` chiqmaydi (tuzatilmagan).
+**Tekshirildi (HTTP, `--resolve api.iep.uz:80:95.46.96.12`):** news/structure/search 200,
+29 xodim; noto'g'ri login 401; auth'siz upload 401; `/api/files/...png` 200, `image/png`,
+bayt lokal fayl bilan bir xil. api `tsc`, vitest 50/50, `wrangler --dry-run`, web `tsc`, build.
+**Tekshirilmadi:** frontend serverda (yuklanmagan), `.htaccess` Apache'da, HTTPS, haqiqiy
+admin login (parol yo'q), CORS (FRONTEND_URL tuzatilmaguncha).
 
 ### 2026-09-23 · 16 — A bosqichi: API Node.js'da (webname cPanel) ishlaydi
 

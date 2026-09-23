@@ -1,0 +1,40 @@
+# webname (Apache) uchun — Cloudflare Pages'dagi `_headers` + `_redirects` ning o'rnini bosadi.
+# `_headers` ni o'zgartirsangiz, shu faylni ham yangilang (va aksincha).
+#
+# HTTP → HTTPS yo'naltirish bu yerda YO'Q: SSL sertifikati chiqqandan keyin panelda
+# «Force SSL» yoqiladi. Sertifikatsiz redirect yozilsa, sayt umuman ochilmay qoladi.
+
+Options -Indexes
+
+# SPA: mavjud bo'lmagan har qanday yo'l index.html ga (React Router hal qiladi).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # HSTS faqat HTTPS javobida — HTTP orqali yuborilsa brauzer baribir e'tiborsiz qoldiradi.
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" "expr=%{HTTPS} == 'on'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  # CSP hozircha FAQAT Report-Only (CLAUDE.md 4.1-8). API manzili img-src va connect-src da.
+  Header always set Content-Security-Policy-Report-Only "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://api.iep.uz; connect-src 'self' https://api.iep.uz; form-action 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+
+  # Vite xeshli fayllari o'zgarmaydi — uzoq kesh; index.html esa har safar tekshirilsin.
+  <FilesMatch "\.(js|css|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <Files "index.html">
+    Header set Cache-Control "no-cache"
+  </Files>
+</IfModule>
+
+# Pages'ga xos fayllar Apache'da kerak emas.
+<FilesMatch "^_(headers|redirects)$">
+  Require all denied
+</FilesMatch>
