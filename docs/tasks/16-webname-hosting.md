@@ -1,9 +1,8 @@
 # 16 — webname.uz hostingiga ko'chish
 
-**Holat:** A ✅, B ✅ (`.htaccess`, build), C qisman — API serverda ishlaydi, baza to'la,
-media yuklandi; frontend yuklash foydalanuvchida, `FRONTEND_URL` dagi bosh joy tuzatilishi
-kerak. D (DNS + SSL) kutilmoqda (2026-09-23).
-Ma'lumot manbasi: **docker'dagi `energetika_mig`** (foydalanuvchi tanlovi).
+**Holat:** ✅ production sinovidan o'tdi (2026-09-23, sslip.io sinov domenida). Qaror:
+`iep.uz` yuridik shaxs nomidan Arsenal-D orqali, yangi hosting kabinetida — qo'llanma
+`docs/deploy-hosting.md`. D bosqichi (domen) shu yangi hisobda bajariladi.
 
 **Qaror (2026-09-23, foydalanuvchi):** API webname'ning Node.js ilovasiga (cPanel +
 Passenger, Node 22) ko'chadi. Frontend `public_html` ga ko'chadi. SSH (Terminal) bor.

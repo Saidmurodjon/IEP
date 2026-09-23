@@ -14,14 +14,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-09-23
 
-**🆕 16 — webname.uz hostingiga ko'chish.** Sayt **sinov domenida to'liq ishlaydi (HTTPS)**:
-https://iep-95-46-96-12.sslip.io (API: `api.iep-95-46-96-12.sslip.io`; sslip.io IP'ni nomdan
-oladi, domen sotib olinmagan). Node ilova URL'i va `FRONTEND_URL` HOZIR shu sinov domeniga
-qaragan. SSH: `iepuz@web2.webspace.uz`, kalit `~/.ssh/iep_webname`.
-**`iep.uz` bloklangan:** whois `Status: AUCTION`, NS `ns1.redemption.uz` — egalik cctld.uz da
-tekshirilishi kerak; keyin NS → `dns1–4.webspace.uz`, zonaga `www`, SSL, ilova URL'i +
-`FRONTEND_URL` ni `iep.uz` ga qaytarish, `apps/web/dist-webname` (api.iep.uz bilan) yuklash.
-Reja: `docs/tasks/16-webname-hosting.md`. **Push qilinmagan.**
+**✅ 16 — hosting production sinovidan O'TDI (2026-09-23), foydalanuvchi qarori: holat yetarli.**
+Sinov: https://iep-95-46-96-12.sslip.io (webname, `iepuz@web2.webspace.uz`, kalit
+`~/.ssh/iep_webname`; muddati **28.09.2026**). **Keyingi:** `iep.uz` yuridik shaxs nomidan
+sotib olinadi, **Arsenal-D** orqali ro'yxatdan o'tkaziladi, hosting olinadi va sayt yuridik
+shaxs kabinetida ishga tushiriladi — to'liq qo'llanma: **`docs/deploy-hosting.md`**
+(sozlamalar, env nomlari, ko'chirish, tuzoqlar). Joriy hostingdagi baza/media — ko'chirish
+manbai, 28.09 dan oldin zaxira olinsin.
 
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
 (`e177810..3a013da`), shu jumladan 13-navbar Bosqich C/D, test-rejim banneri va qidiruv/
@@ -173,6 +172,19 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-09-23 · 16 — o'lchov, qaror, qo'llanma
+
+**Kim:** Claude Code (Opus 5.5). **O'lchandi (foydalanuvchi Mac'idan, RTT ~5 ms):** API TTFB
+31–50 ms (server 15–25 ms), gzip + HTTP/2. Chrome CDP: LCP 0,29–0,74 s sovuq, 3G sovuq
+1,9–3,3 s (xodimlar sahifasi eng sekin). `ab -n200 -c10`: 0 xato, news p50 62 ms, employees
+p50 96 ms / p99 2,3 s. 4G taqlidi ishonchsiz chiqdi (hisobga olinmadi).
+**Topildi:** `/images/*` da `Cache-Control` yo'q → har tashrifda ~600 KB; hero 334 KB,
+logo 117 KB; JS bundle 505 KB. Tuzatilmadi — `docs/deploy-hosting.md` 10-bo'lim.
+**Qaror (foydalanuvchi):** holat production uchun yetarli; `iep.uz` yuridik shaxs nomidan
+Arsenal-D orqali, yangi hosting kabinetida. **Qilindi:** `docs/deploy-hosting.md` — yangi
+hisobda noldan joylash qo'llanmasi (secret'siz). Push: GitHub Actions Cloudflare deploy'i
+oldin ham secret'siz yiqilgan (3 ta run), push'dan zarar yo'q.
+
 ### 2026-09-23 · 16 — sslip.io sinov domeni; rasmlar va 500 tuzatildi
 
 **Kim:** Claude Code (Opus 5.5). Domen/SSL/ilova sozlamasi — foydalanuvchi (panel).
@@ -215,28 +227,5 @@ tuzatdi. `FRONTEND_URL` boshida bo'sh joy → `Access-Control-Allow-Origin` chiq
 bayt lokal fayl bilan bir xil. api `tsc`, vitest 50/50, `wrangler --dry-run`, web `tsc`, build.
 **Tekshirilmadi:** frontend serverda (yuklanmagan), `.htaccess` Apache'da, HTTPS, haqiqiy
 admin login (parol yo'q), CORS (FRONTEND_URL tuzatilmaguncha).
-
-### 2026-09-23 · 16 — A bosqichi: API Node.js'da (webname cPanel) ishlaydi
-
-**Kim:** Claude Code (Opus 5.5) · Foydalanuvchi webname.uz 10G hosting oldi; qaror: API,
-frontend va baza (PostgreSQL) shu yerga. Ma'lumot manbasi — docker `energetika_mig`.
-**Qilindi:** `lib/storage.ts` — `R2Bucket` o'rniga minimal `MediaBucket` interfeysi (R2 uni
-tuzilma bo'yicha bajaradi). `lib/fs-storage.ts` — diskdagi ombor, kalit `isValidKey` +
-`root` ichidaligi tekshiriladi. `lib/db.ts` — `setDb()`. `src/node.ts` — `@hono/node-server`,
-`process.env` → `Env`, secret yo'q/qisqa bo'lsa ishga tushmaydi, `waitUntil` o'rnini bosuvchi
-`executionCtx`. `scripts/build-node.mjs` — esbuild → `deploy/iep-api/server.cjs` + package.json
-+ prisma schema/migrations + zip. `apps/api/deploy/` `.gitignore` da.
-**Tekshirildi:** `tsc` (api) toza; vitest 50/50 (yangi `fs-storage.test.ts` — traversal
-sinovlari bilan); `wrangler deploy --dry-run` o'tdi. Paket alohida papkada `npm install`
-(prisma generate ishladi) → bo'sh bazaga `migrate deploy` 0–7 o'tdi. To'liq dumpni
-superuser BO'LMAGAN rol bilan tiklash o'tdi (15 news, 29 employees, 45 media). `server.cjs`
-shu bazaga: `/`, news, search, structure 200; CORS + xavfsizlik sarlavhalari bor; login
-(to'g'ri 200 / noto'g'ri 401); PNG yuklash 201 → `/api/files` 200, baytlar bir xil, ETag
-va Content-Type to'g'ri; auth'siz yuklash 401; `../` 404; kontakt 201 (waitUntil yiqilmadi);
-JWT_SECRET yo'q/qisqa → jarayon to'xtaydi.
-**Tekshirilmadi:** haqiqiy webname serverida (Passenger, CloudLinux, Prisma engine);
-media baytlarini eksport qilish; frontend. Lokal docker'da `iep_node_test` baza va
-`iep_hosting_like` rol sinov uchun qoldi (o'chirish mumkin).
-**Qaror:** `--data-only` o'rniga to'liq dump — superuser talab qilmaydi (sabab tasks/16 da).
 
 > Eski yozuvlar: `docs/journal-archive/` (2026-08.md, 2026-09.md).
