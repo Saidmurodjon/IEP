@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Area } from 'react-easy-crop';
 import { Upload, X, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
-import { uploadsApi } from '@/lib/api';
+import { fileUrl, uploadsApi } from '@/lib/api';
 import { useToast } from '@/components/Toast';
 import {
   formatBytes, prepareImage, cropToFile, MAX_WIDTH_DEFAULT, MAX_WIDTH_PHOTO, MIN_WIDTH_PHOTO,
@@ -116,7 +116,7 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
         <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3">
           {isImage ? (
             <img
-              src={value}
+              src={fileUrl(value)}
               alt=""
               className={`${kind === 'photo' ? 'h-16 w-12' : 'h-14 w-14'} rounded object-cover bg-gray-100 flex-shrink-0`}
             />

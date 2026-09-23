@@ -49,7 +49,23 @@ function buildEnv(): Env {
 
 const env = buildEnv();
 
-const prisma = new PrismaClient({ datasourceUrl: env.DATABASE_URL });
+/**
+ * Hostingda hisob uchun ochiq DB ulanishlari soni cheklangan: Prisma'ning
+ * standart pool'i (CPU × 2 + 1) limitdan oshgach, yangi ulanish 5 soniyada
+ * uziladi va so'rov 500 qaytaradi (2026-09-23, 4-parallel so'rovda tasdiqlangan).
+ * Kichik pool bilan ortiqcha so'rovlar yiqilmaydi, navbatda kutadi.
+ * URL da parametr berilgan bo'lsa, o'shanisi ustun.
+ */
+function withPoolLimits(databaseUrl: string): string {
+  const url = new URL(databaseUrl);
+  if (!url.searchParams.has('connection_limit')) {
+    url.searchParams.set('connection_limit', process.env.DB_CONNECTION_LIMIT || '2');
+  }
+  if (!url.searchParams.has('pool_timeout')) url.searchParams.set('pool_timeout', '20');
+  return url.toString();
+}
+
+const prisma = new PrismaClient({ datasourceUrl: withPoolLimits(env.DATABASE_URL) });
 setDb(prisma);
 
 // Workers'dagi `ExecutionContext` o'rnini bosuvchi: Node jarayoni javobdan

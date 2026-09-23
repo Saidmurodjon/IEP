@@ -24,14 +24,19 @@ export const api = axios.create({
  *  - yalang'och kalit (masalan `Document.fileKey`):  `abc123.pdf`
  *  - eski nisbiy manzil (bu tuzatishdan oldin yozilgan):
  *    `/api/files/abc123.pdf`
- *  - to'liq manzil (shu funksiya avval ishlagan bo'lsa):
- *    `https://.../api/files/abc123.pdf` — o'zgarishsiz qaytadi
+ *  - to'liq manzil: `https://.../api/files/abc123.pdf` — domeni JORIY
+ *    `VITE_API_URL` ga almashtiriladi. Bazada eski domenlar qolgan
+ *    (`http://localhost:3000`, workers.dev); fayllar esa faqat bizning
+ *    API'da, shuning uchun yo'l saqlanib, domen yangilanadi.
+ *  - boshqa to'liq manzil (`/api/files/` emas) — o'zgarishsiz qaytadi.
  *
  * `VITE_API_URL` bo'sh bo'lsa (lokal, same-origin/Vite proksi) natija ham
  * nisbiy qoladi — bu holatda nisbiy manzilning o'zi to'g'ri ishlaydi.
  */
 export function fileUrl(value: string | null | undefined): string {
   if (!value) return '';
+  const own = /^https?:\/\/[^/]+(\/api\/files\/.+)$/i.exec(value);
+  if (own) return `${API_URL}${own[1]}`;
   if (/^https?:\/\//i.test(value)) return value;
   const path = value.startsWith('/api/files/') ? value : `/api/files/${value}`;
   return `${API_URL}${path}`;

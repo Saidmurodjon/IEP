@@ -1,5 +1,5 @@
 import DOMPurify from 'dompurify';
-import { isOwnFileUrl } from '@/lib/api';
+import { fileUrl, isOwnFileUrl } from '@/lib/api';
 
 /**
  * Brauzer tomonidagi HTML tozalash.
@@ -49,6 +49,11 @@ export function sanitizeHtml(input: string | null | undefined): string {
     RETURN_DOM_FRAGMENT: true,
   });
   pruneDisallowedSources(clean);
+  // Ko'rsatishda nisbiy `/api/files/...` API domeniga ko'chiriladi — frontend
+  // boshqa domenda. Saqlashda (tahrirlagich) nisbiy shakl qoladi.
+  clean.querySelectorAll('img').forEach((img) => {
+    img.setAttribute('src', fileUrl(img.getAttribute('src')));
+  });
   const wrapper = document.createElement('div');
   wrapper.appendChild(clean);
   return wrapper.innerHTML;

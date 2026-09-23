@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Plus, Pencil, Trash2, X, Eye, EyeOff } from 'lucide-react';
 import clsx from 'clsx';
-import { partnersApi } from '@/lib/api';
+import { fileUrl, partnersApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
@@ -256,7 +256,7 @@ export default function AdminPartnersPage() {
                       />
                     </td>
                     <td className="px-4 py-3">
-                      <img src={item.logoUrl} alt={item.nameUz} className="h-8 w-auto max-w-[120px] object-contain" />
+                      <img src={fileUrl(item.logoUrl)} alt={item.nameUz} className="h-8 w-auto max-w-[120px] object-contain" />
                     </td>
                     <td className="px-4 py-3 font-medium text-gray-900">{item.nameUz}</td>
                     <td className="px-4 py-3 text-gray-500 truncate max-w-[200px]">{item.websiteUrl ?? '—'}</td>

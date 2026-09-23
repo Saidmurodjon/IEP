@@ -1,4 +1,5 @@
 import { useAccessibility } from '@/hooks/useAccessibility';
+import { fileUrl } from '@/lib/api';
 
 type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
   /**
@@ -15,7 +16,7 @@ type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
  * (`alt=""`) butunlay yo'qoladi, mazmunli rasm o'rniga uning tavsifi matn
  * sifatida chiqadi.
  */
-export default function A11yImage({ alt, className, ...rest }: Props) {
+export default function A11yImage({ alt, className, src, ...rest }: Props) {
   const { settings } = useAccessibility();
 
   if (settings.images === 'off') {
@@ -23,5 +24,7 @@ export default function A11yImage({ alt, className, ...rest }: Props) {
     return <span className="a11y-alt">{alt}</span>;
   }
 
-  return <img alt={alt} className={className} {...rest} />;
+  // Bazadagi `/api/files/...` manzili API domeniga ko'chiriladi (`fileUrl()` izohi).
+  const resolved = src?.includes('/api/files/') ? fileUrl(src) : src;
+  return <img alt={alt} className={className} src={resolved} {...rest} />;
 }
