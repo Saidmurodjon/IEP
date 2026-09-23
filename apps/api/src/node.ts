@@ -65,6 +65,13 @@ function withPoolLimits(databaseUrl: string): string {
   return url.toString();
 }
 
+// Prisma engine'i (tokio) standart holatda har bir CPU yadrosiga bitta oqim ochadi —
+// ko'p yadroli hosting serverida bu jarayon boshiga ~50 oqim. CloudLinux (LVE) oqimlarni
+// ham jarayon limitiga qo'shadi: limit oshgach Passenger jarayonlari o'ldiriladi va
+// SSH ham ochilmaydi (2026-09-23). Engine birinchi so'rovda yuklanadi, shuning uchun
+// shu yerda o'rnatish yetarli.
+process.env.TOKIO_WORKER_THREADS ||= '2';
+
 const prisma = new PrismaClient({ datasourceUrl: withPoolLimits(env.DATABASE_URL) });
 setDb(prisma);
 
