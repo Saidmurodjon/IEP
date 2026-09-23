@@ -2,7 +2,7 @@
 //
 // Natija: apps/api/deploy/iep-api/ va apps/api/deploy/iep-api.zip
 //   server.cjs         — butun API bitta faylda (@prisma/client tashqarida)
-//   package.json       — serverda "Run NPM Install" uchun; postinstall `prisma generate`
+//   package.json       — serverda `npm install`, keyin ilova papkasida `npm run generate`
 //   prisma/            — schema.prisma va migrations/ (`npx prisma migrate deploy`)
 //
 // Secret'lar paketga TUSHMAYDI — ular cPanel formasida kiritiladi.
@@ -52,8 +52,10 @@ const pkg = {
   engines: { node: '>=22' },
   scripts: {
     start: 'node server.cjs',
-    postinstall: 'prisma generate',
-    migrate: 'prisma migrate deploy',
+    // postinstall EMAS: CloudLinux `npm install` ni ~/nodevenv/.../lib ichida
+    // ishga tushiradi, u yerda prisma/ papkasi yo'q. Ilova papkasida qo'lda.
+    generate: 'prisma generate --schema=prisma/schema.prisma',
+    migrate: 'prisma migrate deploy --schema=prisma/schema.prisma',
   },
   dependencies: {
     '@prisma/client': prismaVersion,
