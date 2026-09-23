@@ -11,6 +11,8 @@ import clsx from 'clsx';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
   titleUz: z.string().min(1), titleEn: z.string().min(1), titleRu: z.string().min(1),
@@ -71,6 +73,23 @@ export default function AdminPublicationsPage() {
     },
     onError: (error) => toast.showError(error),
   });
+
+  const bulk = useBulkSelection();
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const bulkDelete = async () => {
+    const ids = [...bulk.selected];
+    if (!confirm(t('admin.bulk_confirm_delete', { count: ids.length }))) return;
+    setBulkBusy(true);
+    const results = await Promise.allSettled(ids.map((id) => pubsApi.delete(id)));
+    setBulkBusy(false);
+    bulk.clear();
+    qc.invalidateQueries({ queryKey: ['admin-pubs-list'] });
+    qc.invalidateQueries({ queryKey: ['publications'] });
+    const failed = results.filter((r) => r.status === 'rejected').length;
+    const done = ids.length - failed;
+    if (failed === 0) toast.success(t('admin.bulk_delete_done', { count: done }));
+    else toast.error(t('admin.bulk_delete_partial', { done, failed }));
+  };
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset({ category: 'article', year: new Date().getFullYear() }); };
 
@@ -192,10 +211,29 @@ export default function AdminPublicationsPage() {
         )}
 
         {isLoading ? <div className="text-center py-8 text-gray-400">Yuklanmoqda...</div> : (
+          <>
+            <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
+              <button
+                type="button"
+                onClick={() => void bulkDelete()}
+                disabled={bulkBusy}
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+              >
+                {t('admin.bulk_delete')}
+              </button>
+            </BulkActionsBar>
           <div className="card overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <input
+                      type="checkbox"
+                      aria-label={t('admin.select_all')}
+                      checked={items.length > 0 && items.every((item) => bulk.selected.has(item.id))}
+                      onChange={() => bulk.toggleAll(items.map((item) => item.id))}
+                    />
+                  </th>
                   <th className="text-left px-4 py-3 text-gray-600 font-medium">Sarlavha</th>
                   <th className="text-left px-4 py-3 text-gray-600 font-medium hidden md:table-cell">Mualliflar</th>
                   <th className="text-left px-4 py-3 text-gray-600 font-medium hidden sm:table-cell">Yil</th>
@@ -205,6 +243,14 @@ export default function AdminPublicationsPage() {
               <tbody className="divide-y divide-gray-50">
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`${t('admin.select_row')}: ${item.titleUz}`}
+                        checked={bulk.selected.has(item.id)}
+                        onChange={() => bulk.toggle(item.id)}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <BookOpen className="h-4 w-4 text-gray-300 flex-shrink-0" />
@@ -221,10 +267,11 @@ export default function AdminPublicationsPage() {
                     </td>
                   </tr>
                 ))}
-                {items.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">Nashrlar yo'q</td></tr>}
+                {items.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">Nashrlar yo'q</td></tr>}
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     </>

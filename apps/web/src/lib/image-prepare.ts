@@ -14,6 +14,8 @@ export const MAX_WIDTH_DEFAULT = 1920;
 export const MAX_WIDTH_PHOTO = 800;
 /** Xodim rasmi uchun eng kichik kenglik — juda kichik rasm kartochkada xunuk. */
 export const MIN_WIDTH_PHOTO = 200;
+/** Xodim rasmi andozasi — 3x4 (bo'yiga, portret). Kenglik / balandlik. */
+export const PHOTO_ASPECT_RATIO = 3 / 4;
 
 const QUALITY = 0.85;
 
@@ -130,4 +132,39 @@ export async function prepareImage(
       afterBytes: blob.size,
     },
   };
+}
+
+/**
+ * Foydalanuvchi `PhotoCropModal`da qo'lda tanlagan piksel maydonini
+ * (`react-easy-crop`ning `croppedAreaPixels`i) haqiqiy faylga aylantiradi.
+ * Markazdan avtomatik kesishdan farqli — foydalanuvchi qaysi qismi
+ * saqlanishini o'zi tanlaydi.
+ */
+export async function cropToFile(
+  imageUrl: string,
+  area: { x: number; y: number; width: number; height: number },
+  fileName: string
+): Promise<File> {
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const el = new Image();
+    el.onload = () => resolve(el);
+    el.onerror = () => reject(new ClientError('UNSUPPORTED_TYPE', { formats: ALLOWED_FORMATS }));
+    el.src = imageUrl;
+  });
+
+  const width = Math.round(area.width);
+  const height = Math.round(area.height);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext('2d');
+  if (!context) throw new ClientError('UPLOAD_FAILED');
+  context.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, width, height);
+
+  const type = supportsWebp() ? 'image/webp' : 'image/jpeg';
+  const blob = await toBlob(canvas, type);
+  const extension = type === 'image/webp' ? 'webp' : 'jpg';
+  const baseName = fileName.replace(/\.[^.]+$/, '') || 'photo';
+
+  return new File([blob], `${baseName}.${extension}`, { type });
 }

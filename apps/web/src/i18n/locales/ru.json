@@ -222,7 +222,18 @@
     "unsaved_warning": "Есть несохранённые изменения. Покинуть страницу?",
     "logs": "Журнал ошибок",
     "unresolved_errors": "Нерешённые ошибки",
-    "unanswered_msgs": "Обращения без ответа"
+    "unanswered_msgs": "Обращения без ответа",
+    "select_all": "Выбрать все",
+    "select_row": "Выбрать",
+    "bulk_toolbar": "Массовые действия",
+    "selected_count": "Выбрано: {{count}}",
+    "bulk_delete": "Удалить",
+    "bulk_confirm_delete": "Удалить {{count}} записей?",
+    "bulk_set_draft": "Перевести в черновик",
+    "bulk_delete_done": "Удалено записей: {{count}}.",
+    "bulk_delete_partial": "Удалено: {{done}}, с ошибкой: {{failed}}.",
+    "bulk_draft_done": "Переведено в черновик: {{count}}.",
+    "bulk_draft_partial": "Переведено в черновик: {{done}}, с ошибкой: {{failed}}."
   },
   "common": {
     "test_mode_banner": "Сайт работает в тестовом режиме",
@@ -362,7 +373,11 @@
     "remove": "Удалить",
     "preparing": "Подготовка изображения...",
     "uploading": "Загрузка...",
-    "no_file": "Файл не выбран"
+    "no_file": "Файл не выбран",
+    "crop_title": "Подогнать под 3x4",
+    "crop_zoom": "Масштаб",
+    "crop_hint": "Перетащите и увеличьте, чтобы выбрать сохраняемую часть фото.",
+    "crop_confirm": "Обрезать и сохранить"
   },
   "documents": {
     "title": "Нормативные документы",

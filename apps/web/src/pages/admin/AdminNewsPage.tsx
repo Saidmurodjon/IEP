@@ -16,6 +16,8 @@ import { useToast } from '@/components/Toast';
 import { slugify, uniqueSlug } from '@/lib/slug';
 import { useUnsavedWarning } from '@/hooks/useUnsavedWarning';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
   slug: z.string().min(1, 'Slug kiriting'),
@@ -90,6 +92,35 @@ export default function AdminNewsPage() {
     onSuccess: () => { refresh(); toast.success(t('toast.news_deleted')); },
     onError: (error) => toast.showError(error),
   });
+
+  const bulk = useBulkSelection();
+  const [bulkBusy, setBulkBusy] = useState(false);
+
+  const runBulk = async (ids: string[], action: (id: string) => Promise<unknown>) => {
+    setBulkBusy(true);
+    const results = await Promise.allSettled(ids.map(action));
+    setBulkBusy(false);
+    bulk.clear();
+    refresh();
+    return results.filter((r) => r.status === 'rejected').length;
+  };
+
+  const bulkDelete = async () => {
+    const ids = [...bulk.selected];
+    if (!confirm(t('admin.bulk_confirm_delete', { count: ids.length }))) return;
+    const failed = await runBulk(ids, (id) => newsApi.delete(id));
+    const done = ids.length - failed;
+    if (failed === 0) toast.success(t('admin.bulk_delete_done', { count: done }));
+    else toast.error(t('admin.bulk_delete_partial', { done, failed }));
+  };
+
+  const bulkSetDraft = async () => {
+    const ids = [...bulk.selected];
+    const failed = await runBulk(ids, (id) => newsApi.update(id, { isPublished: false }));
+    const done = ids.length - failed;
+    if (failed === 0) toast.success(t('admin.bulk_draft_done', { count: done }));
+    else toast.error(t('admin.bulk_draft_partial', { done, failed }));
+  };
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
 
@@ -357,10 +388,37 @@ export default function AdminNewsPage() {
         {isLoading ? (
           <div className="text-center py-8 text-gray-400">Yuklanmoqda...</div>
         ) : (
+          <>
+            <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
+              <button
+                type="button"
+                onClick={() => void bulkDelete()}
+                disabled={bulkBusy}
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+              >
+                {t('admin.bulk_delete')}
+              </button>
+              <button
+                type="button"
+                onClick={() => void bulkSetDraft()}
+                disabled={bulkBusy}
+                className="btn-secondary disabled:opacity-60"
+              >
+                {t('admin.bulk_set_draft')}
+              </button>
+            </BulkActionsBar>
           <div className="card overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <input
+                      type="checkbox"
+                      aria-label={t('admin.select_all')}
+                      checked={items.length > 0 && items.every((item) => bulk.selected.has(item.id))}
+                      onChange={() => bulk.toggleAll(items.map((item) => item.id))}
+                    />
+                  </th>
                   <th className="text-left px-4 py-3 text-gray-600 font-medium">Sarlavha</th>
                   <th className="text-left px-4 py-3 text-gray-600 font-medium hidden sm:table-cell">Sana</th>
                   <th className="text-right px-4 py-3 text-gray-600 font-medium">Amallar</th>
@@ -369,6 +427,14 @@ export default function AdminNewsPage() {
               <tbody className="divide-y divide-gray-50">
                 {items.map((item) => (
                   <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`${t('admin.select_row')}: ${item.titleUz}`}
+                        checked={bulk.selected.has(item.id)}
+                        onChange={() => bulk.toggle(item.id)}
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-gray-900 truncate max-w-xs">{item.titleUz}</span>
@@ -411,7 +477,7 @@ export default function AdminNewsPage() {
                 ))}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
                       Yangiliklar yo'q
                     </td>
                   </tr>
@@ -419,6 +485,7 @@ export default function AdminNewsPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     </>

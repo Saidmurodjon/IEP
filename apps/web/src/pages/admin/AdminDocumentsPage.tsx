@@ -14,6 +14,8 @@ import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTab
 import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/date';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
   titleUz: z.string().min(1, 'Nomini kiriting'),
@@ -98,6 +100,22 @@ export default function AdminDocumentsPage() {
     onSuccess: () => { refresh(); toast.success(t('toast.document_deleted')); },
     onError: (error) => toast.showError(error),
   });
+
+  const bulk = useBulkSelection();
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const bulkDelete = async () => {
+    const ids = [...bulk.selected];
+    if (!confirm(t('admin.bulk_confirm_delete', { count: ids.length }))) return;
+    setBulkBusy(true);
+    const results = await Promise.allSettled(ids.map((id) => documentsApi.delete(id)));
+    setBulkBusy(false);
+    bulk.clear();
+    refresh();
+    const failed = results.filter((r) => r.status === 'rejected').length;
+    const done = ids.length - failed;
+    if (failed === 0) toast.success(t('admin.bulk_delete_done', { count: done }));
+    else toast.error(t('admin.bulk_delete_partial', { done, failed }));
+  };
 
   const openEdit = (item: DocumentItem) => {
     setEditItem(item);
@@ -241,10 +259,29 @@ export default function AdminDocumentsPage() {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
+          <>
+            <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
+              <button
+                type="button"
+                onClick={() => void bulkDelete()}
+                disabled={bulkBusy}
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+              >
+                {t('admin.bulk_delete')}
+              </button>
+            </BulkActionsBar>
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-gray-500">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <input
+                      type="checkbox"
+                      aria-label={t('admin.select_all')}
+                      checked={items.length > 0 && items.every((item) => bulk.selected.has(item.id))}
+                      onChange={() => bulk.toggleAll(items.map((item) => item.id))}
+                    />
+                  </th>
                   <th className="text-left font-medium px-4 py-3">Nomi</th>
                   <th className="text-left font-medium px-4 py-3">Raqami</th>
                   <th className="text-left font-medium px-4 py-3">Sanasi</th>
@@ -254,13 +291,21 @@ export default function AdminDocumentsPage() {
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-4 py-10 text-center text-gray-400">
+                    <td colSpan={5} className="px-4 py-10 text-center text-gray-400">
                       Hujjatlar hali kiritilmagan.
                     </td>
                   </tr>
                 )}
                 {items.map((item) => (
                   <tr key={item.id} className={clsx('border-t border-gray-100', !item.isActive && 'opacity-50')}>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`${t('admin.select_row')}: ${item.titleUz}`}
+                        checked={bulk.selected.has(item.id)}
+                        onChange={() => bulk.toggle(item.id)}
+                      />
+                    </td>
                     <td className="px-4 py-3 font-medium text-gray-900">{item.titleUz}</td>
                     <td className="px-4 py-3 text-gray-500">{item.documentNumber ?? '—'}</td>
                     <td className="px-4 py-3 text-gray-500">
@@ -294,6 +339,7 @@ export default function AdminDocumentsPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     </>

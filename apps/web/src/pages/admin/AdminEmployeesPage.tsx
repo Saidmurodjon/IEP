@@ -14,6 +14,8 @@ import { type Unit } from '@/lib/structure';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
   fullNameUz: z.string().min(1, 'Ism kiriting'),
@@ -101,6 +103,23 @@ export default function AdminEmployeesPage() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_deleted')); },
     onError: (error) => toast.showError(error),
   });
+
+  const bulk = useBulkSelection();
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const bulkDelete = async () => {
+    const ids = [...bulk.selected];
+    if (!confirm(t('admin.bulk_confirm_delete', { count: ids.length }))) return;
+    setBulkBusy(true);
+    const results = await Promise.allSettled(ids.map((id) => employeesApi.delete(id)));
+    setBulkBusy(false);
+    bulk.clear();
+    qc.invalidateQueries({ queryKey: ['admin-employees'] });
+    qc.invalidateQueries({ queryKey: ['employees'] });
+    const failed = results.filter((r) => r.status === 'rejected').length;
+    const done = ids.length - failed;
+    if (failed === 0) toast.success(t('admin.bulk_delete_done', { count: done }));
+    else toast.error(t('admin.bulk_delete_partial', { done, failed }));
+  };
 
   const openEdit = (item: Employee) => {
     setEditItem(item);
@@ -313,10 +332,29 @@ export default function AdminEmployeesPage() {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
+          <>
+            <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
+              <button
+                type="button"
+                onClick={() => void bulkDelete()}
+                disabled={bulkBusy}
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+              >
+                {t('admin.bulk_delete')}
+              </button>
+            </BulkActionsBar>
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-gray-500">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <input
+                      type="checkbox"
+                      aria-label={t('admin.select_all')}
+                      checked={items.length > 0 && items.every((item) => bulk.selected.has(item.id))}
+                      onChange={() => bulk.toggleAll(items.map((item) => item.id))}
+                    />
+                  </th>
                   <th className="text-left font-medium px-4 py-3">Ism-sharif</th>
                   <th className="text-left font-medium px-4 py-3">Lavozimi</th>
                   <th className="text-left font-medium px-4 py-3">Bo'linma</th>
@@ -327,13 +365,21 @@ export default function AdminEmployeesPage() {
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-10 text-center text-gray-400">
+                    <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
                       Xodimlar hali kiritilmagan.
                     </td>
                   </tr>
                 )}
                 {items.map((item) => (
                   <tr key={item.id} className={clsx('border-t border-gray-100', !item.isActive && 'opacity-50')}>
+                    <td className="px-4 py-3">
+                      <input
+                        type="checkbox"
+                        aria-label={`${t('admin.select_row')}: ${item.fullNameUz}`}
+                        checked={bulk.selected.has(item.id)}
+                        onChange={() => bulk.toggle(item.id)}
+                      />
+                    </td>
                     <td className="px-4 py-3 font-medium text-gray-900">
                       {item.fullNameUz}
                       {item.isManagement && <span className="ml-2 text-xs text-accent-700">rahbariyat</span>}
@@ -371,6 +417,7 @@ export default function AdminEmployeesPage() {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
     </>

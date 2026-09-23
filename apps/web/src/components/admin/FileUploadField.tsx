@@ -1,11 +1,13 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { Area } from 'react-easy-crop';
 import { Upload, X, FileText, Image as ImageIcon, Loader2 } from 'lucide-react';
 import { uploadsApi } from '@/lib/api';
 import { useToast } from '@/components/Toast';
 import {
-  formatBytes, prepareImage, MAX_WIDTH_DEFAULT, MAX_WIDTH_PHOTO, MIN_WIDTH_PHOTO,
+  formatBytes, prepareImage, cropToFile, MAX_WIDTH_DEFAULT, MAX_WIDTH_PHOTO, MIN_WIDTH_PHOTO,
 } from '@/lib/image-prepare';
+import PhotoCropModal from '@/components/admin/PhotoCropModal';
 
 interface Props {
   kind: 'image' | 'photo' | 'document';
@@ -32,6 +34,7 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
   const toast = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState<'preparing' | 'uploading' | null>(null);
+  const [cropSrc, setCropSrc] = useState<{ url: string; file: File } | null>(null);
 
   const isImage = kind !== 'document';
 
@@ -76,6 +79,33 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
     }
   };
 
+  /** Xodim rasmi tanlanganda — avval qo'lda kesish oynasi ochiladi. */
+  const onFileSelected = (file: File) => {
+    if (kind === 'photo') {
+      setCropSrc({ url: URL.createObjectURL(file), file });
+      return;
+    }
+    void handleFile(file);
+  };
+
+  const closeCrop = () => {
+    if (cropSrc) URL.revokeObjectURL(cropSrc.url);
+    setCropSrc(null);
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
+  const confirmCrop = async (area: Area) => {
+    if (!cropSrc) return;
+    const { url, file } = cropSrc;
+    setCropSrc(null);
+    try {
+      const cropped = await cropToFile(url, area, file.name);
+      await handleFile(cropped);
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  };
+
   const Icon = isImage ? ImageIcon : FileText;
 
   return (
@@ -85,7 +115,11 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
       {value ? (
         <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3">
           {isImage ? (
-            <img src={value} alt="" className="h-14 w-14 rounded object-cover bg-gray-100" />
+            <img
+              src={value}
+              alt=""
+              className={`${kind === 'photo' ? 'h-16 w-12' : 'h-14 w-14'} rounded object-cover bg-gray-100 flex-shrink-0`}
+            />
           ) : (
             <div className="h-14 w-14 rounded bg-gray-100 flex items-center justify-center">
               <FileText className="h-6 w-6 text-gray-400" />
@@ -139,9 +173,17 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
         className="hidden"
         onChange={(event) => {
           const file = event.target.files?.[0];
-          if (file) void handleFile(file);
+          if (file) onFileSelected(file);
         }}
       />
+
+      {cropSrc && (
+        <PhotoCropModal
+          imageUrl={cropSrc.url}
+          onCancel={closeCrop}
+          onConfirm={(area) => void confirmCrop(area)}
+        />
+      )}
     </div>
   );
 }

@@ -222,7 +222,18 @@
     "unsaved_warning": "You have unsaved changes. Leave the page?",
     "logs": "Error log",
     "unresolved_errors": "Unresolved errors",
-    "unanswered_msgs": "Unanswered appeals"
+    "unanswered_msgs": "Unanswered appeals",
+    "select_all": "Select all",
+    "select_row": "Select",
+    "bulk_toolbar": "Bulk actions",
+    "selected_count": "{{count}} selected",
+    "bulk_delete": "Delete",
+    "bulk_confirm_delete": "Delete {{count}} records?",
+    "bulk_set_draft": "Move to draft",
+    "bulk_delete_done": "{{count}} records deleted.",
+    "bulk_delete_partial": "{{done}} deleted, {{failed}} failed.",
+    "bulk_draft_done": "{{count}} records moved to draft.",
+    "bulk_draft_partial": "{{done}} moved to draft, {{failed}} failed."
   },
   "common": {
     "test_mode_banner": "The site is running in test mode",
@@ -362,7 +373,11 @@
     "remove": "Remove",
     "preparing": "Preparing image...",
     "uploading": "Uploading...",
-    "no_file": "No file selected"
+    "no_file": "No file selected",
+    "crop_title": "Fit to 3x4",
+    "crop_zoom": "Zoom",
+    "crop_hint": "Drag and zoom to choose the part of the photo to keep.",
+    "crop_confirm": "Crop and save"
   },
   "documents": {
     "title": "Official documents",

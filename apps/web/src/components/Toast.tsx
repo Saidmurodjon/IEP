@@ -19,6 +19,11 @@ interface ToastApi {
   success: (text: string) => void;
   /** Xato xabari. Foydalanuvchi yopgunicha qoladi. */
   showError: (error: unknown) => void;
+  /**
+   * Tayyor matn bilan xato xabari — API xato kodiga bog'liq bo'lmagan
+   * holatlar uchun (masalan ommaviy amalning qisman muvaffaqiyatsizligi).
+   */
+  error: (text: string) => void;
 }
 
 const ToastContext = createContext<ToastApi | null>(null);
@@ -51,6 +56,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const api = useMemo<ToastApi>(
     () => ({
       success: (text: string) => push('success', text),
+      error: (text: string) => push('error', text),
       showError: (error: unknown) => {
         const apiError: ApiError = toApiError(error);
         const message = t(`errors.${apiError.code}`, {

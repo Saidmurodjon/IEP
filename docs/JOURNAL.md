@@ -13,6 +13,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
 **Oxirgi yangilanish:** 2026-09-01
+
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
 (`e177810..3a013da`), shu jumladan 13-navbar Bosqich C/D, test-rejim banneri va qidiruv/
 maxsus imkoniyatlar ikonka tuzatishlari (batafsil pastdagi 13-yozuv va undan keyingi
@@ -139,6 +140,7 @@ Har bir topshiriq tugagach PM sessiyasi tekshiradi.
 | 10C | Xavfsizlik sarlavhalari va CSP | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 13 | Ikki darajali mega-menyu | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
 | 14 | Test ma'lumotlari (lokal baza) | ✅ Bajarildi (PM tekshiruvi kutilmoqda) |
+| 15 | Xodim rasmi 3x4, admin ommaviy amal, modal fokus xatosi | 🟠 Bajarildi, brauzerda tekshirilmadi (PM tekshiruvi kutilmoqda) |
 
 03-production alohida turadi va `wrangler login` dan keyin bajariladi.
 
@@ -161,6 +163,86 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-09-04 · 15 — 2-bosqich: qo'lda kesish, kartochka joylashuvi, ichma-ich modal fokus
+
+**Kim:** Claude Code (Sonnet 5) · Foydalanuvchi skrinshot bilan ikkita kamchilikni ko'rsatdi:
+(a) avtomatik markazdan kesish ko'p hollarda yuzni yomon joylashtirib qo'yardi (bo'sh joy
+ko'p), (b) kengaytirilgan kartochkada rasm past, matn ustuni uzun bo'lgani uchun rasm
+"ajralib qolgan" ko'rinardi.
+
+**1. Qo'lda kesish (crop).** Avtomatik markazdan kesish olib tashlandi. `react-easy-crop@6.2.3`
+qo'shildi (`npm install --workspace=apps/web`). Yangi `PhotoCropModal.tsx` — foydalanuvchi
+rasmni surib (drag) va kattalashtirib (zoom) 3x4 doirasi ichida qaysi qismi saqlanishini
+o'zi tanlaydi. `image-prepare.ts`: `prepareImage`dagi `cropAspect` avtomatik mantiqi olib
+tashlandi (asl holatiga qaytarildi), o'rniga `cropToFile(imageUrl, area, fileName)` qo'shildi
+— `react-easy-crop`ning `croppedAreaPixels`ini haqiqiy faylga aylantiradi. `FileUploadField`:
+`kind="photo"` tanlanganda endi to'g'ridan-to'g'ri yuklamaydi, avval `PhotoCropModal`ni ochadi.
+
+**2. Kartochka joylashuvi.** `EmployeeCard.tsx` kengaytirilgan variant: avval rasm butun
+matn ustuni bilan bitta `flex-row`da edi. Endi rasm FAQAT sarlavha qatori (ism/lavozim/
+daraja) bilan yonma-yon, qolgan hammasi (ilmiy yo'nalish, xona/telefon, ORCID/Scopus,
+qabul kunlari) TO'LIQ kenglikda rasm TAGIDA davom etadi — rasm endi "yolg'iz osilib"
+qolmaydi.
+
+**3. Ichma-ich modal fokus xatosi (topilib, oldindan tuzatildi).** `PhotoCropModal` admin
+formasi (masalan `AdminEmployeesPage`) ochiq turgan holda ustiga ochiladi — ikkalasi ham
+`useFocusTrap` ishlatadi, ya'ni ikkalasi ham `document`da `Escape` tinglaydi. Buni ishga
+tushirmasdan oldin aniqlandi: agar tuzatilmasa, kesish oynasida `Escape` bosilganda ORQADAGI
+BUTUN ADMIN FORMASI HAM yopilib, kiritilgan ma'lumot yo'qolar edi. `useFocusTrap.ts`ga
+modul darajasidagi `activeTraps` stek qo'shildi — faqat ENG TEPADAGI (eng so'nggi ochilgan)
+qopqon `Escape`/`Tab`ga javob beradi, pastdagilar `isTopmost()` tekshiruvidan o'tmay jim
+turadi.
+
+**TEKSHIRILDI:** `tsc --noEmit` (apps/web) toza, `vite build` muvaffaqiyatli (yangi
+`react-easy-crop` to'g'ri bog'landi). Nested-modal Escape mantig'i FAQAT kod darajasida
+tekshirildi (stek push/filter to'g'ri ishlashi qo'lda kuzatildi), brauzerda haqiqiy
+Tab/Escape bosish bilan TASDIQLANMADI — Chrome kengaytmasi bu sessiyada ham ulanmagan.
+**TEKSHIRILMADI:** crop oynasida haqiqiy surish/kattalashtirish amali, yuklangandan keyingi
+natija sifatini ko'rish, `/employees` va `/management`dagi yangi kartochka joylashuvi
+vizual ko'rinishi. Keyingi sessiya `npm run dev`da qo'lda tasdiqlashi kerak.
+
+**Kim:** Claude Code (Sonnet 5) · Reja: `docs/tasks/15-admin-panel-va-xodim-rasmi.md` (foydalanuvchi tasdiqlagan).
+
+**1. Modal fokus xatosi (sabab).** `useFocusTrap.ts`: `useEffect` bog'liqlik ro'yxatida
+`onClose` bor edi, sahifalardagi `closeForm` memoizatsiyasiz yozilgani uchun har renderda
+(har harf yozilganda) effekt qayta ishga tushib, birinchi fokuslanadigan elementga (X/yopish
+tugmasiga) qaytarib yuborar edi. Tuzatish: `onClose` endi `useRef` orqali saqlanadi, effekt
+bog'liqligi `[ref, active]` ga tushirildi — 6 ta admin sahifasining hech birida alohida
+o'zgartirish shart bo'lmadi (`AdminNewsPage`, `AdminEmployeesPage`, `AdminDocumentsPage`,
+`AdminPublicationsPage`, `AdminPartnersPage`, `AdminStructurePage`).
+
+**2. Xodim surati 3x4.** `image-prepare.ts`: `prepareImage` ga `cropAspect` parametri
+qo'shildi — manba rasmning o'zidan markazdan 3:4 nisbatda kesib oladi (`PHOTO_ASPECT_RATIO`),
+keyin odatdagidek kenglik bo'yicha kichraytiradi. `FileUploadField` `kind="photo"` da shu
+parametrni yuboradi va kesilganda alohida toast (`toast.image_cropped`) ko'rsatadi.
+`EmployeeCard.tsx` dagi `Avatar` endi doira emas — `aspect-[3/4] rounded-lg object-cover`
+to'rtburchak (rasmli ham, bosh-harfli zaxira ham). Uch sahifada ham ta'sir qiladi
+(`EmployeesPage`, `ManagementPage`, `LabDetailPage`) — hammasi `EmployeeCard` orqali.
+
+**3. Admin ommaviy o'chirish/qoralama.** Yangi `useBulkSelection` hook va `BulkActionsBar`
+komponenti — 5 ta admin ro'yxat sahifasiga (`AdminNewsPage`, `AdminPublicationsPage`,
+`AdminDocumentsPage`, `AdminEmployeesPage`, `AdminPartnersPage`) checkbox ustuni va "N ta
+tanlandi" paneli qo'shildi. O'chirish — mavjud `DELETE` endpoint'lari `Promise.allSettled`
+bilan ketma-ket chaqiriladi (yangi backend endpoint yo'q), qisman xatolik alohida xabar
+bilan ko'rsatiladi. "Qoralamaga o'tkazish" faqat `AdminNewsPage`da (`isPublished:false`,
+mavjud `PATCH`). `Toast.tsx`ga tayyor matnli `error()` metodi qo'shildi (avval faqat
+`success`/`showError` bor edi). Uchala tilga (`uz/en/ru`) yangi `admin.*` va
+`toast.image_cropped` kalitlari qo'shildi.
+
+**TEKSHIRILDI:** `npx tsc --noEmit` (apps/web va apps/api) — toza. `npm test
+--workspace=apps/api` — 43/43 o'tdi (bu topshiriq backendga tegmagan, regressiya yo'qligi
+uchun). `cd apps/api && npm run build` (`wrangler deploy --dry-run`) — muvaffaqiyatli.
+`cd apps/web && npm run build` (`vite build`) — muvaffaqiyatli, yangi xato yo'q.
+
+**TEKSHIRILMADI — MUHIM.** Brauzerda qo'lda tekshirish qilinmadi: Chrome kengaytmasi shu
+sessiyada ulanmagan edi (`claude-in-chrome` xato qaytardi). Ya'ni: (a) modalda haqiqatan
+uzluksiz yozish mumkinligi, (b) checkbox/ommaviy amal UI'si real DOM'da to'g'ri ishlashi,
+(c) 3x4 kesish real rasm bilan vizual to'g'ri chiqishi — **hammasi faqat kod darajasida
+tekshirildi (sabab aniq topilgan, formula qo'lda hisoblab ko'rilgan), lekin brauzerda
+ko'rilmagan.** Keyingi sessiya (yoki foydalanuvchi) `npm run dev`da qo'lda tasdiqlashi kerak.
+Lokal test bazasi (`iep-pg`/`iep-neon-proxy`, 14-topshiriqdagi) ishlatildi, production
+Neon'ga tegilmadi.
 
 ### 2026-09-01 · 13-navbar ustiga: test-rejim banneri, qidiruv ikonkaga o'tkazildi, a11y ikonka almashtirildi
 

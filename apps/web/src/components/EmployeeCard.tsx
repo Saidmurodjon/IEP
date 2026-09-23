@@ -15,23 +15,32 @@ interface Props {
   badge?: string;
 }
 
-/** Rasm bo'lmasa — ism bosh harflaridan doira. Bo'sh joy qolmaydi. */
+/**
+ * Rasm bo'lmasa — ism bosh harflaridan to'rtburchak. Bo'sh joy qolmaydi.
+ * Xodim surati rasmiy 3x4 (bo'yiga, portret) andozada — kartochkada ham
+ * shu nisbat saqlanadi, eski nomutanosib rasmlar `object-cover` bilan
+ * markazdan kesib ko'rsatiladi.
+ */
 function Avatar({ name, photoUrl, size }: { name: string; photoUrl?: string | null; size: 'sm' | 'lg' }) {
   const { t } = useTranslation();
-  const box = size === 'lg' ? 'h-24 w-24 text-2xl' : 'h-16 w-16 text-lg';
+  // Ikkala o'lcham ham ANIQ beriladi (faqat `aspect-ratio` emas) — `<img>`
+  // elementida CSS `aspect-ratio` rasmning o'z (natural) nisbatidan PASTROQ
+  // ustuvorlikda, ya'ni faqat balandlik berilsa, brauzer baribir haqiqiy
+  // rasm nisbatini ishlatadi va 3x4 kartochkada amalga oshmay qoladi.
+  const box = size === 'lg' ? 'h-32 w-24 text-3xl' : 'h-20 w-[3.75rem] text-xl';
   if (photoUrl) {
     return (
       <A11yImage
         src={photoUrl}
         alt={`${name} — ${t('employee.photo_alt')}`}
-        className={`${box} rounded-full object-cover flex-shrink-0 bg-gray-100`}
+        className={`${box} rounded-lg object-cover flex-shrink-0 bg-gray-100`}
       />
     );
   }
   return (
     <div
       aria-hidden="true"
-      className={`${box} rounded-full flex-shrink-0 bg-primary-100 text-primary-700 font-semibold flex items-center justify-center`}
+      className={`${box} rounded-lg flex-shrink-0 bg-primary-100 text-primary-700 font-semibold flex items-center justify-center`}
     >
       {initials(name)}
     </div>
@@ -108,7 +117,15 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
 
   return (
     <div className="card p-6">
-      <div className="flex flex-col sm:flex-row items-start gap-5">
+      {/*
+        Rasm faqat sarlavha qatori (ism/lavozim/daraja) bilan yonma-yon —
+        qolgan ma'lumot (ilmiy yo'nalish, aloqa, qabul kunlari) TO'LIQ
+        kenglikda rasm TAGIDA davom etadi. Avval hammasi rasm bilan bitta
+        ustunda edi — rasm past, matn ustuni uzun bo'lgani uchun rasm
+        "ajralib qolgan" (kartochkaning yuqori chap burchagida yolg'iz
+        osilib qolgan) ko'rinardi.
+      */}
+      <div className="flex items-start gap-5">
         <Avatar name={name} photoUrl={employee.photoUrl} size="lg" />
         <div className="min-w-0 flex-1">
           {badge && (
@@ -119,55 +136,56 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
           <h3 className="text-lg font-bold text-gray-900 leading-snug">{name}</h3>
           <p className="text-sm text-primary-700 font-medium mt-1">{position}</p>
           {credentials && <p className="text-sm text-gray-500 mt-1">{credentials}</p>}
-          {researchArea && (
-            <p className="text-sm text-gray-600 mt-3 flex items-start gap-2">
-              <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-500" />
-              <span>
-                <span className="text-gray-500">{t('employee.research_area')}: </span>
-                {researchArea}
-              </span>
-            </p>
-          )}
-
-          <div className="mt-4 space-y-2 text-sm text-gray-600">
-            {employee.officeRoom && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <span>
-                  <span className="text-gray-500">{t('employee.office')}: </span>
-                  {employee.officeRoom}
-                </span>
-              </div>
-            )}
-            {employee.phone && (
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <a href={telHref(employee.phone)} className="text-primary-700 hover:underline">
-                  {employee.phone}
-                </a>
-              </div>
-            )}
-          </div>
-
-          <div className="mt-3">{links}</div>
-
-          {/*
-            Qabul kunlari ATAYLAB ajratilgan — fuqarolar saytga aynan shu
-            ma'lumot uchun kiradi (06-topshiriq, 4a-bo'lim).
-          */}
-          {reception && (
-            <div className="mt-4 rounded-lg bg-accent-50 border border-accent-200 p-3 flex items-start gap-2.5">
-              <Clock className="h-4 w-4 text-accent-700 mt-0.5 flex-shrink-0" />
-              <div>
-                <div className="text-xs font-semibold text-accent-900 uppercase tracking-wide">
-                  {t('employee.reception')}
-                </div>
-                <div className="text-sm text-gray-700 mt-0.5">{reception}</div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {researchArea && (
+        <p className="text-sm text-gray-600 mt-4 flex items-start gap-2">
+          <BookOpen className="h-4 w-4 mt-0.5 flex-shrink-0 text-gray-500" />
+          <span>
+            <span className="text-gray-500">{t('employee.research_area')}: </span>
+            {researchArea}
+          </span>
+        </p>
+      )}
+
+      <div className="mt-4 space-y-2 text-sm text-gray-600">
+        {employee.officeRoom && (
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
+            <span>
+              <span className="text-gray-500">{t('employee.office')}: </span>
+              {employee.officeRoom}
+            </span>
+          </div>
+        )}
+        {employee.phone && (
+          <div className="flex items-center gap-2">
+            <Phone className="h-4 w-4 text-gray-500 flex-shrink-0" />
+            <a href={telHref(employee.phone)} className="text-primary-700 hover:underline">
+              {employee.phone}
+            </a>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3">{links}</div>
+
+      {/*
+        Qabul kunlari ATAYLAB ajratilgan — fuqarolar saytga aynan shu
+        ma'lumot uchun kiradi (06-topshiriq, 4a-bo'lim).
+      */}
+      {reception && (
+        <div className="mt-4 rounded-lg bg-accent-50 border border-accent-200 p-3 flex items-start gap-2.5">
+          <Clock className="h-4 w-4 text-accent-700 mt-0.5 flex-shrink-0" />
+          <div>
+            <div className="text-xs font-semibold text-accent-900 uppercase tracking-wide">
+              {t('employee.reception')}
+            </div>
+            <div className="text-sm text-gray-700 mt-0.5">{reception}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -222,7 +222,18 @@
     "unsaved_warning": "Saqlanmagan o'zgarishlar bor. Sahifadan chiqasizmi?",
     "logs": "Xatoliklar jurnali",
     "unresolved_errors": "Hal qilinmagan xatolar",
-    "unanswered_msgs": "Javobsiz murojaatlar"
+    "unanswered_msgs": "Javobsiz murojaatlar",
+    "select_all": "Hammasini tanlash",
+    "select_row": "Tanlash",
+    "bulk_toolbar": "Ommaviy amallar",
+    "selected_count": "{{count}} ta tanlandi",
+    "bulk_delete": "O'chirish",
+    "bulk_confirm_delete": "{{count}} ta yozuvni o'chirishni tasdiqlaysizmi?",
+    "bulk_set_draft": "Qoralamaga o'tkazish",
+    "bulk_delete_done": "{{count}} ta yozuv o'chirildi.",
+    "bulk_delete_partial": "{{done}} ta o'chirildi, {{failed}} tasida xatolik yuz berdi.",
+    "bulk_draft_done": "{{count}} ta yozuv qoralamaga o'tkazildi.",
+    "bulk_draft_partial": "{{done}} tasi qoralamaga o'tkazildi, {{failed}} tasida xatolik yuz berdi."
   },
   "common": {
     "test_mode_banner": "Sayt test rejimida ishlamoqda",
@@ -362,7 +373,11 @@
     "remove": "O'chirish",
     "preparing": "Rasm tayyorlanmoqda...",
     "uploading": "Yuklanmoqda...",
-    "no_file": "Fayl tanlanmagan"
+    "no_file": "Fayl tanlanmagan",
+    "crop_title": "Rasmni 3x4 ga moslash",
+    "crop_zoom": "Kattalashtirish",
+    "crop_hint": "Rasmni suring va kattalashtirib, saqlanadigan qismini tanlang.",
+    "crop_confirm": "Kesib saqlash"
   },
   "documents": {
     "title": "Me'yoriy hujjatlar",
