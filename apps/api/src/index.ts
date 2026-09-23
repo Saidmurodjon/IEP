@@ -20,17 +20,18 @@ import { recordError } from './lib/error-log';
 import { redactStack } from './lib/redact';
 import { ConfigError, getFrontendUrl } from './lib/env';
 import type { PrismaClient } from '@prisma/client';
+import type { MediaBucket } from './lib/storage';
 
 export interface Env {
   DATABASE_URL: string;
   JWT_SECRET: string;
   FRONTEND_URL: string;
   /**
-   * R2 media ombori. Sozlanmagan bo'lishi MUMKIN — shuning uchun ixtiyoriy.
+   * Media ombori: Workers'da R2, Node'da disk (`lib/fs-storage.ts`). Sozlanmagan bo'lishi MUMKIN — shuning uchun ixtiyoriy.
    * Yuklash endpointi bog'lanish yo'qligini o'zi tekshiradi va 503 qaytaradi
    * (`lib/storage.ts`), sukut bo'yicha boshqa omborga o'tmaydi.
    */
-  MEDIA?: R2Bucket;
+  MEDIA?: MediaBucket;
   /**
    * Resend API kaliti. Sozlanmagan bo'lishi MUMKIN — bunday holatda xat
    * yuborilmaydi, lekin murojaat baribir saqlanadi va jurnalga `warning`

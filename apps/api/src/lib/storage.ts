@@ -13,8 +13,28 @@ export class StorageUnavailableError extends Error {
   }
 }
 
+/**
+ * Ombordan kerak bo'ladigan minimal interfeys — R2 ning faqat ishlatiladigan
+ * qismi. Workers'da `R2Bucket`, Node'da `lib/fs-storage.ts` shuni bajaradi.
+ */
+export interface MediaObject {
+  body: ReadableStream;
+  httpEtag: string;
+  httpMetadata?: { contentType?: string };
+}
+
+export interface MediaBucket {
+  put(
+    key: string,
+    value: ArrayBuffer | Uint8Array,
+    options?: { httpMetadata?: { contentType?: string; cacheControl?: string } }
+  ): Promise<unknown>;
+  get(key: string): Promise<MediaObject | null>;
+  delete(key: string): Promise<void>;
+}
+
 /** @throws {StorageUnavailableError} MEDIA bog'lanishi yo'q bo'lsa. */
-export function getStorage(env: Env): R2Bucket {
+export function getStorage(env: Env): MediaBucket {
   const bucket = env?.MEDIA;
   if (!bucket || typeof bucket.put !== 'function') {
     throw new StorageUnavailableError();

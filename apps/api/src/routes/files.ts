@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { fail } from '../lib/errors';
-import { getStorage, isValidKey, StorageUnavailableError } from '../lib/storage';
+import { getStorage, isValidKey, StorageUnavailableError, type MediaBucket } from '../lib/storage';
 import type { AppContext } from '../index';
 
 export const filesRouter = new Hono<AppContext>();
@@ -19,7 +19,7 @@ filesRouter.get('/*', async (c) => {
     return fail(c, 'NOT_FOUND', 'Invalid file key');
   }
 
-  let bucket: R2Bucket;
+  let bucket: MediaBucket;
   try {
     bucket = getStorage(c.env);
   } catch (err) {

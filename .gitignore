@@ -24,3 +24,6 @@ apps/web/vite.config.d.ts
 packages/db/.test-media.json
 ~$*
 docs/reference/
+
+# 16-topshiriq: webname uchun yig'ilgan Node paketi
+apps/api/deploy/

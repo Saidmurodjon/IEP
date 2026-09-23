@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { requireAuth } from '../middleware/auth';
 import { fail } from '../lib/errors';
-import { getStorage, buildKey, StorageUnavailableError } from '../lib/storage';
+import { getStorage, buildKey, StorageUnavailableError, type MediaBucket } from '../lib/storage';
 import {
   detectType, documentExtension, FORMAT_LABELS, LIMITS, type UploadKind,
 } from '../lib/file-types';
@@ -16,7 +16,7 @@ const KINDS: UploadKind[] = ['image', 'photo', 'document'];
 const ORPHAN_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
 uploadsRouter.post('/', requireAuth, async (c) => {
-  let bucket: R2Bucket;
+  let bucket: MediaBucket;
   try {
     bucket = getStorage(c.env);
   } catch (err) {
@@ -145,7 +145,7 @@ uploadsRouter.post('/', requireAuth, async (c) => {
  * ombor bo'ylab ommaviy o'chirish qilinmaydi (07-topshiriq, 7-bo'lim).
  */
 uploadsRouter.post('/cleanup', requireAuth, async (c) => {
-  let bucket: R2Bucket;
+  let bucket: MediaBucket;
   try {
     bucket = getStorage(c.env);
   } catch {

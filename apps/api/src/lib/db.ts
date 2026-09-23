@@ -4,6 +4,15 @@ import { PrismaClient } from '@prisma/client';
 
 let _prisma: PrismaClient | null = null;
 
+/**
+ * Node kirish nuqtasi (`src/node.ts`) oddiy PostgreSQL uchun o'z klientini
+ * shu yerda o'rnatadi — shunda Neon HTTP drayveri umuman ishlatilmaydi.
+ * Workers'da chaqirilmaydi.
+ */
+export function setDb(client: PrismaClient): void {
+  _prisma = client;
+}
+
 export function getDb(databaseUrl: string): PrismaClient {
   if (!_prisma) {
     // Neon HTTP drayveri uchun `PrismaNeonHTTP` ishlatiladi.
