@@ -14,13 +14,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-09-23
 
-**🆕 16 — webname.uz hostingiga ko'chish.** SSH ishlaydi (`iepuz@web2.webspace.uz`, kalit
-`~/.ssh/iep_webname`). API Passenger'da ishlaydi va bazaga ulangan (`/api/news`, structure,
-search 200; login 401 noto'g'ri parolda), 45 media fayl `~/iep-media` da. Frontend `public_html` da (SPA yo'llari, sarlavhalar, kesh
-tekshirildi), CORS `https://iep.uz` uchun ishlaydi. **Qolgan:** DNS (`iep.uz` hozir
-91.212.89.6 ga qaraydi, server 95.46.96.12) → SSL (`iep.uz`, `www`, `api`) → Force SSL →
-brauzerda to'liq tekshiruv. Hosting o'zi ham sarlavha qo'shadi (`X-Frame-Options: SAMEORIGIN`,
-`Permissions-Policy`, `CSP: block-all-mixed-content`) — bizniki bilan takrorlanadi, keyin ko'rilsin.
+**🆕 16 — webname.uz hostingiga ko'chish.** Sayt **sinov domenida to'liq ishlaydi (HTTPS)**:
+https://iep-95-46-96-12.sslip.io (API: `api.iep-95-46-96-12.sslip.io`; sslip.io IP'ni nomdan
+oladi, domen sotib olinmagan). Node ilova URL'i va `FRONTEND_URL` HOZIR shu sinov domeniga
+qaragan. SSH: `iepuz@web2.webspace.uz`, kalit `~/.ssh/iep_webname`.
+**`iep.uz` bloklangan:** whois `Status: AUCTION`, NS `ns1.redemption.uz` — egalik cctld.uz da
+tekshirilishi kerak; keyin NS → `dns1–4.webspace.uz`, zonaga `www`, SSL, ilova URL'i +
+`FRONTEND_URL` ni `iep.uz` ga qaytarish, `apps/web/dist-webname` (api.iep.uz bilan) yuklash.
 Reja: `docs/tasks/16-webname-hosting.md`. **Push qilinmagan.**
 
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
@@ -172,6 +172,23 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-09-23 · 16 — sslip.io sinov domeni; rasmlar va 500 tuzatildi
+
+**Kim:** Claude Code (Opus 5.5). Domen/SSL/ilova sozlamasi — foydalanuvchi (panel).
+**Rasmlar** (`7876021`): `<img>` nisbiy `/api/files/...` bilan frontend domeniga ketardi, bazada
+`http://localhost:3000/...` ham bor. `fileUrl()` endi har qanday `/api/files/` manzilini
+`VITE_API_URL` ga o'giradi; `A11yImage`, yangilik HTML, admin logo/preview shundan o'tadi.
+**500** (`7876021`, `1994e94`): CloudLinux LVE oqimlarni ham sanaydi; Prisma tokio yadro
+soniga qarab ~52 oqim/jarayon ochardi → Passenger jarayonlari 4–12 s da o'ldirilardi, DB
+ulanishi 5 s timeout, SSH ham uzilardi. `node.ts`: `TOKIO_WORKER_THREADS=2`,
+`connection_limit=2`, `pool_timeout=20`. Lokal: CONNECTION LIMIT 3 rol bilan eski kod 11/12
+500, yangi 12/12 200; oqimlar 21→11.
+**Tekshirildi (serverda):** 12 parallel `/api/settings` 200; NodeApp 13–15 oqim, >1 daqiqa
+yashaydi; SSH barqaror. Headless Chrome (CDP): 7 sahifa, 0 buzilgan rasm, 0 ta 4xx/5xx.
+**Tekshirilmadi:** admin login (parol yo'q), fayl yuklash va kontakt formasi (production DB'ga
+yozadi — foydalanuvchi bilan), email. Yuklash panel Fayl menejeri orqali bo'ldi (SSH o'shanda
+ishlamasdi; auto-mode production'ga yozishni ham bloklaydi).
 
 ### 2026-09-23 · 16 — C: frontend serverda, CORS tuzatildi
 
