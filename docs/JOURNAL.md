@@ -14,6 +14,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🆕 Laboratoriyalar — to'liq admin boshqaruvi LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+Migratsiya `10_lab_details` (structure_units: content/directions ×3, imageUrl, email, phone, room,
+foundedYear). Admin: `/admin/labs` kartochkalar (to'liqlik ko'rsatkichi), `/admin/labs/:id` ichida
+«Ma'lumotlar» va «Xodimlar» tablari — xodim lab ichida qo'shiladi/tahrirlanadi (`EmployeeForm`).
+Ochiq `/laboratories` va lab sahifasi faqat shu ma'lumotlardan; `staffCount` o'rniga haqiqiy xodim soni.
+iep.uz uchun: migratsiya 10 + API + web, foydalanuvchi tasdig'i bilan.
+
 **🆕 Asosiy bo'limlar + xodimning laboratoriyasi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 Bo'linma turi `section` (asosiy bo'lim) va `laboratory` — ikkalasi ham yuqori darajada, lab bo'lim
 ichida emas. Xodim: `unitId` = bo'lim, yangi `labId` = laboratoriya (migratsiya `9_employee_lab`).
@@ -215,33 +222,19 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
-### 2026-10-27 · Bo'limlar va laboratoriyalar — alohida admin sahifalari, «Rahbar» olib tashlandi
+### 2026-10-27 · Laboratoriya formasi, lab ichida xodimlar, ochiq lab sahifalari qayta dizayn
 
-**Nima qilindi:** foydalanuvchi: «rahbar nima keragi bor», yon panelda bo'lim va lab alohida sahifa bo'lsin.
-- `AdminUnitsPage` endi `kind` prop bilan: `/admin/sections` va `/admin/labs` (App.tsx, `key` bilan —
-  sahifalar orasida holat aralashmaydi); `/admin/units` → `/admin/sections` redirect.
-- `AdminLayout` yon paneli: «Bo'limlar» (Network) va «Laboratoriyalar» (FlaskConical).
-- «Rahbar» matn maydoni shakldan olib tashlandi: ochiq lab sahifasida rahbar `isUnitHead` xodimdan
-  olinadi, `unit.head` hech qayerda ko'rsatilmaydi. Bazadagi ustun qoldi (migratsiya yo'q), tahrirda yuborilmaydi.
-- i18n: `admin.sections`/`admin.labs` qo'shildi, `admin.units` va keraksiz `adminD.units.*` olib tashlandi.
-**Tekshirildi:** `tsc` web toza. Brauzer (DOM): `/admin/units` → `/admin/sections`, yon panelda ikki
-element, bo'limlar 2 ta, lablar 6 ta «Xodimlar» tugmasi bilan, lab formasida faqat nom/tavsif/tartib.
-Forma orqali bo'lim yaratildi (type=section, parentId=null) va API orqali o'chirildi (200).
-**Tekshirilmadi:** production.
-
-### 2026-10-27 · Bo'linmalar sahifasi: bo'lim va laboratoriya alohida, lab xodimlari paneli
-
-**Nima qilindi:** foydalanuvchi: «tur nima keragi bor», «lab bo'lim emas, alohida qism», lab xodimlari
-yangi xodim qo'shib yoki mavjudini biriktirib shakllansin.
-- `AdminUnitsPage`: «Tur» select olib tashlandi; ikki qism («Bo'limlar», «Laboratoriyalar»), tur qaysi
-  tugmadan ochilganiga qarab yuboriladi, tahrirda tur yuborilmaydi. Lab `parentId=null` (avvalgi qaror saqlandi).
-- `LabStaffPanel`: lab xodimlari ro'yxati, «Laboratoriyadan chiqarish» (`labId: ''` → null), mavjud
-  xodimni biriktirish, «Yangi xodim» → `/admin/employees?labId=…`.
-- `AdminEmployeesPage`: `?labId=` bilan yangi xodim formasi ochiladi; lab qiymati variantlar yuklangandan
-  keyin o'rnatiladi (avval reset qilinsa select bo'sh qolardi — brauzerda topildi).
-- i18n `adminD.units` uchala tilda yangilandi (type/parent/th_* kalitlari olib tashlandi, ru ko'plik shakllari).
-API o'zgarmadi.
-**Tekshirildi:** `tsc` web toza. Brauzer (lokal, DOM orqali): ikki qism ko'rinadi, «Yangi laboratoriya»
-formasida tur select yo'q; lab → «Yangi xodim» → forma lab tanlangan holda, saqlandi, panelda «1 xodim»;
-chiqarish → bo'sh; qayta biriktirish → qaytdi. Sinov xodimi keyin API orqali o'chirildi.
-**Tekshirilmadi:** yangi lab/bo'limni shakl orqali saqlash (API yo'li o'zgarmagan); production.
+**Nima qilindi:** foydalanuvchi: lab formasini takomillashtirish, saytdagi lab ma'lumotlari faqat admindan,
+xodimlarni lab ichida qo'shish/tahrirlash, «wow» dizayn. Opus nazorat, 4 ta Sonnet koder.
+- Migratsiya `10_lab_details` (faqat ADD COLUMN). `structure.ts`: yangi maydonlar zod bilan, content
+  `sanitizeFields`, `syncContentFiles`/`replaceSingleFile` (faqat `imageUrl` kelganda)/`deleteOwnerFiles`.
+- `EmployeeForm` komponenti (`AdminEmployeesPage` dan ajratildi; `presetLabId`, `lockLab`).
+- `AdminLabsPage` + `AdminLabDetailPage` (`/admin/labs/new`, `/admin/labs/:id`); `AdminUnitsPage` endi faqat bo'limlar.
+- `LabsPage`/`LabDetailPage`: muqova, yo'nalishlar, HTML matn (DOMPurify), bog'lanish kartasi, haqiqiy xodim soni.
+- i18n: `adminLab.*`, `labs.*`/`lab.*` uchala tilda; ishlatilmay qolgan `adminD.units.*` kalitlari olib tashlandi.
+**Tekshirildi:** tsc (api+web), 66 vitest, wrangler dry-run, vite build. HTTP: `<script>` tozalanadi, qisman
+PUT boshqa maydonlarga tegmaydi, DELETE 404 beradi. Brauzer: /admin/labs kartochkalar, lab ichida «Yangi xodim»
+→ saqlandi, «Rahbar qilish» → ochiq sahifada mudir va bog'lanish kartasida chiqdi; «Ma'lumotlar» saqlash toast;
+/admin/sections va /admin/employees ishlaydi. Sinov xodimi o'chirildi. `lab-renewable` namunaviy ma'lumot bilan qoldi.
+**Tekshirilmadi:** muqova rasm yuklash va almashtirishda eski faylning o'chishi; RichTextEditor ichidagi rasm;
+qorong'i mavzu va mobil ko'rinish; en/ru sahifalar vizual; production. Qidiruv indeksi yangi maydonlarni qamramaydi.

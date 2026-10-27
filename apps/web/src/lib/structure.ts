@@ -5,6 +5,16 @@ export interface Unit {
   id: string;
   nameUz: string; nameEn: string; nameRu: string;
   descriptionUz: string; descriptionEn: string; descriptionRu: string;
+  /** To'liq ma'lumot (HTML) — ko'rsatishdan oldin `sanitize` dan o'tkaziladi. */
+  contentUz?: string; contentEn?: string; contentRu?: string;
+  /** Ilmiy yo'nalishlar, har bir qatorda bittasi. */
+  directionsUz?: string; directionsEn?: string; directionsRu?: string;
+  imageUrl?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  room?: string | null;
+  foundedYear?: number | null;
+  order?: number;
   head?: string | null;
   type: string;
   staffCount?: number | null;

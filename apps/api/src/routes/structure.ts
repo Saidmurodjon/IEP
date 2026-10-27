@@ -4,7 +4,8 @@ import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
 import { reindex } from '../lib/search-index';
 import { fail } from '../lib/errors';
-import { extractFileKeys, deleteKeys } from '../lib/media';
+import { extractFileKeys, deleteKeys, syncContentFiles, deleteOwnerFiles, replaceSingleFile } from '../lib/media';
+import { sanitizeFields, CONTENT_FIELDS } from '../lib/sanitize';
 import { LIMITS } from '../lib/file-types';
 import type { AppContext } from '../index';
 
@@ -15,6 +16,18 @@ const unitSchema = z.object({
   descriptionUz: z.string().default(''),
   descriptionEn: z.string().default(''),
   descriptionRu: z.string().default(''),
+  contentUz: z.string().max(100000).default(''),
+  contentEn: z.string().max(100000).default(''),
+  contentRu: z.string().max(100000).default(''),
+  // Har bir qator — bitta ilmiy yo'nalish
+  directionsUz: z.string().max(5000).default(''),
+  directionsEn: z.string().max(5000).default(''),
+  directionsRu: z.string().max(5000).default(''),
+  imageUrl: z.string().max(500).optional().nullable(),
+  email: z.string().email().max(200).optional().nullable().or(z.literal('')),
+  phone: z.string().max(100).optional().nullable(),
+  room: z.string().max(100).optional().nullable(),
+  foundedYear: z.number().int().min(1900).max(2100).optional().nullable(),
   head: z.string().optional().nullable(),
   type: z
     .enum(['section', 'department', 'laboratory', 'division', 'center', 'sector', 'council', 'position', 'service'])
@@ -24,6 +37,22 @@ const unitSchema = z.object({
   order: z.number().int().default(0),
   parentId: z.string().optional().nullable(),
 });
+
+/** Bo'sh qatorni null ga aylantiradi; maydon kelmagan bo'lsa (undefined) tegmaydi. */
+function emptyToNull(v: string | null | undefined): string | null | undefined {
+  return v === undefined ? undefined : v || null;
+}
+
+/** Ixtiyoriy matn maydonlarida bo'sh qiymatlarni null qiladi. */
+function normalizeOptional<T extends { imageUrl?: string | null; email?: string | null; phone?: string | null; room?: string | null }>(data: T): T {
+  return {
+    ...data,
+    imageUrl: emptyToNull(data.imageUrl),
+    email: emptyToNull(data.email),
+    phone: emptyToNull(data.phone),
+    room: emptyToNull(data.room),
+  };
+}
 
 function buildTree(units: Record<string, unknown>[], parentId: string | null = null): unknown[] {
   return units
@@ -47,7 +76,11 @@ structureRouter.get('/:id', async (c) => {
 
 structureRouter.post('/', requireAuth, zValidator('json', unitSchema), async (c) => {
   const db = c.get('db');
-  const unit = await db.structureUnit.create({ data: c.req.valid('json') });
+  const data = normalizeOptional(sanitizeFields(c.req.valid('json'), CONTENT_FIELDS));
+  const unit = await db.structureUnit.create({ data });
+  await syncContentFiles(c.env, db, 'structure', unit.id, [
+    unit.contentUz, unit.contentEn, unit.contentRu, unit.imageUrl,
+  ]);
   await reindex(c, 'structure_units', unit.id);
   return c.json({ data: unit }, 201);
 });
@@ -109,7 +142,17 @@ structureRouter.put('/chart', requireAuth, zValidator('json', chartSchema), asyn
 
 structureRouter.put('/:id', requireAuth, zValidator('json', unitSchema.partial()), async (c) => {
   const db = c.get('db');
-  const unit = await db.structureUnit.update({ where: { id: c.req.param('id') }, data: c.req.valid('json') });
+  const id = c.req.param('id');
+  const body = c.req.valid('json');
+  const data = normalizeOptional(sanitizeFields(body, CONTENT_FIELDS));
+  const before = await db.structureUnit.findUnique({ where: { id } });
+  if (!before) return c.json({ error: 'Not found' }, 404);
+  const unit = await db.structureUnit.update({ where: { id }, data });
+  // Rasm faqat so'rovda kelgan bo'lsa almashtiriladi — qisman yangilash rasmni o'chirmasin.
+  if ('imageUrl' in body) await replaceSingleFile(c.env, db, before.imageUrl, unit.imageUrl);
+  await syncContentFiles(c.env, db, 'structure', unit.id, [
+    unit.contentUz, unit.contentEn, unit.contentRu, unit.imageUrl,
+  ]);
   await reindex(c, 'structure_units', unit.id);
   return c.json({ data: unit });
 });
@@ -118,6 +161,9 @@ structureRouter.delete('/:id', requireAuth, async (c) => {
   const db = c.get('db');
   const id = c.req.param('id');
   const unit = await db.structureUnit.findUnique({ where: { id } });
+  // Avval fayllar, keyin yozuv — aks holda fayllar egasiz qolib ketardi.
+  if (!id) return c.json({ error: 'Not found' }, 404);
+  await deleteOwnerFiles(c.env, db, 'structure', id);
   // Prisma bog'lanish maydonini o'zgartirish/o'chirishda tranzaksiya ochadi, Neon HTTP
   // rejimida esa tranzaksiya yo'q (500) — shuning uchun xom SQL. Bazadagi FK lar
   // `ON DELETE SET NULL`: xodimlar o'chmaydi, faqat bog'lanish uziladi.

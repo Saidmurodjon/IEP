@@ -88,6 +88,19 @@ model StructureUnit {
   descriptionUz String          @default("") @db.Text
   descriptionEn String          @default("") @db.Text
   descriptionRu String          @default("") @db.Text
+  // Laboratoriya sahifasi uchun to'liq ma'lumot (HTML, server tozalaydi).
+  contentUz     String          @default("") @db.Text
+  contentEn     String          @default("") @db.Text
+  contentRu     String          @default("") @db.Text
+  // Ilmiy yo'nalishlar — har bir qatorda bittasi.
+  directionsUz  String          @default("") @db.Text
+  directionsEn  String          @default("") @db.Text
+  directionsRu  String          @default("") @db.Text
+  imageUrl      String?
+  email         String?
+  phone         String?
+  room          String?
+  foundedYear   Int?
   head          String?
   type          String          @default("department")
   // Shtat birligi soni (hujjatdagi raqam). Direktor/Ilmiy kengash kabi birliklarda ko'rsatilmagan → nullable.

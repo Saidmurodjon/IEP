@@ -31,6 +31,8 @@ const AdminNewsPage = lazy(() => import('@/pages/admin/AdminNewsPage'));
 const AdminPublicationsPage = lazy(() => import('@/pages/admin/AdminPublicationsPage'));
 const AdminStructurePage = lazy(() => import('@/pages/admin/AdminStructurePage'));
 const AdminUnitsPage = lazy(() => import('@/pages/admin/AdminUnitsPage'));
+const AdminLabsPage = lazy(() => import('@/pages/admin/AdminLabsPage'));
+const AdminLabDetailPage = lazy(() => import('@/pages/admin/AdminLabDetailPage'));
 const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
 const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
 const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'));
@@ -130,7 +132,9 @@ export default function App() {
           <Route path="publications" element={<AdminPublicationsPage />} />
           <Route path="structure" element={<AdminStructurePage />} />
           <Route path="sections" element={<AdminUnitsPage key="section" kind="section" />} />
-          <Route path="labs" element={<AdminUnitsPage key="laboratory" kind="laboratory" />} />
+          <Route path="labs" element={<AdminLabsPage />} />
+          <Route path="labs/new" element={<AdminLabDetailPage key="new" />} />
+          <Route path="labs/:id" element={<AdminLabDetailPage />} />
           <Route path="units" element={<Navigate to="/admin/sections" replace />} />
           <Route path="settings" element={<SuperAdminRoute><AdminSettingsPage /></SuperAdminRoute>} />
           <Route path="employees" element={<AdminEmployeesPage />} />

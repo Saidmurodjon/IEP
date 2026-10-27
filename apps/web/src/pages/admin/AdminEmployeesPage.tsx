@@ -3,52 +3,16 @@ import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Plus, Pencil, Trash2, Users, EyeOff, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, EyeOff, Eye } from 'lucide-react';
 import clsx from 'clsx';
 import { employeesApi, structureApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { Employee } from '@/lib/employee';
 import { type Unit } from '@/lib/structure';
-import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
-import AdminFormPage from '@/components/admin/AdminFormPage';
+import EmployeeForm from '@/components/admin/EmployeeForm';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
-
-const schema = z.object({
-  fullNameUz: z.string().min(1, 'adminC.employees.err_name'),
-  fullNameEn: z.string().min(1, 'adminC.employees.err_name'),
-  fullNameRu: z.string().min(1, 'adminC.employees.err_name'),
-  positionUz: z.string().min(1, 'adminC.employees.err_position'),
-  positionEn: z.string().min(1, 'adminC.employees.err_position'),
-  positionRu: z.string().min(1, 'adminC.employees.err_position'),
-  degreeUz: z.string().optional(), degreeEn: z.string().optional(), degreeRu: z.string().optional(),
-  titleUz: z.string().optional(), titleEn: z.string().optional(), titleRu: z.string().optional(),
-  researchAreaUz: z.string().optional(), researchAreaEn: z.string().optional(), researchAreaRu: z.string().optional(),
-  receptionHoursUz: z.string().optional(), receptionHoursEn: z.string().optional(), receptionHoursRu: z.string().optional(),
-  email: z.string().email('adminC.employees.err_email').optional().or(z.literal('')),
-  phone: z.string().optional(),
-  photoUrl: z.string().optional(),
-  orcid: z.string().optional(),
-  scopusId: z.string().optional(),
-  officeRoom: z.string().optional(),
-  unitId: z.string().optional(),
-  labId: z.string().optional(),
-  order: z.coerce.number().int().optional(),
-  isManagement: z.boolean().optional(),
-  isUnitHead: z.boolean().optional(),
-  isActive: z.boolean().optional(),
-});
-type FormData = z.infer<typeof schema>;
-
-const TABS = [
-  { key: 'Uz', label: "O'zbek" },
-  { key: 'En', label: 'English' },
-  { key: 'Ru', label: 'Русский' },
-] as const;
 
 /** Daraxtni tekis ro'yxatga aylantiradi — biriktirish uchun ro'yxat. */
 function flatten(units: Unit[], depth = 0): Array<{ unit: Unit; depth: number }> {
@@ -60,7 +24,6 @@ export default function AdminEmployeesPage() {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<Employee | null>(null);
-  const [activeTab, setActiveTab] = useState<'Uz' | 'En' | 'Ru'>('Uz');
   const toast = useToast();
 
   const { data, isLoading } = useQuery({
@@ -79,40 +42,23 @@ export default function AdminEmployeesPage() {
   const sections = units.filter((unit) => unit.type === 'section');
   const labs = units.filter((unit) => unit.type === 'laboratory');
 
-  const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-  const photoUrl = watch('photoUrl');
-
   // «Bo'linmalar» sahifasidagi laboratoriyadan «Yangi xodim» — shakl shu lab bilan ochiladi.
   const [searchParams, setSearchParams] = useSearchParams();
   const presetLab = searchParams.get('labId');
   const [pendingLab, setPendingLab] = useState<string | null>(null);
   useEffect(() => {
     if (!presetLab) return;
-    reset();
     setEditItem(null);
     setShowForm(true);
     setPendingLab(presetLab);
     setSearchParams({}, { replace: true });
-  }, [presetLab, reset, setSearchParams]);
-  // Select qiymati faqat variantlar (laboratoriyalar) yuklangandan keyin o'rnatiladi.
-  useEffect(() => {
-    if (!pendingLab || !labs.some((lab) => lab.id === pendingLab)) return;
-    setValue('labId', pendingLab);
-    setPendingLab(null);
-  }, [pendingLab, labs, setValue]);
+  }, [presetLab, setSearchParams]);
 
-  const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
+  const closeForm = () => { setShowForm(false); setEditItem(null); setPendingLab(null); };
 
-  const createMutation = useMutation({
-    mutationFn: (values: FormData) => employeesApi.create(values),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_saved')); closeForm(); },
-    onError: (error) => toast.showError(error),
-  });
-  const updateMutation = useMutation({
-    mutationFn: ({ id, values }: { id: string; values: Partial<FormData> }) => employeesApi.update(id, values),
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_saved')); closeForm(); },
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, values }: { id: string; values: { isActive: boolean } }) => employeesApi.update(id, values),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-employees'] }); qc.invalidateQueries({ queryKey: ['employees'] }); toast.success(t('toast.employee_saved')); },
     onError: (error) => toast.showError(error),
   });
   const deleteMutation = useMutation({
@@ -140,203 +86,29 @@ export default function AdminEmployeesPage() {
 
   const openEdit = (item: Employee) => {
     setEditItem(item);
-    Object.entries(item).forEach(([key, value]) => {
-      if (value === null || value === undefined) return;
-      setValue(key as keyof FormData, value as never);
-    });
     setShowForm(true);
   };
 
   /** Ishdan ketgan xodim O'CHIRILMAYDI — `isActive` olib tashlanadi. */
   const toggleActive = (item: Employee) =>
-    updateMutation.mutate({ id: item.id, values: { isActive: !item.isActive } });
-
-  const onSubmit = (values: FormData) => {
-    if (editItem) updateMutation.mutate({ id: editItem.id, values });
-    else createMutation.mutate(values);
-  };
+    toggleMutation.mutate({ id: item.id, values: { isActive: !item.isActive } });
 
   return (
     <>
       <Helmet><title>{t('admin.employees')} | Admin</title></Helmet>
       <div className="p-6">
         {showForm ? (
-          <AdminFormPage
-            title={`${editItem ? t('admin.edit') : t('admin.add_new')} — ${t('admin.employees')}`}
-            subtitle={t('admin.modal_subtitle')}
-            icon={Users}
-            size="lg"
+          <EmployeeForm
+            key={editItem?.id ?? 'new'}
+            employee={editItem}
+            presetLabId={pendingLab ?? undefined}
             onClose={closeForm}
-            onSubmit={handleSubmit(onSubmit)}
-            footer={
-              <>
-                <button type="button" onClick={closeForm} className="btn-secondary sm:mr-auto">
-                  {t('admin.cancel')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={createMutation.isPending || updateMutation.isPending}
-                  className="btn-primary"
-                >
-                  {t('admin.save')}
-                </button>
-              </>
-            }
-          >
-            <div className="flex gap-1 border-b dark:border-gray-800">
-              {TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => setActiveTab(tab.key)}
-                  className={clsx(
-                    'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-                    activeTab === tab.key
-                      ? 'border-primary-600 text-primary-700 dark:border-primary-300 dark:text-primary-300'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-                  )}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-
-            {TABS.map((tab) => (
-              <div key={tab.key} className={clsx('space-y-3', activeTab === tab.key ? '' : 'hidden')}>
-                <div>
-                  <label className="label">{t('adminC.employees.fullname_label', { lang: tab.key.toUpperCase() })}</label>
-                  <input {...register(`fullName${tab.key}` as keyof FormData)} className="input" />
-                  {errors[`fullName${tab.key}` as keyof FormData] && (
-                    <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-                      {t(errors[`fullName${tab.key}` as keyof FormData]?.message as string)}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="label">{t('adminC.employees.position_label', { lang: tab.key.toUpperCase() })}</label>
-                  <input {...register(`position${tab.key}` as keyof FormData)} className="input" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="label">{t('adminC.employees.degree_label', { lang: tab.key.toUpperCase() })}</label>
-                    <input {...register(`degree${tab.key}` as keyof FormData)} className="input" />
-                  </div>
-                  <div>
-                    <label className="label">{t('adminC.employees.title_label', { lang: tab.key.toUpperCase() })}</label>
-                    <input {...register(`title${tab.key}` as keyof FormData)} className="input" />
-                  </div>
-                </div>
-                <div>
-                  <label className="label">{t('adminC.employees.research_label', { lang: tab.key.toUpperCase() })}</label>
-                  <input {...register(`researchArea${tab.key}` as keyof FormData)} className="input" />
-                </div>
-                <div>
-                  <label className="label">{t('adminC.employees.reception_label', { lang: tab.key.toUpperCase() })}</label>
-                  <input
-                    {...register(`receptionHours${tab.key}` as keyof FormData)}
-                    className="input"
-                    placeholder={t('adminC.employees.reception_placeholder')}
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {t('adminC.employees.reception_hint')}
-                  </p>
-                </div>
-              </div>
-            ))}
-
-            {/*
-              Shaxsiy ma'lumotlar bo'yicha ogohlantirish — 06-topshiriq talabi.
-            */}
-            <div className="rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-900/30 p-4 space-y-3">
-              <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
-                <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.employees.warn_before')}{' '}
-                <span className="font-semibold">{t('adminC.employees.warn_bold')}</span>{' '}
-                {t('adminC.employees.warn_after')}
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="label">{t('adminC.employees.phone')}</label>
-                  <input {...register('phone')} className="input" placeholder="+998 71 ..." />
-                </div>
-                <div>
-                  <label className="label">{t('adminC.employees.email')}</label>
-                  <input {...register('email')} className="input" placeholder="ism@iep.uz" />
-                  {errors.email && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.email.message as string)}</p>}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="label">{t('adminC.employees.office')}</label>
-                <input {...register('officeRoom')} className="input" />
-              </div>
-              <div className="sm:col-span-2">
-                <FileUploadField
-                  kind="photo"
-                  label={t('adminC.employees.photo')}
-                  value={photoUrl ?? null}
-                  onChange={(url) => setValue('photoUrl', url ?? '', { shouldDirty: true })}
-                  ownerType="employee"
-                  ownerId={editItem?.id}
-                />
-              </div>
-              <div>
-                <label className="label">ORCID</label>
-                <input {...register('orcid')} className="input" placeholder="0000-0000-0000-0000" />
-              </div>
-              <div>
-                <label className="label">Scopus Author ID</label>
-                <input {...register('scopusId')} className="input" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="emp-unit" className="label">{t('adminC.employees.unit')}</label>
-                <select id="emp-unit" {...register('unitId')} className="input">
-                  <option value="">{t('adminC.employees.unit_none')}</option>
-                  {sections.map((unit) => (
-                    <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="emp-lab" className="label">{t('adminC.employees.lab')}</label>
-                <select id="emp-lab" {...register('labId')} className="input">
-                  <option value="">{t('adminC.employees.lab_none')}</option>
-                  {labs.map((unit) => (
-                    <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="emp-order" className="label">{t('adminC.common.order_number')}</label>
-              <input id="emp-order" type="number" {...register('order')} className="input" defaultValue={0} />
-            </div>
-
-            <div className="flex flex-wrap gap-5 pt-1">
-              <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                <input type="checkbox" {...register('isManagement')} className="rounded" />
-                {t('adminC.employees.is_management')}
-              </label>
-              <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                <input type="checkbox" {...register('isUnitHead')} className="rounded" />
-                {t('adminC.employees.is_unit_head')}
-              </label>
-              <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-                {t('adminC.employees.active')}
-              </label>
-            </div>
-          </AdminFormPage>
+          />
         ) : (
           <>
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.employees')}</h1>
-              <button onClick={() => { reset(); setEditItem(null); setShowForm(true); }} className="btn-primary gap-2">
+              <button onClick={() => { setEditItem(null); setPendingLab(null); setShowForm(true); }} className="btn-primary gap-2">
                 <Plus className="h-4 w-4" /> {t('admin.add_new')}
               </button>
             </div>
