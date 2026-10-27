@@ -635,6 +635,7 @@
       "err_name": "Введите имя",
       "err_position": "Введите должность",
       "err_email": "Неверный адрес почты",
+      "err_form": "Не все поля заполнены — проверьте вкладку {{tab}}",
       "fullname_label": "ФИО ({{lang}}) *",
       "position_label": "Должность ({{lang}}) *",
       "degree_label": "Учёная степень ({{lang}})",

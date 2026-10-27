@@ -222,6 +222,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · fix: xodim formasi — boshqa til tabidagi xato yashirin qolardi
+
+**Muammo:** foydalanuvchi xodim yarata olmadi. API to'g'ri ishlaydi (curl bilan 201). Sabab formada:
+ism/lavozim uchala tilda majburiy, lekin EN/RU tabi `hidden` bo'lgani uchun xato ko'rinmas, «Saqlash» indamay to'xtardi.
+**Qilindi:** `EmployeeForm.tsx` — `handleSubmit(onSubmit, onInvalid)`: xatoli birinchi tabga o'tadi va
+toast `adminC.employees.err_form` chiqaradi; xatoli tablarda qizil nuqta. Kalit uchala json'da.
+**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda faqat UZ to'ldirib saqlash → English tabiga o'tdi, toast chiqdi, EN/RU belgilandi.
+**Tekshirilmadi:** production (iep.uz) — u yerda eski kod, deploy qilinmadi. Boshqa uch tilli formalarda ham shu muammo bo'lishi mumkin (tekshirilmadi).
+
 ### 2026-10-27 · Laboratoriya formasi, lab ichida xodimlar, ochiq lab sahifalari qayta dizayn
 
 **Nima qilindi:** foydalanuvchi: lab formasini takomillashtirish, saytdagi lab ma'lumotlari faqat admindan,

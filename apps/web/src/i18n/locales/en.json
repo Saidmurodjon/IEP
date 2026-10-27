@@ -635,6 +635,7 @@
       "err_name": "Enter the name",
       "err_position": "Enter the position",
       "err_email": "Invalid email address",
+      "err_form": "Some fields are missing — check the {{tab}} tab",
       "fullname_label": "Full name ({{lang}}) *",
       "position_label": "Position ({{lang}}) *",
       "degree_label": "Academic degree ({{lang}})",

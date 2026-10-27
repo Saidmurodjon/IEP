@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Users } from 'lucide-react';
@@ -119,6 +119,17 @@ export default function EmployeeForm({ employee, presetLabId, lockLab, onClose, 
     else createMutation.mutate(values);
   };
 
+  // Xato boshqa til tabida bo'lsa, u yashirin qoladi — o'sha tabga o'tib, xabar chiqaramiz.
+  const tabHasError = (key: string) =>
+    Object.keys(errors).some((field) => field.endsWith(key));
+  const onInvalid = (invalid: FieldErrors<EmployeeFormData>) => {
+    const fields = Object.keys(invalid);
+    const tab = TABS.find((item) => fields.some((field) => field.endsWith(item.key)));
+    if (!tab) return;
+    setActiveTab(tab.key);
+    toast.error(t('adminC.employees.err_form', { tab: tab.label }));
+  };
+
   return (
   <AdminFormPage
     title={`${employee ? t('admin.edit') : t('admin.add_new')} — ${t('admin.employees')}`}
@@ -126,7 +137,7 @@ export default function EmployeeForm({ employee, presetLabId, lockLab, onClose, 
     icon={Users}
     size="lg"
     onClose={handleClose}
-    onSubmit={handleSubmit(onSubmit)}
+    onSubmit={handleSubmit(onSubmit, onInvalid)}
     footer={
       <>
         <button type="button" onClick={handleClose} className="btn-secondary sm:mr-auto">
@@ -156,6 +167,9 @@ export default function EmployeeForm({ employee, presetLabId, lockLab, onClose, 
           )}
         >
           {tab.label}
+          {tabHasError(tab.key) && (
+            <span className="ml-1 text-red-600 dark:text-red-400" aria-label={t('adminC.employees.err_form', { tab: tab.label })}>•</span>
+          )}
         </button>
       ))}
     </div>

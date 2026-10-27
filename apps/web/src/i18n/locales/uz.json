@@ -635,6 +635,7 @@
       "err_name": "Ism kiriting",
       "err_position": "Lavozim kiriting",
       "err_email": "Pochta noto'g'ri",
+      "err_form": "Ba'zi maydonlar to'ldirilmagan — {{tab}} tabini tekshiring",
       "fullname_label": "Ism-sharif ({{lang}}) *",
       "position_label": "Lavozimi ({{lang}}) *",
       "degree_label": "Ilmiy darajasi ({{lang}})",
