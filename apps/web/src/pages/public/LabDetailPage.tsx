@@ -158,7 +158,7 @@ export default function LabDetailPage() {
                 <div className="space-y-5">
                   {head && <EmployeeCard employee={head} variant="extended" badge={t('employee.head')} />}
                   {members.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                       {members.map((employee) => (
                         <EmployeeCard key={employee.id} employee={employee} />
                       ))}

@@ -39,7 +39,7 @@ API + web, foydalanuvchi tasdig'i bilan.
 **🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
 production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Admin qo'shish/tahrirlash
 shakllari oyna emas, ro'yxat o'rnida to'liq sahifa (`AdminFormPage`, sticky «Saqlash» paneli); yangilik slug'i faqat
-sarlavhadan avtomatik. Xodim formasi ixcham ikki ustunli; ochiq saytda xodim surati 3x4 sm. Keyingi: D (kiritish qulayligi).
+sarlavhadan avtomatik. Xodim formasi ixcham ikki ustunli; ochiq saytda xodim surati 3x4 sm, kartochka mobil uchun qayta dizayn qilingan. Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
@@ -222,6 +222,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Xodim kartochkasi — mobil va planshet uchun qayta dizayn
+
+`EmployeeCard`: `sm` dan tor ekranda vertikal — gradient lenta, 3x4 sm surat markazda lenta
+ustiga chiqib turadi (oq halqa + soya), matn markazda, email/telefon to'liq kenglikdagi
+44 px tugmalar, ORCID/Scopus kapsula. `sm` dan — yonma-yon, tepada ingichka gradient chiziq,
+hover'da ko'tarilish va surat kattalashishi (`motion-safe`). Email faqat `@` oldidan bo'linadi.
+Ikki ustun: xodimlar sahifasida `md` → `lg`, lab sahifasida `md` → `xl` (tor ustunda email sinardi).
+**Tekshirildi:** `tsc --noEmit` (web) toza; iframe orqali 320/335/360/375/390/420/589/768/982/1280 px —
+hech birida gorizontal siljish yo'q, skrinshotlar ko'rildi (xodimlar, rahbariyat).
+**Tekshirilmadi:** lab sahifasidagi kartochka (lokal bazada lab xodimi yo'q), haqiqiy telefon, production.
+
+
 ### 2026-10-27 · Xodim surati ochiq saytda 3x4 sm
 
 `EmployeeCard` dagi `Avatar`: ikki o'lcham (`sm` 60x80, `lg` 96x128 px) o'rniga bitta fizik
@@ -236,16 +248,3 @@ rasm ham, bosh harf joyi ham 113.4x151.2 px; skrinshot bilan joylashuv ko'rildi.
 Foydalanuvchi so'rovi bilan «Aloqa» blokidagi sariq ogohlantirish (06-topshiriqdan) o'chirildi,
 `adminC.employees.warn_*` kalitlari uchala tildan olib tashlandi (boshqa joyda ishlatilmaydi).
 **Tekshirildi:** `tsc --noEmit` (web) toza. Brauzerda qayta ochilmadi (faqat bitta blok o'chdi).
-
-### 2026-10-27 · Xodim formasi ixchamlashtirildi
-
-**Nima qilindi:** foydalanuvchi so'rovi — forma juda yoyilib ketgan edi. `EmployeeForm` endi
-`AdminFormPage bare size="full"` + ikki ustun (yangilik formasi kabi, `FormSection`):
-chapda «Asosiy ma'lumot» (til tablari; har tabda 6 maydon 2 ustunli setkada — 6 qator o'rniga 3)
-va «Aloqa va identifikatorlar» (telefon/pochta/xona bir qatorda, ORCID/Scopus ikkinchi qatorda,
-ogohlantirish ixcham); o'ngda «Rasm» va «Biriktirish va holat» (bo'lim, lab, tartib, belgilar).
-Barcha maydonlarga `id`+`htmlFor`, majburiy maydonlarga `aria-invalid`. 4 ta yangi i18n kalit ×3 til.
-**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda `/admin/employees` → «Yangi qo'shish»:
-forma 1456×839 ekranga to'liq sig'adi (skrinshot); bo'sh forma saqlanganda 6 ta majburiy maydonda
-`aria-invalid` va xabar chiqdi. **Tekshirilmadi:** mobil kenglik, lab ichidan (`lockLab`) ochilgan
-forma, haqiqiy saqlash (mantiq o'zgarmagan).
