@@ -85,20 +85,24 @@ export default function LabDetailPage() {
             <div aria-hidden="true" className="absolute inset-0 bg-primary-950/80" />
           </>
         )}
-        <div className="container relative py-12 sm:py-16">
+        <div className="container relative py-8 sm:py-12">
           <LocalizedLink
             to="/laboratories"
-            className="inline-flex items-center gap-1 text-white/90 hover:text-white underline-offset-4 hover:underline text-sm mb-6"
+            className="inline-flex items-center gap-1 text-white/90 hover:text-white underline-offset-4 hover:underline text-sm mb-4 sm:mb-5"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" /> {t('lab.back')}
           </LocalizedLink>
-          <h1 className="text-3xl sm:text-4xl font-bold max-w-4xl leading-tight">{name}</h1>
-          {summary && <p className="mt-4 max-w-3xl text-lg text-white/90 leading-relaxed">{summary}</p>}
-          <ul className="mt-6 flex flex-wrap gap-3 list-none p-0">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold max-w-4xl leading-tight">{name}</h1>
+          {summary && (
+            <p className="mt-3 max-w-3xl text-base sm:text-lg text-white/90 leading-relaxed sm:text-justify hyphens-auto line-clamp-4">
+              {summary}
+            </p>
+          )}
+          <ul className="mt-5 flex flex-wrap gap-2 list-none p-0">
             {stats.map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium"
+                className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-sm font-medium"
               >
                 <Icon aria-hidden="true" className="h-4 w-4" />
                 {label}
@@ -108,15 +112,17 @@ export default function LabDetailPage() {
         </div>
       </div>
 
-      <div className="container py-10">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
-          <div className="space-y-12 min-w-0">
+      <div className="container py-8 sm:py-10">
+        <div
+          className={`grid grid-cols-1 gap-8 ${hasContact ? 'lg:grid-cols-[minmax(0,1fr)_18rem] xl:gap-10' : ''}`}
+        >
+          <div className={`space-y-10 min-w-0 ${hasContact ? '' : 'max-w-4xl'}`}>
 
             {hasContent && (
               <section aria-labelledby="lab-about">
-                <h2 id="lab-about" className="text-2xl font-bold text-gray-900 mb-5">{t('lab.about')}</h2>
+                <h2 id="lab-about" className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">{t('lab.about')}</h2>
                 <div
-                  className="prose-content text-gray-800"
+                  className="prose-content text-gray-800 sm:text-justify hyphens-auto [&_p:last-child]:mb-0"
                   // Server saqlashdan oldin tozalagan; bu ikkinchi qatlam (CLAUDE.md 4.1-7).
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
@@ -124,12 +130,12 @@ export default function LabDetailPage() {
             )}
 
             <section aria-labelledby="lab-staff">
-              <h2 id="lab-staff" className="text-2xl font-bold text-gray-900 mb-5">{t('lab.staff_list')}</h2>
+              <h2 id="lab-staff" className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">{t('lab.staff_list')}</h2>
 
               {employees.length === 0 ? (
                 <EmptyState icon={Users} title={t('lab.staff_empty')} hint={t('employees.empty_hint')} />
               ) : (
-                <div className="space-y-5">
+                <div className="space-y-4">
                   {head && <EmployeeCard employee={head} variant="extended" badge={t('employee.head')} />}
                   {members.length > 0 && (
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
@@ -145,7 +151,7 @@ export default function LabDetailPage() {
 
           {hasContact && (
             <aside aria-labelledby="lab-contact" className="lg:sticky lg:top-24 lg:self-start">
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
                 <h2 id="lab-contact" className="flex items-center gap-2 text-lg font-bold text-gray-900 mb-4">
                   <Beaker aria-hidden="true" className="h-5 w-5 text-primary-700" />
                   {t('lab.contact')}
@@ -188,8 +194,17 @@ export default function LabDetailPage() {
                       <div className="min-w-0">
                         <dt className="text-gray-600">{t('lab.email')}</dt>
                         <dd>
-                          <a href={`mailto:${lab.email}`} className="break-all font-medium text-primary-700 hover:underline">
-                            {lab.email}
+                          <a href={`mailto:${lab.email}`} className="break-words font-medium text-primary-700 hover:underline">
+                            {/* Uzun manzil so'z o'rtasidan emas, «@» oldidan bo'linsin */}
+                            {lab.email.includes('@') ? (
+                              <>
+                                {lab.email.slice(0, lab.email.indexOf('@'))}
+                                <wbr />
+                                {lab.email.slice(lab.email.indexOf('@'))}
+                              </>
+                            ) : (
+                              lab.email
+                            )}
                           </a>
                         </dd>
                       </div>

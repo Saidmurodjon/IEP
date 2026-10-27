@@ -220,6 +220,17 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-27 — feat: laboratoriya sahifasi — matn va oraliqlar
+- `LabDetailPage.tsx`: hero `py-12/16` → `py-8/12`, h1 mobil'da `text-2xl`, hero tavsifi `line-clamp-4`
+  (asosiy matn bilan takrorlanmasin), statistika chiplari ixchamroq. Asosiy blok `py-8/10`, h2 `text-xl/2xl`.
+  «Laboratoriya haqida» matni `sm:` dan boshlab ikki tomonga tekislanadi (mobil'da chapga — tor ustunda
+  justify katta bo'shliq qoldiradi). Aloqa paneli bo'lmasa grid bir ustunli + `max-w-4xl` (o'qish uzunligi);
+  bo'lsa 18rem, `p-5`. E-pochta `break-all` o'rniga «@» oldida `<wbr>` bilan bo'linadi.
+- Tekshirildi: `tsc --noEmit` (web); `/uz/laboratories/lab-energy-security` brauzerda desktop (1555px)
+  va tor (606px) kenglikda ko'rildi.
+- Tekshirilmadi: rahbari va xodimlari bor lab (lokal bazada 0 xodim). Yangiliklar sahifasidagi
+  `prose-content` tegilmadi — ehtimol unga ham xuddi shu tekislash kerak.
+
 ### 2026-10-27 — feat: laboratoriya kartochkasi ixchamlashtirildi
 - `LabsPage.tsx`: kartochka tanasi `p-6` → `p-4 sm:p-5`, sarlavha mobil'da `text-base`, tavsif
   `text-justify`; «N xodim» va «Batafsil →» pastki bitta qatorda (chap/o'ng); rahbar (bo'lsa) tavsif
