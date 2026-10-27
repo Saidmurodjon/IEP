@@ -751,7 +751,13 @@
       "invalid": "Incorrect email or password",
       "emailInvalid": "Invalid email address",
       "passwordShort": "Password must be at least 8 characters",
-      "language": "Language"
+      "language": "Language",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "backToSite": "Back to site",
+      "welcome": "Sign in to your account",
+      "welcomeHint": "Enter your email and password to continue",
+      "secureNote": "Authorized staff only"
     }
   }
 }

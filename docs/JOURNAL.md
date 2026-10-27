@@ -21,7 +21,7 @@ Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqa
 API + web, foydalanuvchi tasdig'i bilan.
 
 **🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
-production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Keyingi: D (kiritish qulayligi).
+production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
@@ -203,6 +203,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · Admin login sahifasi qayta dizayn
+**Kommit:** `feat(admin): redesign login page with navbar and password toggle`
+**Qilindi:** `LoginPage.tsx` — asosiy sayt sarlavhasiga o'xshash navbar (emblema + nom, `/` ga havola),
+mavzu (light/dark/system) va til (Globe, uz/en/ru) ochiladigan menyulari (`HeaderMenu`, Escape va
+tashqariga bosish bilan yopiladi). Parolni ko'rsatish/yashirish tugmasi (`aria-label`, `aria-controls`).
+Ikki ustunli karta (keng ekranda chap brend paneli), yorug' fonda och gradient — avval qorong'i
+mavzuda karta fonga singib ketardi. Xato bloki `aria-live` + ikonka, «Saytga qaytish» havolasi.
+i18n: `adminE.login.{showPassword,hidePassword,backToSite,welcome,welcomeHint,secureNote}` — uchala tilda.
+**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda (localhost:5173) — parol turi password↔text
+almashadi, mavzu va til menyulari ishlaydi (`dark` klassi, `lang=uz`), bitta `h1`, ikki mavzuda skrinshot.
+**Tekshirilmadi:** login so'rovining o'zi (auth mantig'iga tegilmagan), mobil kenglik vizual ko'rinishi.
 
 ### 2026-10-27 · 19-C — admin navbar, til, qorong'i mavzu, profil
 **Kommit:** `feat(admin): topbar with language, dark theme and profile page`

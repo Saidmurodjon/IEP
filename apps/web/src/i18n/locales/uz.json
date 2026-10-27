@@ -751,7 +751,13 @@
       "invalid": "Email yoki parol noto'g'ri",
       "emailInvalid": "Email noto'g'ri",
       "passwordShort": "Parol kamida 8 ta belgi",
-      "language": "Til"
+      "language": "Til",
+      "showPassword": "Parolni ko'rsatish",
+      "hidePassword": "Parolni yashirish",
+      "backToSite": "Saytga qaytish",
+      "welcome": "Hisobingizga kiring",
+      "welcomeHint": "Davom etish uchun email va parolingizni kiriting",
+      "secureNote": "Faqat vakolatli xodimlar uchun"
     }
   }
 }
