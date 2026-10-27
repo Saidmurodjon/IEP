@@ -220,6 +220,11 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-27 — fix: lab sahifasida matn mobil'da ham ikki tomonga tekislanadi
+- Foydalanuvchi so'rovi bilan `sm:text-justify` → `text-justify` (hero tavsifi va «Laboratoriya haqida»).
+- Tekshirildi: `tsc --noEmit` (web). Avvalgi skrinshotda (606px) justify so'zlar orasida katta bo'shliq
+  qoldirgan — o'zbek tili uchun brauzerda defis lug'ati yo'q; bu foydalanuvchiga aytildi.
+
 ### 2026-10-27 — feat: laboratoriya sahifasi — matn va oraliqlar
 - `LabDetailPage.tsx`: hero `py-12/16` → `py-8/12`, h1 mobil'da `text-2xl`, hero tavsifi `line-clamp-4`
   (asosiy matn bilan takrorlanmasin), statistika chiplari ixchamroq. Asosiy blok `py-8/10`, h2 `text-xl/2xl`.

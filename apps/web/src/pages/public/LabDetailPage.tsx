@@ -94,7 +94,7 @@ export default function LabDetailPage() {
           </LocalizedLink>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold max-w-4xl leading-tight">{name}</h1>
           {summary && (
-            <p className="mt-3 max-w-3xl text-base sm:text-lg text-white/90 leading-relaxed sm:text-justify hyphens-auto line-clamp-4">
+            <p className="mt-3 max-w-3xl text-base sm:text-lg text-white/90 leading-relaxed text-justify hyphens-auto line-clamp-4">
               {summary}
             </p>
           )}
@@ -122,7 +122,7 @@ export default function LabDetailPage() {
               <section aria-labelledby="lab-about">
                 <h2 id="lab-about" className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">{t('lab.about')}</h2>
                 <div
-                  className="prose-content text-gray-800 sm:text-justify hyphens-auto [&_p:last-child]:mb-0"
+                  className="prose-content text-gray-800 text-justify hyphens-auto [&_p:last-child]:mb-0"
                   // Server saqlashdan oldin tozalagan; bu ikkinchi qatlam (CLAUDE.md 4.1-7).
                   dangerouslySetInnerHTML={{ __html: content }}
                 />
