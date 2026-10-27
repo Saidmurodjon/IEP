@@ -222,6 +222,11 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · `/laboratories` sarlavha bloki ixchamlashtirildi
+- Hero `py-14 sm:py-20` → `py-12` (boshqa ochiq sahifalar bilan bir xil), bezak ikonka 64→48, nishon `mt-6`→`mt-4`.
+  U yerga rasm joylanmaydi — bo'sh joy faqat ortiqcha padding edi.
+- Tekshirildi: `tsc --noEmit` (web). Brauzerda ko'rilmadi.
+
 ### 2026-10-27 · Laboratoriya «Ilmiy yo'nalishlar» olib tashlandi
 
 Foydalanuvchi qarori: yo'nalishlar to'liq matn ichida yoziladi, alohida maydon kerak emas.

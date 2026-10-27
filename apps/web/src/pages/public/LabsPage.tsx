@@ -42,16 +42,16 @@ export default function LabsPage() {
     <>
       <SeoHead title={t('labs.title')} />
 
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white py-14 sm:py-20">
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary-900 via-primary-800 to-primary-700 text-white py-12">
         <Beaker
           aria-hidden="true"
-          className="absolute -right-8 -bottom-10 h-64 w-64 text-white/10 -rotate-12"
+          className="absolute -right-6 -bottom-8 h-48 w-48 text-white/10 -rotate-12"
         />
         <div className="container relative">
           <h1 className="text-3xl sm:text-4xl font-bold mb-3">{t('labs.title')}</h1>
           <p className="text-primary-100 text-lg max-w-2xl">{t('labs.subtitle')}</p>
           {labs.length > 0 && (
-            <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium">
+            <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium">
               <Beaker aria-hidden="true" className="h-4 w-4" />
               {labs.length} {t('labs.count')}
             </p>
