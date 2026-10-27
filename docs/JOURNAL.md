@@ -21,8 +21,8 @@ Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqa
 API + web, foydalanuvchi tasdig'i bilan.
 
 **🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
-production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Barcha admin formalari
-yangi `AdminFormModal` (katta oyna, qotirilgan sarlavha/tugmalar) ga o'tkazildi; yangilik slug'i faqat
+production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Admin qo'shish/tahrirlash
+shakllari oyna emas, ro'yxat o'rnida to'liq sahifa (`AdminFormPage`, sticky «Saqlash» paneli); yangilik slug'i faqat
 sarlavhadan avtomatik. Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
@@ -205,6 +205,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · Admin formalar — oyna o'rniga to'liq sahifa
+
+- Foydalanuvchi: «modal nima keragi bor, dashboardda turibdiku». Yangi `components/admin/AdminFormPage.tsx`
+  (+ `FormSection`): ro'yxat o'rnida ochiladi, «Orqaga» tugmasi, o'z `h1` sarlavhasi (ro'yxat sarlavhasi
+  yashiriladi — sahifada bitta h1), `sticky bottom-4` tugmalar paneli, ochilganda main boshiga qaytadi.
+- 6 sahifa: `{showForm ? <AdminFormPage/> : <>sarlavha + ro'yxat</>}`. Users: create/edit — sahifa,
+  reset/delete — kichik oyna (`AdminFormModal` faqat sm/md dialog sifatida qoldi).
+- i18n: `admin.back_to_list` (uz/en/ru).
+- Tekshirildi: `tsc` toza, `vite build` o'tdi; brauzerda news (ikki ustun, slug jonli, «Orqaga» → ro'yxat)
+  va users (create sahifa, jadval yashirin) ko'rildi.
+- Tekshirilmadi: haqiqiy saqlash, qolgan 4 sahifa vizual, telefon kengligi.
 
 ### 2026-10-27 · Admin formalar — katta modal, slug sarlavhadan
 

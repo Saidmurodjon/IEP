@@ -14,6 +14,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import FieldError from '@/components/FieldError';
 import { useToast } from '@/components/Toast';
 import AdminFormModal from '@/components/admin/AdminFormModal';
+import AdminFormPage from '@/components/admin/AdminFormPage';
 
 type Role = AdminDto['role'];
 const ROLES: Role[] = ['ADMIN', 'SUPER_ADMIN'];
@@ -98,127 +99,135 @@ export default function AdminUsersPage() {
 
   const iconBtn = 'p-2 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 disabled:opacity-40 disabled:hover:text-gray-500';
 
+  // Qo'shish/tahrirlash — ro'yxat o'rnida to'liq sahifa; parolni tiklash va
+  // o'chirish tasdig'i esa kichik oyna bo'lib qoladi.
+  const isFormPage = modal?.kind === 'create' || modal?.kind === 'edit';
+
   return (
     <>
       <Helmet><title>{t('usersPage.title')} | Admin</title></Helmet>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6 gap-3">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('usersPage.title')}</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t('usersPage.subtitle')}</p>
-          </div>
-          <button type="button" onClick={openCreate} className="btn-primary gap-2">
-            <Plus className="h-4 w-4" aria-hidden="true" /> {t('usersPage.add')}
-          </button>
-        </div>
+        {!isFormPage && (
+          <>
+            <div className="flex items-center justify-between mb-6 gap-3">
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('usersPage.title')}</h1>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t('usersPage.subtitle')}</p>
+              </div>
+              <button type="button" onClick={openCreate} className="btn-primary gap-2">
+                <Plus className="h-4 w-4" aria-hidden="true" /> {t('usersPage.add')}
+              </button>
+            </div>
 
-        {isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <div className="card overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
-                <tr>
-                  <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.name')}</th>
-                  <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.email')}</th>
-                  <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.role')}</th>
-                  <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.status')}</th>
-                  <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.last_login')}</th>
-                  <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.created')}</th>
-                  <th scope="col" className="text-right font-medium px-4 py-3">{t('usersPage.actions')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-gray-600 dark:text-gray-400">{t('usersPage.empty')}</td>
-                  </tr>
-                )}
-                {items.map((item) => {
-                  const isSelf = item.id === me?.id;
-                  return (
-                    <tr key={item.id} className="border-t border-gray-100 dark:border-gray-800">
-                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
-                        {item.name}
-                        {isSelf && (
-                          <span className="ml-2 rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-xs font-normal text-gray-700 dark:text-gray-300">
-                            {t('usersPage.you')}
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.email}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={clsx(
-                            'rounded px-2 py-0.5 text-xs font-medium',
-                            item.role === 'SUPER_ADMIN' ? 'bg-primary-100 text-primary-900 dark:bg-primary-900/40 dark:text-primary-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                          )}
-                        >
-                          {t(`usersPage.role_${item.role}`)}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={clsx(
-                            'inline-flex items-center gap-1 text-xs font-medium',
-                            item.isActive ? 'text-emerald-800 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'
-                          )}
-                        >
-                          {item.isActive
-                            ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
-                            : <Ban className="h-3.5 w-3.5" aria-hidden="true" />}
-                          {item.isActive ? t('usersPage.active') : t('usersPage.blocked')}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
-                        {item.lastLoginAt ? formatDateTime(item.lastLoginAt) : t('usersPage.never')}
-                      </td>
-                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{formatDate(item.createdAt)}</td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-1">
-                          <button type="button" onClick={() => openEdit(item)} aria-label={`${t('usersPage.edit')}: ${item.name}`} title={t('usersPage.edit')} className={iconBtn}>
-                            <Pencil className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                          <button type="button" onClick={() => openReset(item)} aria-label={`${t('usersPage.reset')}: ${item.name}`} title={t('usersPage.reset')} className={iconBtn}>
-                            <KeyRound className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                          <button
-                            type="button"
-                            disabled={isSelf || updateMutation.isPending}
-                            onClick={() => updateMutation.mutate({ id: item.id, values: { isActive: !item.isActive } })}
-                            aria-label={`${item.isActive ? t('usersPage.block') : t('usersPage.unblock')}: ${item.name}`}
-                            title={item.isActive ? t('usersPage.block') : t('usersPage.unblock')}
-                            className={iconBtn}
-                          >
-                            {item.isActive
-                              ? <Ban className="h-4 w-4" aria-hidden="true" />
-                              : <CheckCircle2 className="h-4 w-4" aria-hidden="true" />}
-                          </button>
-                          <button
-                            type="button"
-                            disabled={isSelf}
-                            onClick={() => setModal({ kind: 'delete', item })}
-                            aria-label={`${t('usersPage.delete')}: ${item.name}`}
-                            title={t('usersPage.delete')}
-                            className={clsx(iconBtn, 'hover:text-red-700 dark:hover:text-red-300')}
-                          >
-                            <Trash2 className="h-4 w-4" aria-hidden="true" />
-                          </button>
-                        </div>
-                      </td>
+            {isLoading ? (
+              <LoadingSpinner />
+            ) : (
+              <div className="card overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
+                    <tr>
+                      <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.name')}</th>
+                      <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.email')}</th>
+                      <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.role')}</th>
+                      <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.status')}</th>
+                      <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.last_login')}</th>
+                      <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.created')}</th>
+                      <th scope="col" className="text-right font-medium px-4 py-3">{t('usersPage.actions')}</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                  </thead>
+                  <tbody>
+                    {items.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="px-4 py-10 text-center text-gray-600 dark:text-gray-400">{t('usersPage.empty')}</td>
+                      </tr>
+                    )}
+                    {items.map((item) => {
+                      const isSelf = item.id === me?.id;
+                      return (
+                        <tr key={item.id} className="border-t border-gray-100 dark:border-gray-800">
+                          <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                            {item.name}
+                            {isSelf && (
+                              <span className="ml-2 rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-xs font-normal text-gray-700 dark:text-gray-300">
+                                {t('usersPage.you')}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.email}</td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={clsx(
+                                'rounded px-2 py-0.5 text-xs font-medium',
+                                item.role === 'SUPER_ADMIN' ? 'bg-primary-100 text-primary-900 dark:bg-primary-900/40 dark:text-primary-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
+                              )}
+                            >
+                              {t(`usersPage.role_${item.role}`)}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span
+                              className={clsx(
+                                'inline-flex items-center gap-1 text-xs font-medium',
+                                item.isActive ? 'text-emerald-800 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'
+                              )}
+                            >
+                              {item.isActive
+                                ? <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                                : <Ban className="h-3.5 w-3.5" aria-hidden="true" />}
+                              {item.isActive ? t('usersPage.active') : t('usersPage.blocked')}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
+                            {item.lastLoginAt ? formatDateTime(item.lastLoginAt) : t('usersPage.never')}
+                          </td>
+                          <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{formatDate(item.createdAt)}</td>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-end gap-1">
+                              <button type="button" onClick={() => openEdit(item)} aria-label={`${t('usersPage.edit')}: ${item.name}`} title={t('usersPage.edit')} className={iconBtn}>
+                                <Pencil className="h-4 w-4" aria-hidden="true" />
+                              </button>
+                              <button type="button" onClick={() => openReset(item)} aria-label={`${t('usersPage.reset')}: ${item.name}`} title={t('usersPage.reset')} className={iconBtn}>
+                                <KeyRound className="h-4 w-4" aria-hidden="true" />
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isSelf || updateMutation.isPending}
+                                onClick={() => updateMutation.mutate({ id: item.id, values: { isActive: !item.isActive } })}
+                                aria-label={`${item.isActive ? t('usersPage.block') : t('usersPage.unblock')}: ${item.name}`}
+                                title={item.isActive ? t('usersPage.block') : t('usersPage.unblock')}
+                                className={iconBtn}
+                              >
+                                {item.isActive
+                                  ? <Ban className="h-4 w-4" aria-hidden="true" />
+                                  : <CheckCircle2 className="h-4 w-4" aria-hidden="true" />}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={isSelf}
+                                onClick={() => setModal({ kind: 'delete', item })}
+                                aria-label={`${t('usersPage.delete')}: ${item.name}`}
+                                title={t('usersPage.delete')}
+                                className={clsx(iconBtn, 'hover:text-red-700 dark:hover:text-red-300')}
+                              >
+                                <Trash2 className="h-4 w-4" aria-hidden="true" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
 
         {modal?.kind === 'create' && (
-          <AdminFormModal
+          <AdminFormPage
             title={t('usersPage.create_title')}
             icon={UserCog}
-            size="sm"
+            size="md"
             onClose={closeModal}
             onSubmit={createForm.handleSubmit((v) => createMutation.mutate(v))}
             footer={
@@ -256,14 +265,14 @@ export default function AdminUsersPage() {
                 {ROLES.map((r) => <option key={r} value={r}>{t(`usersPage.role_${r}`)}</option>)}
               </select>
             </div>
-          </AdminFormModal>
+          </AdminFormPage>
         )}
 
         {modal?.kind === 'edit' && (
-          <AdminFormModal
+          <AdminFormPage
             title={t('usersPage.edit_title')}
             icon={UserCog}
-            size="sm"
+            size="md"
             onClose={closeModal}
             onSubmit={editForm.handleSubmit((v) => {
                 // O'z qatorida rol o'zgartirilmaydi (serverda ham SELF_ACTION)
@@ -290,7 +299,7 @@ export default function AdminUsersPage() {
                 {ROLES.map((r) => <option key={r} value={r}>{t(`usersPage.role_${r}`)}</option>)}
               </select>
             </div>
-          </AdminFormModal>
+          </AdminFormPage>
         )}
 
         {modal?.kind === 'reset' && (

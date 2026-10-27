@@ -11,7 +11,7 @@ import { formatDate } from '@/lib/date';
 import clsx from 'clsx';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import FileUploadField from '@/components/admin/FileUploadField';
-import AdminFormModal, { FormSection } from '@/components/admin/AdminFormModal';
+import AdminFormPage, { FormSection } from '@/components/admin/AdminFormPage';
 import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTabs';
 import { useToast } from '@/components/Toast';
 import { slugify, uniqueSlug } from '@/lib/slug';
@@ -179,29 +179,13 @@ export default function AdminNewsPage() {
     <>
       <Helmet><title>{t('adminD.news.helmet')}</title></Helmet>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.news')}</h1>
-          <button
-            onClick={() => {
-              // Nashr sanasi sukut bo'yicha bugungi kun.
-              reset({ slug: '', publishedAt: new Date().toISOString().slice(0, 10), isPublished: true });
-              setEditItem(null);
-              setShowForm(true);
-            }}
-            className="btn-primary gap-2"
-          >
-            <Plus className="h-4 w-4" /> {t('admin.add_new')}
-          </button>
-        </div>
-
-        {/* Form modal */}
-        {showForm && (
-          <AdminFormModal
+        {showForm ? (
+          <AdminFormPage
             title={`${editItem ? t('admin.edit') : t('admin.add_new')} — ${t('adminD.news.modal_suffix')}`}
             subtitle={t('admin.modal_subtitle')}
             icon={Newspaper}
-            size="xl"
-            tinted
+            size="full"
+            bare
             onClose={closeForm}
             onSubmit={handleSubmit((data) => submit(data))}
             footer={
@@ -375,112 +359,131 @@ export default function AdminNewsPage() {
                 </FormSection>
               </div>
             </div>
-          </AdminFormModal>
-        )}
-
-        {/* List */}
-        {isLoading ? (
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
+          </AdminFormPage>
         ) : (
           <>
-            <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.news')}</h1>
               <button
-                type="button"
-                onClick={() => void bulkDelete()}
-                disabled={bulkBusy}
-                className="btn-secondary !text-red-600 dark:!text-red-300 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/30 disabled:opacity-60"
+                onClick={() => {
+                  // Nashr sanasi sukut bo'yicha bugungi kun.
+                  reset({ slug: '', publishedAt: new Date().toISOString().slice(0, 10), isPublished: true });
+                  setEditItem(null);
+                  setShowForm(true);
+                }}
+                className="btn-primary gap-2"
               >
-                {t('admin.bulk_delete')}
+                <Plus className="h-4 w-4" /> {t('admin.add_new')}
               </button>
-              <button
-                type="button"
-                onClick={() => void bulkSetDraft()}
-                disabled={bulkBusy}
-                className="btn-secondary disabled:opacity-60"
-              >
-                {t('admin.bulk_set_draft')}
-              </button>
-            </BulkActionsBar>
-          <div className="card overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th className="px-4 py-3 w-10">
-                    <input
-                      type="checkbox"
-                      aria-label={t('admin.select_all')}
-                      checked={items.length > 0 && items.every((item) => bulk.selected.has(item.id))}
-                      onChange={() => bulk.toggleAll(items.map((item) => item.id))}
-                    />
-                  </th>
-                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.news.th_title')}</th>
-                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.news.th_date')}</th>
-                  <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
-                    <td className="px-4 py-3">
-                      <input
-                        type="checkbox"
-                        aria-label={`${t('admin.select_row')}: ${item.titleUz}`}
-                        checked={bulk.selected.has(item.id)}
-                        onChange={() => bulk.toggle(item.id)}
-                      />
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-xs">{item.titleUz}</span>
-                        {item.isPublished === false && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs font-medium flex-shrink-0">
-                            <FileEdit className="h-3 w-3" />
-                            {t('admin.draft')}
+            </div>
+
+            {/* Form modal */}
+
+            {/* List */}
+            {isLoading ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
+            ) : (
+              <>
+                <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
+                  <button
+                    type="button"
+                    onClick={() => void bulkDelete()}
+                    disabled={bulkBusy}
+                    className="btn-secondary !text-red-600 dark:!text-red-300 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/30 disabled:opacity-60"
+                  >
+                    {t('admin.bulk_delete')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void bulkSetDraft()}
+                    disabled={bulkBusy}
+                    className="btn-secondary disabled:opacity-60"
+                  >
+                    {t('admin.bulk_set_draft')}
+                  </button>
+                </BulkActionsBar>
+              <div className="card overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="px-4 py-3 w-10">
+                        <input
+                          type="checkbox"
+                          aria-label={t('admin.select_all')}
+                          checked={items.length > 0 && items.every((item) => bulk.selected.has(item.id))}
+                          onChange={() => bulk.toggleAll(items.map((item) => item.id))}
+                        />
+                      </th>
+                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.news.th_title')}</th>
+                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.news.th_date')}</th>
+                      <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                    {items.map((item) => (
+                      <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            aria-label={`${t('admin.select_row')}: ${item.titleUz}`}
+                            checked={bulk.selected.has(item.id)}
+                            onChange={() => bulk.toggle(item.id)}
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-xs">{item.titleUz}</span>
+                            {item.isPublished === false && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs font-medium flex-shrink-0">
+                                <FileEdit className="h-3 w-3" />
+                                {t('admin.draft')}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{item.slug}</div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(item.publishedAt)}
                           </span>
-                        )}
-                      </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">{item.slug}</div>
-                    </td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {formatDate(item.publishedAt)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => void openEdit(item)}
-                          aria-label={t('admin.edit')}
-                          className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (confirm(t('admin.confirm_delete'))) {
-                              deleteMutation.mutate(item.id);
-                            }
-                          }}
-                          aria-label={t('admin.delete')}
-                          className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {items.length === 0 && (
-                  <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                      {t('adminD.news.empty')}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => void openEdit(item)}
+                              aria-label={t('admin.edit')}
+                              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (confirm(t('admin.confirm_delete'))) {
+                                  deleteMutation.mutate(item.id);
+                                }
+                              }}
+                              aria-label={t('admin.delete')}
+                              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {items.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                          {t('adminD.news.empty')}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+              </>
+            )}
           </>
         )}
       </div>

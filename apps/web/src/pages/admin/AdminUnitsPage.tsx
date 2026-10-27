@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { structureApi } from '@/lib/api';
 import { Plus, Pencil, Trash2, Network } from 'lucide-react';
 import clsx from 'clsx';
-import AdminFormModal from '@/components/admin/AdminFormModal';
+import AdminFormPage from '@/components/admin/AdminFormPage';
 
 const schema = z.object({
   nameUz: z.string().min(1), nameEn: z.string().min(1), nameRu: z.string().min(1),
@@ -75,15 +75,8 @@ export default function AdminUnitsPage() {
     <>
       <Helmet><title>{t('adminD.units.helmet')}</title></Helmet>
       <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.units')}</h1>
-          <button onClick={() => { reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); setShowForm(true); }} className="btn-primary gap-2">
-            <Plus className="h-4 w-4" /> {t('admin.add_new')}
-          </button>
-        </div>
-
-        {showForm && (
-          <AdminFormModal
+        {showForm ? (
+          <AdminFormPage
             title={editItem ? t('adminD.units.edit_title') : t('adminD.units.new_title')}
             subtitle={t('admin.modal_subtitle')}
             icon={Network}
@@ -148,38 +141,48 @@ export default function AdminUnitsPage() {
                 </select>
               </div>
             </div>
-          </AdminFormModal>
-        )}
+          </AdminFormPage>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.units')}</h1>
+              <button onClick={() => { reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); setShowForm(true); }} className="btn-primary gap-2">
+                <Plus className="h-4 w-4" /> {t('admin.add_new')}
+              </button>
+            </div>
 
-        {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (
-          <div className="card overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-800">
-                <tr>
-                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.units.th_name')}</th>
-                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.units.th_type')}</th>
-                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden md:table-cell">{t('adminD.units.th_head')}</th>
-                  <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                {flat.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{item.type}</td>
-                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{item.head ?? '—'}</td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openEdit(item)} aria-label={t('admin.edit')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
-                        <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(item.id); }} aria-label={t('admin.delete')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {flat.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{t('adminD.units.empty')}</td></tr>}
-              </tbody>
-            </table>
-          </div>
+
+            {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (
+              <div className="card overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.units.th_name')}</th>
+                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.units.th_type')}</th>
+                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden md:table-cell">{t('adminD.units.th_head')}</th>
+                      <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                    {flat.map((item) => (
+                      <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</td>
+                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{item.type}</td>
+                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{item.head ?? '—'}</td>
+                        <td className="px-4 py-3 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button onClick={() => openEdit(item)} aria-label={t('admin.edit')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
+                            <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(item.id); }} aria-label={t('admin.delete')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {flat.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{t('adminD.units.empty')}</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </div>
     </>
