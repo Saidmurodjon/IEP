@@ -4,14 +4,14 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Users } from 'lucide-react';
+import { Users, UserRound, Phone, Image as ImageIcon, Building2 } from 'lucide-react';
 import clsx from 'clsx';
 import { employeesApi, structureApi } from '@/lib/api';
 import type { Employee } from '@/lib/employee';
 import { type Unit } from '@/lib/structure';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
-import AdminFormPage from '@/components/admin/AdminFormPage';
+import AdminFormPage, { FormSection } from '@/components/admin/AdminFormPage';
 
 export const employeeSchema = z.object({
   fullNameUz: z.string().min(1, 'adminC.employees.err_name'),
@@ -135,7 +135,8 @@ export default function EmployeeForm({ employee, presetLabId, lockLab, onClose, 
     title={`${employee ? t('admin.edit') : t('admin.add_new')} — ${t('admin.employees')}`}
     subtitle={t('admin.modal_subtitle')}
     icon={Users}
-    size="lg"
+    size="full"
+    bare
     onClose={handleClose}
     onSubmit={handleSubmit(onSubmit, onInvalid)}
     footer={
@@ -153,158 +154,161 @@ export default function EmployeeForm({ employee, presetLabId, lockLab, onClose, 
       </>
     }
   >
-    <div className="flex gap-1 border-b dark:border-gray-800">
-      {TABS.map((tab) => (
-        <button
-          key={tab.key}
-          type="button"
-          onClick={() => setActiveTab(tab.key)}
-          className={clsx(
-            'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-            activeTab === tab.key
-              ? 'border-primary-600 text-primary-700 dark:border-primary-300 dark:text-primary-300'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
-          )}
-        >
-          {tab.label}
-          {tabHasError(tab.key) && (
-            <span className="ml-1 text-red-600 dark:text-red-400" aria-label={t('adminC.employees.err_form', { tab: tab.label })}>•</span>
-          )}
-        </button>
-      ))}
-    </div>
-
-    {TABS.map((tab) => (
-      <div key={tab.key} className={clsx('space-y-3', activeTab === tab.key ? '' : 'hidden')}>
-        <div>
-          <label className="label">{t('adminC.employees.fullname_label', { lang: tab.key.toUpperCase() })}</label>
-          <input {...register(`fullName${tab.key}` as keyof EmployeeFormData)} className="input" />
-          {errors[`fullName${tab.key}` as keyof EmployeeFormData] && (
-            <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-              {t(errors[`fullName${tab.key}` as keyof EmployeeFormData]?.message as string)}
-            </p>
-          )}
-        </div>
-        <div>
-          <label className="label">{t('adminC.employees.position_label', { lang: tab.key.toUpperCase() })}</label>
-          <input {...register(`position${tab.key}` as keyof EmployeeFormData)} className="input" />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="label">{t('adminC.employees.degree_label', { lang: tab.key.toUpperCase() })}</label>
-            <input {...register(`degree${tab.key}` as keyof EmployeeFormData)} className="input" />
-          </div>
-          <div>
-            <label className="label">{t('adminC.employees.title_label', { lang: tab.key.toUpperCase() })}</label>
-            <input {...register(`title${tab.key}` as keyof EmployeeFormData)} className="input" />
-          </div>
-        </div>
-        <div>
-          <label className="label">{t('adminC.employees.research_label', { lang: tab.key.toUpperCase() })}</label>
-          <input {...register(`researchArea${tab.key}` as keyof EmployeeFormData)} className="input" />
-        </div>
-        <div>
-          <label className="label">{t('adminC.employees.reception_label', { lang: tab.key.toUpperCase() })}</label>
-          <input
-            {...register(`receptionHours${tab.key}` as keyof EmployeeFormData)}
-            className="input"
-            placeholder={t('adminC.employees.reception_placeholder')}
-          />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {t('adminC.employees.reception_hint')}
-          </p>
-        </div>
-      </div>
-    ))}
-
-    {/*
-      Shaxsiy ma'lumotlar bo'yicha ogohlantirish — 06-topshiriq talabi.
-    */}
-    <div className="rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-900/30 p-4 space-y-3">
-      <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
-        <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.employees.warn_before')}{' '}
-        <span className="font-semibold">{t('adminC.employees.warn_bold')}</span>{' '}
-        {t('adminC.employees.warn_after')}
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="label">{t('adminC.employees.phone')}</label>
-          <input {...register('phone')} className="input" placeholder="+998 71 ..." />
-        </div>
-        <div>
-          <label className="label">{t('adminC.employees.email')}</label>
-          <input {...register('email')} className="input" placeholder="ism@iep.uz" />
-          {errors.email && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.email.message as string)}</p>}
-        </div>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div>
-        <label className="label">{t('adminC.employees.office')}</label>
-        <input {...register('officeRoom')} className="input" />
-      </div>
-      <div className="sm:col-span-2">
-        <FileUploadField
-          kind="photo"
-          label={t('adminC.employees.photo')}
-          value={photoUrl ?? null}
-          onChange={(url) => setValue('photoUrl', url ?? '', { shouldDirty: true })}
-          ownerType="employee"
-          ownerId={employee?.id}
-        />
-      </div>
-      <div>
-        <label className="label">ORCID</label>
-        <input {...register('orcid')} className="input" placeholder="0000-0000-0000-0000" />
-      </div>
-      <div>
-        <label className="label">Scopus Author ID</label>
-        <input {...register('scopusId')} className="input" />
-      </div>
-    </div>
-
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      <div>
-        <label htmlFor="emp-unit" className="label">{t('adminC.employees.unit')}</label>
-        <select id="emp-unit" {...register('unitId')} className="input">
-          <option value="">{t('adminC.employees.unit_none')}</option>
-          {sections.map((unit) => (
-            <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
-          ))}
-        </select>
-      </div>
-      {!lockLab && (
-        <div>
-          <label htmlFor="emp-lab" className="label">{t('adminC.employees.lab')}</label>
-          <select id="emp-lab" {...register('labId')} className="input">
-            <option value="">{t('adminC.employees.lab_none')}</option>
-            {labs.map((unit) => (
-              <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start">
+      <div className="space-y-5 min-w-0">
+        <FormSection title={t('adminC.employees.section_main')} icon={UserRound}>
+          <div className="flex gap-1 border-b dark:border-gray-800">
+            {TABS.map((tab) => (
+              <button
+                key={tab.key}
+                type="button"
+                onClick={() => setActiveTab(tab.key)}
+                className={clsx(
+                  'px-3 py-1.5 text-sm font-medium border-b-2 -mb-px transition-colors',
+                  activeTab === tab.key
+                    ? 'border-primary-600 text-primary-700 dark:border-primary-300 dark:text-primary-300'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+                )}
+              >
+                {tab.label}
+                {tabHasError(tab.key) && (
+                  <span className="ml-1 text-red-600 dark:text-red-400" aria-label={t('adminC.employees.err_form', { tab: tab.label })}>•</span>
+                )}
+              </button>
             ))}
-          </select>
-        </div>
-      )}
-    </div>
+          </div>
 
-    <div>
-      <label htmlFor="emp-order" className="label">{t('adminC.common.order_number')}</label>
-      <input id="emp-order" type="number" {...register('order')} className="input" defaultValue={0} />
-    </div>
+          {TABS.map((tab) => {
+            const lang = tab.key.toUpperCase();
+            const field = (name: string) => `${name}${tab.key}` as keyof EmployeeFormData;
+            const id = (name: string) => `emp-${name}-${tab.key}`;
+            const error = (name: string) => errors[field(name)]?.message as string | undefined;
+            return (
+              <div key={tab.key} className={clsx('grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3', activeTab === tab.key ? '' : 'hidden')}>
+                <div>
+                  <label htmlFor={id('fullName')} className="label">{t('adminC.employees.fullname_label', { lang })}</label>
+                  <input id={id('fullName')} {...register(field('fullName'))} className="input" aria-invalid={!!error('fullName')} />
+                  {error('fullName') && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{t(error('fullName') as string)}</p>}
+                </div>
+                <div>
+                  <label htmlFor={id('position')} className="label">{t('adminC.employees.position_label', { lang })}</label>
+                  <input id={id('position')} {...register(field('position'))} className="input" aria-invalid={!!error('position')} />
+                  {error('position') && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{t(error('position') as string)}</p>}
+                </div>
+                <div>
+                  <label htmlFor={id('degree')} className="label">{t('adminC.employees.degree_label', { lang })}</label>
+                  <input id={id('degree')} {...register(field('degree'))} className="input" />
+                </div>
+                <div>
+                  <label htmlFor={id('title')} className="label">{t('adminC.employees.title_label', { lang })}</label>
+                  <input id={id('title')} {...register(field('title'))} className="input" />
+                </div>
+                <div>
+                  <label htmlFor={id('researchArea')} className="label">{t('adminC.employees.research_label', { lang })}</label>
+                  <input id={id('researchArea')} {...register(field('researchArea'))} className="input" />
+                </div>
+                <div>
+                  <label htmlFor={id('receptionHours')} className="label">{t('adminC.employees.reception_label', { lang })}</label>
+                  <input
+                    id={id('receptionHours')}
+                    {...register(field('receptionHours'))}
+                    className="input"
+                    placeholder={t('adminC.employees.reception_placeholder')}
+                    title={t('adminC.employees.reception_hint')}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          <p className="text-xs text-gray-600 dark:text-gray-400">{t('adminC.employees.reception_hint')}</p>
+        </FormSection>
 
-    <div className="flex flex-wrap gap-5 pt-1">
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input type="checkbox" {...register('isManagement')} className="rounded" />
-        {t('adminC.employees.is_management')}
-      </label>
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input type="checkbox" {...register('isUnitHead')} className="rounded" />
-        {t('adminC.employees.is_unit_head')}
-      </label>
-      <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-        <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-        {t('adminC.employees.active')}
-      </label>
+        <FormSection title={t('adminC.employees.section_contact')} icon={Phone}>
+          {/* Shaxsiy ma'lumotlar bo'yicha ogohlantirish — 06-topshiriq talabi. */}
+          <p className="rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2 text-xs text-amber-900 leading-relaxed dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+            <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.employees.warn_before')}{' '}
+            <span className="font-semibold">{t('adminC.employees.warn_bold')}</span>{' '}
+            {t('adminC.employees.warn_after')}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-6 gap-x-4 gap-y-3">
+            <div className="sm:col-span-2">
+              <label htmlFor="emp-phone" className="label">{t('adminC.employees.phone')}</label>
+              <input id="emp-phone" {...register('phone')} className="input" placeholder="+998 71 ..." />
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="emp-email" className="label">{t('adminC.employees.email')}</label>
+              <input id="emp-email" {...register('email')} className="input" placeholder="ism@iep.uz" aria-invalid={!!errors.email} />
+              {errors.email && <p className="text-red-600 dark:text-red-400 text-xs mt-1">{t(errors.email.message as string)}</p>}
+            </div>
+            <div className="sm:col-span-2">
+              <label htmlFor="emp-office" className="label">{t('adminC.employees.office')}</label>
+              <input id="emp-office" {...register('officeRoom')} className="input" />
+            </div>
+            <div className="sm:col-span-3">
+              <label htmlFor="emp-orcid" className="label">ORCID</label>
+              <input id="emp-orcid" {...register('orcid')} className="input" placeholder="0000-0000-0000-0000" />
+            </div>
+            <div className="sm:col-span-3">
+              <label htmlFor="emp-scopus" className="label">Scopus Author ID</label>
+              <input id="emp-scopus" {...register('scopusId')} className="input" />
+            </div>
+          </div>
+        </FormSection>
+      </div>
+
+      <div className="space-y-5">
+        <FormSection title={t('adminC.employees.section_photo')} icon={ImageIcon}>
+          <FileUploadField
+            kind="photo"
+            label={t('adminC.employees.photo')}
+            value={photoUrl ?? null}
+            onChange={(url) => setValue('photoUrl', url ?? '', { shouldDirty: true })}
+            ownerType="employee"
+            ownerId={employee?.id}
+          />
+        </FormSection>
+
+        <FormSection title={t('adminC.employees.section_assign')} icon={Building2}>
+          <div>
+            <label htmlFor="emp-unit" className="label">{t('adminC.employees.unit')}</label>
+            <select id="emp-unit" {...register('unitId')} className="input">
+              <option value="">{t('adminC.employees.unit_none')}</option>
+              {sections.map((unit) => (
+                <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
+              ))}
+            </select>
+          </div>
+          {!lockLab && (
+            <div>
+              <label htmlFor="emp-lab" className="label">{t('adminC.employees.lab')}</label>
+              <select id="emp-lab" {...register('labId')} className="input">
+                <option value="">{t('adminC.employees.lab_none')}</option>
+                {labs.map((unit) => (
+                  <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div>
+            <label htmlFor="emp-order" className="label">{t('adminC.common.order_number')}</label>
+            <input id="emp-order" type="number" {...register('order')} className="input" defaultValue={0} />
+          </div>
+          <div className="space-y-2 pt-1">
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input type="checkbox" {...register('isManagement')} className="rounded" />
+              {t('adminC.employees.is_management')}
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input type="checkbox" {...register('isUnitHead')} className="rounded" />
+              {t('adminC.employees.is_unit_head')}
+            </label>
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
+              {t('adminC.employees.active')}
+            </label>
+          </div>
+        </FormSection>
+      </div>
     </div>
   </AdminFormPage>
   );

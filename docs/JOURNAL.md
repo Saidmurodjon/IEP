@@ -39,7 +39,7 @@ API + web, foydalanuvchi tasdig'i bilan.
 **🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
 production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Admin qo'shish/tahrirlash
 shakllari oyna emas, ro'yxat o'rnida to'liq sahifa (`AdminFormPage`, sticky «Saqlash» paneli); yangilik slug'i faqat
-sarlavhadan avtomatik. Keyingi: D (kiritish qulayligi).
+sarlavhadan avtomatik. Xodim formasi ixcham ikki ustunli. Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
@@ -222,6 +222,19 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Xodim formasi ixchamlashtirildi
+
+**Nima qilindi:** foydalanuvchi so'rovi — forma juda yoyilib ketgan edi. `EmployeeForm` endi
+`AdminFormPage bare size="full"` + ikki ustun (yangilik formasi kabi, `FormSection`):
+chapda «Asosiy ma'lumot» (til tablari; har tabda 6 maydon 2 ustunli setkada — 6 qator o'rniga 3)
+va «Aloqa va identifikatorlar» (telefon/pochta/xona bir qatorda, ORCID/Scopus ikkinchi qatorda,
+ogohlantirish ixcham); o'ngda «Rasm» va «Biriktirish va holat» (bo'lim, lab, tartib, belgilar).
+Barcha maydonlarga `id`+`htmlFor`, majburiy maydonlarga `aria-invalid`. 4 ta yangi i18n kalit ×3 til.
+**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda `/admin/employees` → «Yangi qo'shish»:
+forma 1456×839 ekranga to'liq sig'adi (skrinshot); bo'sh forma saqlanganda 6 ta majburiy maydonda
+`aria-invalid` va xabar chiqdi. **Tekshirilmadi:** mobil kenglik, lab ichidan (`lockLab`) ochilgan
+forma, haqiqiy saqlash (mantiq o'zgarmagan).
+
 ### 2026-10-27 · fix: xodim formasi — boshqa til tabidagi xato yashirin qolardi
 
 **Muammo:** foydalanuvchi xodim yarata olmadi. API to'g'ri ishlaydi (curl bilan 201). Sabab formada:
@@ -230,20 +243,3 @@ ism/lavozim uchala tilda majburiy, lekin EN/RU tabi `hidden` bo'lgani uchun xato
 toast `adminC.employees.err_form` chiqaradi; xatoli tablarda qizil nuqta. Kalit uchala json'da.
 **Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda faqat UZ to'ldirib saqlash → English tabiga o'tdi, toast chiqdi, EN/RU belgilandi.
 **Tekshirilmadi:** production (iep.uz) — u yerda eski kod, deploy qilinmadi. Boshqa uch tilli formalarda ham shu muammo bo'lishi mumkin (tekshirilmadi).
-
-### 2026-10-27 · Laboratoriya formasi, lab ichida xodimlar, ochiq lab sahifalari qayta dizayn
-
-**Nima qilindi:** foydalanuvchi: lab formasini takomillashtirish, saytdagi lab ma'lumotlari faqat admindan,
-xodimlarni lab ichida qo'shish/tahrirlash, «wow» dizayn. Opus nazorat, 4 ta Sonnet koder.
-- Migratsiya `10_lab_details` (faqat ADD COLUMN). `structure.ts`: yangi maydonlar zod bilan, content
-  `sanitizeFields`, `syncContentFiles`/`replaceSingleFile` (faqat `imageUrl` kelganda)/`deleteOwnerFiles`.
-- `EmployeeForm` komponenti (`AdminEmployeesPage` dan ajratildi; `presetLabId`, `lockLab`).
-- `AdminLabsPage` + `AdminLabDetailPage` (`/admin/labs/new`, `/admin/labs/:id`); `AdminUnitsPage` endi faqat bo'limlar.
-- `LabsPage`/`LabDetailPage`: muqova, yo'nalishlar, HTML matn (DOMPurify), bog'lanish kartasi, haqiqiy xodim soni.
-- i18n: `adminLab.*`, `labs.*`/`lab.*` uchala tilda; ishlatilmay qolgan `adminD.units.*` kalitlari olib tashlandi.
-**Tekshirildi:** tsc (api+web), 66 vitest, wrangler dry-run, vite build. HTTP: `<script>` tozalanadi, qisman
-PUT boshqa maydonlarga tegmaydi, DELETE 404 beradi. Brauzer: /admin/labs kartochkalar, lab ichida «Yangi xodim»
-→ saqlandi, «Rahbar qilish» → ochiq sahifada mudir va bog'lanish kartasida chiqdi; «Ma'lumotlar» saqlash toast;
-/admin/sections va /admin/employees ishlaydi. Sinov xodimi o'chirildi. `lab-renewable` namunaviy ma'lumot bilan qoldi.
-**Tekshirilmadi:** muqova rasm yuklash va almashtirishda eski faylning o'chishi; RichTextEditor ichidagi rasm;
-qorong'i mavzu va mobil ko'rinish; en/ru sahifalar vizual; production. Qidiruv indeksi yangi maydonlarni qamramaydi.

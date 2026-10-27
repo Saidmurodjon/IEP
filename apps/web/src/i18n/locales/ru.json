@@ -665,7 +665,11 @@
       "badge_management": "руководство",
       "badge_head": "заведующий",
       "deactivate": "Деактивировать",
-      "activate": "Активировать"
+      "activate": "Активировать",
+      "section_main": "Основная информация",
+      "section_contact": "Контакты и идентификаторы",
+      "section_photo": "Фото",
+      "section_assign": "Привязка и статус"
     },
     "partners": {
       "err_name": "Введите название",

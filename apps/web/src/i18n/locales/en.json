@@ -665,7 +665,11 @@
       "badge_management": "management",
       "badge_head": "head",
       "deactivate": "Deactivate",
-      "activate": "Activate"
+      "activate": "Activate",
+      "section_main": "Main information",
+      "section_contact": "Contacts and identifiers",
+      "section_photo": "Photo",
+      "section_assign": "Assignment and status"
     },
     "partners": {
       "err_name": "Enter the name",

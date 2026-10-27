@@ -665,7 +665,11 @@
       "badge_management": "rahbariyat",
       "badge_head": "mudir",
       "deactivate": "Nofaol qilish",
-      "activate": "Faol qilish"
+      "activate": "Faol qilish",
+      "section_main": "Asosiy ma'lumot",
+      "section_contact": "Aloqa va identifikatorlar",
+      "section_photo": "Rasm",
+      "section_assign": "Biriktirish va holat"
     },
     "partners": {
       "err_name": "Nomini kiriting",
