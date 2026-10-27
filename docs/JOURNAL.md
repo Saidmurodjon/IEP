@@ -17,8 +17,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 **🆕 Asosiy bo'limlar + xodimning laboratoriyasi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 Bo'linma turi `section` (asosiy bo'lim) va `laboratory` — ikkalasi ham yuqori darajada, lab bo'lim
 ichida emas. Xodim: `unitId` = bo'lim, yangi `labId` = laboratoriya (migratsiya `9_employee_lab`).
-Admin «Bo'linmalar»: «Tur» maydoni yo'q — «Bo'limlar» va «Laboratoriyalar» ikki alohida qism, har birining
-o'z «Qo'shish» tugmasi; lab qatorida xodimlar paneli (biriktirish/chiqarish, «Yangi xodim» → lab tanlangan forma).
+Admin: yon panelda alohida «Bo'limlar» (`/admin/sections`) va «Laboratoriyalar» (`/admin/labs`) sahifalari
+(`/admin/units` → sections ga yo'naltiriladi); «Tur» va «Rahbar» maydonlari yo'q; lab qatorida xodimlar paneli (biriktirish/chiqarish, «Yangi xodim» → lab tanlangan forma).
 Lokal bazada eski bo'linmalar o'chirildi, 6 lab saqlandi, 2 bo'lim yaratildi (Ma'muriy boshqaruv,
 Ilmiy xodimlar). iep.uz uchun: migratsiya 9 + bo'linmalarni qayta tuzish SQL (yozuvdagi) + deploy,
 foydalanuvchi tasdig'i bilan.
@@ -214,6 +214,20 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · Bo'limlar va laboratoriyalar — alohida admin sahifalari, «Rahbar» olib tashlandi
+
+**Nima qilindi:** foydalanuvchi: «rahbar nima keragi bor», yon panelda bo'lim va lab alohida sahifa bo'lsin.
+- `AdminUnitsPage` endi `kind` prop bilan: `/admin/sections` va `/admin/labs` (App.tsx, `key` bilan —
+  sahifalar orasida holat aralashmaydi); `/admin/units` → `/admin/sections` redirect.
+- `AdminLayout` yon paneli: «Bo'limlar» (Network) va «Laboratoriyalar» (FlaskConical).
+- «Rahbar» matn maydoni shakldan olib tashlandi: ochiq lab sahifasida rahbar `isUnitHead` xodimdan
+  olinadi, `unit.head` hech qayerda ko'rsatilmaydi. Bazadagi ustun qoldi (migratsiya yo'q), tahrirda yuborilmaydi.
+- i18n: `admin.sections`/`admin.labs` qo'shildi, `admin.units` va keraksiz `adminD.units.*` olib tashlandi.
+**Tekshirildi:** `tsc` web toza. Brauzer (DOM): `/admin/units` → `/admin/sections`, yon panelda ikki
+element, bo'limlar 2 ta, lablar 6 ta «Xodimlar» tugmasi bilan, lab formasida faqat nom/tavsif/tartib.
+Forma orqali bo'lim yaratildi (type=section, parentId=null) va API orqali o'chirildi (200).
+**Tekshirilmadi:** production.
 
 ### 2026-10-27 · Bo'linmalar sahifasi: bo'lim va laboratoriya alohida, lab xodimlari paneli
 

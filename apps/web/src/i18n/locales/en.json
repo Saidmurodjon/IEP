@@ -198,7 +198,8 @@
     "news": "News",
     "publications": "Publications",
     "structure": "Structure",
-    "units": "Units",
+    "sections": "Sections",
+    "labs": "Laboratories",
     "settings": "Settings",
     "messages": "Messages",
     "add_new": "Add New",
@@ -677,7 +678,6 @@
       "helmet": "Structure | Admin"
     },
     "settings": {
-      "helmet": "Settings | Admin",
       "saved": "Saved!",
       "saving": "Saving...",
       "group_general": "General",
@@ -699,10 +699,6 @@
       "name_lang": "Name ({{lang}})",
       "description_lang": "Description ({{lang}})",
       "order": "Order",
-      "head": "Head",
-      "head_placeholder": "Full name",
-      "sections_title": "Sections",
-      "labs_title": "Laboratories",
       "add_section": "Add section",
       "add_lab": "Add laboratory",
       "staff_count_one": "{{count}} employee",

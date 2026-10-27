@@ -129,7 +129,9 @@ export default function App() {
           <Route path="news" element={<AdminNewsPage />} />
           <Route path="publications" element={<AdminPublicationsPage />} />
           <Route path="structure" element={<AdminStructurePage />} />
-          <Route path="units" element={<AdminUnitsPage />} />
+          <Route path="sections" element={<AdminUnitsPage key="section" kind="section" />} />
+          <Route path="labs" element={<AdminUnitsPage key="laboratory" kind="laboratory" />} />
+          <Route path="units" element={<Navigate to="/admin/sections" replace />} />
           <Route path="settings" element={<SuperAdminRoute><AdminSettingsPage /></SuperAdminRoute>} />
           <Route path="employees" element={<AdminEmployeesPage />} />
           <Route path="partners" element={<AdminPartnersPage />} />

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Newspaper, BookOpen, Building2,
   Settings, MessageSquare, Zap,
-  Users, Handshake, FileText, Bug, Network, UserCog,
+  Users, Handshake, FileText, Bug, Network, UserCog, FlaskConical,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
@@ -26,7 +26,8 @@ const navItems: NavItem[] = [
   { to: '/admin/news', icon: Newspaper, key: 'news' },
   { to: '/admin/publications', icon: BookOpen, key: 'publications' },
   { to: '/admin/structure', icon: Building2, key: 'structure' },
-  { to: '/admin/units', icon: Network, key: 'units' },
+  { to: '/admin/sections', icon: Network, key: 'sections' },
+  { to: '/admin/labs', icon: FlaskConical, key: 'labs' },
   { to: '/admin/employees', icon: Users, key: 'employees' },
   { to: '/admin/partners', icon: Handshake, key: 'partners' },
   { to: '/admin/documents', icon: FileText, key: 'documents' },

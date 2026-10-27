@@ -198,7 +198,8 @@
     "news": "Yangiliklar",
     "publications": "Nashrlar",
     "structure": "Tuzilma",
-    "units": "Bo'linmalar",
+    "sections": "Bo'limlar",
+    "labs": "Laboratoriyalar",
     "settings": "Sozlamalar",
     "messages": "Xabarlar",
     "add_new": "Yangi qo'shish",
@@ -677,7 +678,6 @@
       "helmet": "Tuzilma | Admin"
     },
     "settings": {
-      "helmet": "Sozlamalar | Admin",
       "saved": "Saqlandi!",
       "saving": "Saqlanmoqda...",
       "group_general": "Umumiy",
@@ -699,10 +699,6 @@
       "name_lang": "Nomi ({{lang}})",
       "description_lang": "Tavsif ({{lang}})",
       "order": "Tartib",
-      "head": "Rahbar",
-      "head_placeholder": "F.I.O.",
-      "sections_title": "Bo'limlar",
-      "labs_title": "Laboratoriyalar",
       "add_section": "Bo'lim qo'shish",
       "add_lab": "Laboratoriya qo'shish",
       "staff_count_one": "{{count}} xodim",

@@ -18,15 +18,14 @@ const schema = z.object({
   descriptionUz: z.string().default(''),
   descriptionEn: z.string().default(''),
   descriptionRu: z.string().default(''),
-  head: z.string().optional(),
   order: z.coerce.number().int().default(0),
 });
 type FormData = z.infer<typeof schema>;
 type UnitItem = FormData & { id: string; type: string; children?: UnitItem[] };
-/** Bo'lim va laboratoriya — alohida qismlar, har biri o'z ro'yxatidan qo'shiladi. */
+/** Bo'lim va laboratoriya — alohida qismlar, har biri o'z sahifasida. */
 type Kind = 'section' | 'laboratory';
 
-const EMPTY: FormData = { nameUz: '', nameEn: '', nameRu: '', descriptionUz: '', descriptionEn: '', descriptionRu: '', head: '', order: 0 };
+const EMPTY: FormData = { nameUz: '', nameEn: '', nameRu: '', descriptionUz: '', descriptionEn: '', descriptionRu: '', order: 0 };
 const TABS = [{ key: 'uz', label: "O'zbek" }, { key: 'en', label: 'English' }, { key: 'ru', label: 'Русский' }] as const;
 
 function flattenTree(units: UnitItem[]): UnitItem[] {
@@ -38,11 +37,10 @@ function flattenTree(units: UnitItem[]): UnitItem[] {
   return result;
 }
 
-export default function AdminUnitsPage() {
+export default function AdminUnitsPage({ kind }: { kind: Kind }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  // `null` — ro'yxat; aks holda qaysi qism uchun shakl ochiq.
-  const [formKind, setFormKind] = useState<Kind | null>(null);
+  const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<UnitItem | null>(null);
   const [activeTab, setActiveTab] = useState<'uz' | 'en' | 'ru'>('uz');
   const [openLab, setOpenLab] = useState<string | null>(null);
@@ -54,10 +52,11 @@ export default function AdminUnitsPage() {
   });
   const employees: Employee[] = employeesData?.data?.data ?? [];
 
-  const flat = flattenTree(data?.data?.data ?? []).sort((a, b) => a.order - b.order);
-  // Eski turlar (department, center, ...) bo'limlar qatorida ko'rsatiladi.
-  const sections = flat.filter((u) => u.type !== 'laboratory');
-  const labs = flat.filter((u) => u.type === 'laboratory');
+  const isLab = kind === 'laboratory';
+  // Eski turlar (department, center, ...) bo'limlar sahifasida ko'rsatiladi.
+  const items = flattenTree(data?.data?.data ?? [])
+    .filter((u) => (u.type === 'laboratory') === isLab)
+    .sort((a, b) => a.order - b.order);
 
   const { register, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -72,43 +71,44 @@ export default function AdminUnitsPage() {
   const updateMut = useMutation({ mutationFn: ({ id, data }: { id: string; data: FormData }) => structureApi.update(id, data), onSuccess: () => { invalidate(); closeForm(); } });
   const deleteMut = useMutation({ mutationFn: (id: string) => structureApi.delete(id), onSuccess: invalidate });
 
-  const closeForm = () => { setFormKind(null); setEditItem(null); setActiveTab('uz'); reset(EMPTY); };
+  const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('uz'); reset(EMPTY); };
 
-  const openNew = (kind: Kind) => { reset(EMPTY); setEditItem(null); setFormKind(kind); };
+  const openNew = () => { reset(EMPTY); setEditItem(null); setShowForm(true); };
 
   const openEdit = (item: UnitItem) => {
     setEditItem(item);
     reset({
       nameUz: item.nameUz, nameEn: item.nameEn, nameRu: item.nameRu,
       descriptionUz: item.descriptionUz ?? '', descriptionEn: item.descriptionEn ?? '', descriptionRu: item.descriptionRu ?? '',
-      head: item.head ?? '', order: item.order,
+      order: item.order,
     });
-    setFormKind(item.type === 'laboratory' ? 'laboratory' : 'section');
+    setShowForm(true);
   };
 
   const onSubmit = (values: FormData) => {
-    // Tur shakldan emas, qaysi qismdan ochilganidan olinadi; tahrirda tur o'zgarmaydi.
+    // Tur shakldan emas, sahifadan olinadi; tahrirda tur o'zgarmaydi.
     if (editItem) updateMut.mutate({ id: editItem.id, data: values });
-    else if (formKind) createMut.mutate({ ...values, type: formKind, parentId: null });
+    else createMut.mutate({ ...values, type: kind, parentId: null });
   };
 
-  const isLabForm = formKind === 'laboratory';
+  const Icon = isLab ? FlaskConical : Network;
+  const p = isLab ? 'labs' : 'sections';
 
-  const renderRows = (items: UnitItem[], kind: Kind) => (
+  const rows = (
     <ul className="divide-y divide-gray-100 dark:divide-gray-800">
       {items.map((item) => {
-        const staff = employees.filter((e) => (kind === 'laboratory' ? e.labId : e.unitId) === item.id);
-        const expanded = kind === 'laboratory' && openLab === item.id;
+        const staff = employees.filter((e) => (isLab ? e.labId : e.unitId) === item.id);
+        const expanded = isLab && openLab === item.id;
         return (
           <li key={item.id}>
             <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800">
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {item.head || '—'} · {t('adminD.units.staff_count', { count: staff.length })}
+                  {t('adminD.units.staff_count', { count: staff.length })}
                 </p>
               </div>
-              {kind === 'laboratory' && (
+              {isLab && (
                 <button
                   type="button"
                   onClick={() => setOpenLab(expanded ? null : item.id)}
@@ -128,7 +128,7 @@ export default function AdminUnitsPage() {
       })}
       {items.length === 0 && (
         <li className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-          {t(kind === 'laboratory' ? 'adminD.units.empty_labs' : 'adminD.units.empty')}
+          {t(isLab ? 'adminD.units.empty_labs' : 'adminD.units.empty')}
         </li>
       )}
     </ul>
@@ -136,13 +136,13 @@ export default function AdminUnitsPage() {
 
   return (
     <>
-      <Helmet><title>{t('adminD.units.helmet')}</title></Helmet>
+      <Helmet><title>{t(`admin.${p}`)} | Admin</title></Helmet>
       <div className="p-6">
-        {formKind ? (
+        {showForm ? (
           <AdminFormPage
-            title={editItem ? t('adminD.units.edit_title') : t(isLabForm ? 'adminD.units.new_lab_title' : 'adminD.units.new_title')}
+            title={editItem ? t('adminD.units.edit_title') : t(isLab ? 'adminD.units.new_lab_title' : 'adminD.units.new_title')}
             subtitle={t('admin.modal_subtitle')}
-            icon={isLabForm ? FlaskConical : Network}
+            icon={Icon}
             size="md"
             onClose={closeForm}
             onSubmit={handleSubmit(onSubmit)}
@@ -176,48 +176,24 @@ export default function AdminUnitsPage() {
               </div>
             ))}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="label">{t('adminD.units.head')}</label>
-                <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
-              </div>
-              <div>
-                <label className="label">{t('adminD.units.order')}</label>
-                <input {...register('order')} type="number" className="input" />
-              </div>
+            <div className="max-w-[12rem]">
+              <label htmlFor="unit-order" className="label">{t('adminD.units.order')}</label>
+              <input id="unit-order" {...register('order')} type="number" className="input" />
             </div>
           </AdminFormPage>
         ) : (
           <>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('admin.units')}</h1>
-
-            {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (
-              <div className="space-y-8">
-                <section aria-labelledby="units-sections">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 id="units-sections" className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      <Network className="h-5 w-5" aria-hidden="true" /> {t('adminD.units.sections_title')}
-                    </h2>
-                    <button onClick={() => openNew('section')} className="btn-primary gap-2">
-                      <Plus className="h-4 w-4" /> {t('adminD.units.add_section')}
-                    </button>
-                  </div>
-                  <div className="card overflow-hidden">{renderRows(sections, 'section')}</div>
-                </section>
-
-                <section aria-labelledby="units-labs">
-                  <div className="flex items-center justify-between mb-3">
-                    <h2 id="units-labs" className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      <FlaskConical className="h-5 w-5" aria-hidden="true" /> {t('adminD.units.labs_title')}
-                    </h2>
-                    <button onClick={() => openNew('laboratory')} className="btn-primary gap-2">
-                      <Plus className="h-4 w-4" /> {t('adminD.units.add_lab')}
-                    </button>
-                  </div>
-                  <div className="card overflow-hidden">{renderRows(labs, 'laboratory')}</div>
-                </section>
-              </div>
-            )}
+            <div className="flex items-center justify-between mb-6">
+              <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <Icon className="h-6 w-6" aria-hidden="true" /> {t(`admin.${p}`)}
+              </h1>
+              <button onClick={openNew} className="btn-primary gap-2">
+                <Plus className="h-4 w-4" /> {t(isLab ? 'adminD.units.add_lab' : 'adminD.units.add_section')}
+              </button>
+            </div>
+            {isLoading
+              ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
+              : <div className="card overflow-hidden">{rows}</div>}
           </>
         )}
       </div>

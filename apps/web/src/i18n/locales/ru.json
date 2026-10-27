@@ -198,7 +198,8 @@
     "news": "Новости",
     "publications": "Публикации",
     "structure": "Структура",
-    "units": "Подразделения",
+    "sections": "Отделы",
+    "labs": "Лаборатории",
     "settings": "Настройки",
     "messages": "Сообщения",
     "add_new": "Добавить",
@@ -677,7 +678,6 @@
       "helmet": "Структура | Админ"
     },
     "settings": {
-      "helmet": "Настройки | Админ",
       "saved": "Сохранено!",
       "saving": "Сохранение...",
       "group_general": "Общие",
@@ -699,10 +699,6 @@
       "name_lang": "Название ({{lang}})",
       "description_lang": "Описание ({{lang}})",
       "order": "Порядок",
-      "head": "Руководитель",
-      "head_placeholder": "Ф.И.О.",
-      "sections_title": "Отделы",
-      "labs_title": "Лаборатории",
       "add_section": "Добавить отдел",
       "add_lab": "Добавить лабораторию",
       "staff_count_one": "{{count}} сотрудник",
