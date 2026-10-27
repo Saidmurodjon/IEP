@@ -1,46 +1,67 @@
 import { describe, it, expect } from 'vitest';
-import { fillMonths, fillYears, foldUnits, lastMonthKeys, monthWindowStart } from '../stats';
+import { fillPeriods, fillYearRange, foldUnits, parseDay, resolveRange } from '../stats';
 
-describe('lastMonthKeys', () => {
-  it('yil chegarasidan o\'tadi va joriy oyni oxirgi qiladi', () => {
-    const keys = lastMonthKeys(new Date('2026-02-10T12:00:00Z'));
-    expect(keys).toHaveLength(12);
-    expect(keys[0]).toBe('2025-03');
-    expect(keys[10]).toBe('2026-01');
-    expect(keys[11]).toBe('2026-02');
-  });
-  it('Toshkent vaqti bilan oy almashadi (UTC da hali oldingi oy)', () => {
-    // 2026-01-31 20:00 UTC = 2026-02-01 01:00 Toshkent
-    expect(lastMonthKeys(new Date('2026-01-31T20:00:00Z')).at(-1)).toBe('2026-02');
-    expect(lastMonthKeys(new Date('2026-01-31T18:00:00Z')).at(-1)).toBe('2026-01');
-  });
-  it('oyna boshi Toshkent 00:00 ga to\'g\'ri keladi', () => {
-    expect(monthWindowStart(new Date('2026-02-10T12:00:00Z')).toISOString())
-      .toBe('2025-02-28T19:00:00.000Z');
+describe('parseDay', () => {
+  it('to\'g\'ri sanani qabul qiladi, mavjud bo\'lmaganini rad etadi', () => {
+    expect(parseDay('2026-02-28')?.toISOString()).toBe('2026-02-28T00:00:00.000Z');
+    expect(parseDay('2026-02-30')).toBeNull();
+    expect(parseDay('2026-2-1')).toBeNull();
   });
 });
 
-describe('fillMonths', () => {
-  it('bo\'sh oylarni 0 bilan to\'ldiradi', () => {
+describe('resolveRange', () => {
+  it('standart: oxirgi 12 oy, oylik, yil chegarasidan o\'tadi', () => {
+    const r = resolveRange(new Date('2026-02-10T12:00:00Z'))!;
+    expect(r.granularity).toBe('month');
+    expect(r.keys).toHaveLength(12);
+    expect(r.keys[0]).toBe('2025-03');
+    expect(r.keys[11]).toBe('2026-02');
+    expect(r.from).toBe('2025-03-01');
+    expect(r.to).toBe('2026-02-10');
+  });
+  it('bugun Toshkent vaqti bilan aniqlanadi', () => {
+    // 2026-01-31 20:00 UTC = 2026-02-01 01:00 Toshkent
+    expect(resolveRange(new Date('2026-01-31T20:00:00Z'))!.to).toBe('2026-02-01');
+  });
+  it('chegaralar Toshkent 00:00, `to` kuni to\'liq kiradi', () => {
+    const r = resolveRange(new Date(), '2026-03-01', '2026-03-07')!;
+    expect(r.start.toISOString()).toBe('2026-02-28T19:00:00.000Z');
+    expect(r.end.toISOString()).toBe('2026-03-07T19:00:00.000Z');
+  });
+  it('62 kungacha kunlik, undan uzunrog\'i oylik', () => {
+    const d = resolveRange(new Date(), '2026-01-01', '2026-03-03')!;
+    expect(d.granularity).toBe('day');
+    expect(d.keys).toHaveLength(62);
+    expect(d.keys[0]).toBe('2026-01-01');
+    expect(d.keys.at(-1)).toBe('2026-03-03');
+    const m = resolveRange(new Date(), '2026-01-01', '2026-03-04')!;
+    expect(m.granularity).toBe('month');
+    expect(m.keys).toEqual(['2026-01', '2026-02', '2026-03']);
+  });
+  it('noto\'g\'ri oraliqni rad etadi', () => {
+    expect(resolveRange(new Date(), '2026-03-02', '2026-03-01')).toBeNull();
+    expect(resolveRange(new Date(), '2026-02-31', '2026-03-01')).toBeNull();
+    expect(resolveRange(new Date(), '2000-01-01', '2026-03-01')).toBeNull();
+  });
+});
+
+describe('fillPeriods', () => {
+  it('bo\'sh davrlarni 0 bilan to\'ldiradi', () => {
     const keys = ['2025-12', '2026-01', '2026-02'];
-    expect(fillMonths(keys, [{ month: '2026-01', count: 4 }])).toEqual([
-      { month: '2025-12', count: 0 },
-      { month: '2026-01', count: 4 },
-      { month: '2026-02', count: 0 },
+    expect(fillPeriods(keys, [{ period: '2026-01', count: 4 }])).toEqual([
+      { period: '2025-12', count: 0 },
+      { period: '2026-01', count: 4 },
+      { period: '2026-02', count: 0 },
     ]);
   });
 });
 
-describe('fillYears', () => {
-  it('maks yildan orqaga 8 yil, o\'sish tartibida', () => {
-    const out = fillYears([{ year: 2024, count: 3 }, { year: 2020, count: 1 }]);
-    expect(out.map((y) => y.year)).toEqual([2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024]);
-    expect(out[3].count).toBe(1);
-    expect(out[7].count).toBe(3);
-    expect(out[0].count).toBe(0);
-  });
-  it('ma\'lumot bo\'lmasa bo\'sh', () => {
-    expect(fillYears([])).toEqual([]);
+describe('fillYearRange', () => {
+  it('oraliqdagi har bir yil, o\'sish tartibida', () => {
+    const out = fillYearRange([{ year: 2024, count: 3 }], 2023, 2025);
+    expect(out).toEqual([
+      { year: 2023, count: 0 }, { year: 2024, count: 3 }, { year: 2025, count: 0 },
+    ]);
   });
 });
 

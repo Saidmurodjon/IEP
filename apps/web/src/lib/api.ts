@@ -306,7 +306,10 @@ export const searchApi = {
 };
 
 // --- Statistika (dashboard) ---
-export interface MonthCount { month: string; count: number }
+/** Davr kaliti: `YYYY-MM-DD` (kunlik) yoki `YYYY-MM` (oylik). */
+export interface PeriodCount { period: string; count: number }
+export type StatsGranularity = 'day' | 'month';
+export interface StatsRangeParams { from?: string; to?: string }
 export interface DashboardStats {
   totals: {
     newsPublished: number;
@@ -319,8 +322,11 @@ export interface DashboardStats {
     storageBytes: number;
     mediaFiles: number;
   };
-  newsByMonth: MonthCount[];
-  appealsByMonth: MonthCount[];
+  range: { from: string; to: string; granularity: StatsGranularity };
+  /** Tanlangan oraliqdagi sonlar. */
+  period: { news: number; appeals: number; publications: number };
+  newsSeries: PeriodCount[];
+  appealsSeries: PeriodCount[];
   appealsByStatus: { status: string; count: number }[];
   publicationsByYear: { year: number; count: number }[];
   employeesByUnit: {
@@ -328,6 +334,16 @@ export interface DashboardStats {
   }[];
 }
 
+export interface AdminSearchResult {
+  news: { id: string; titleUz: string; titleEn: string; titleRu: string; isPublished: boolean; publishedAt: string }[];
+  publications: { id: string; titleUz: string; titleEn: string; titleRu: string; year: number }[];
+  employees: { id: string; fullNameUz: string; fullNameEn: string; fullNameRu: string; isActive: boolean }[];
+  appeals: { id: string; ticketNumber: string; name: string; subject: string; status: string; createdAt: string }[];
+}
+
 export const statsApi = {
-  get: () => api.get<{ data: DashboardStats }>('/api/stats'),
+  get: (range: StatsRangeParams = {}) =>
+    api.get<{ data: DashboardStats }>('/api/stats', { params: range }),
+  search: (q: string, range: StatsRangeParams = {}) =>
+    api.get<{ data: AdminSearchResult }>('/api/stats/search', { params: { q, ...range } }),
 };

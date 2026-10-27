@@ -4,7 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { logsApi, newsApi, statsApi } from '@/lib/api';
 import BarCard from '@/components/admin/charts/BarCard';
 import { Newspaper, BookOpen, MessageSquare, Users, FileText, HardDrive, Bug } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
+import DashboardFilters, { PERIOD_PRESETS, presetRange, toDayString, type PeriodPreset } from '@/components/admin/DashboardFilters';
+import type { StatsRangeParams } from '@/lib/api';
 import { useAuthStore, isSuperAdmin } from '@/store/auth';
 import { formatDate } from '@/lib/date';
 import type { LucideIcon } from 'lucide-react';
@@ -15,7 +17,37 @@ export default function DashboardPage() {
   const { admin } = useAuthStore();
 
   const { data: newsData } = useQuery({ queryKey: ['admin-news'], queryFn: () => newsApi.list(1, 5) });
-  const statsQuery = useQuery({ queryKey: ['admin-stats'], queryFn: () => statsApi.get() });
+
+  // Davr URL da saqlanadi (`?period=30d` yoki `?period=custom&from=..&to=..`) — havola bilan ulashsa bo'ladi.
+  const [params, setParams] = useSearchParams();
+  const rawPreset = params.get('period');
+  const preset: PeriodPreset = PERIOD_PRESETS.includes(rawPreset as PeriodPreset) ? rawPreset as PeriodPreset : '12m';
+  const customFrom = params.get('from') ?? '';
+  const customTo = params.get('to') ?? '';
+  const customError = preset === 'custom' && (!customFrom || !customTo)
+    ? t('admin.dashboardStats.filter.required')
+    : preset === 'custom' && customFrom > customTo ? t('admin.dashboardStats.filter.invalid') : undefined;
+  const range: StatsRangeParams = preset === 'custom'
+    ? (customError ? {} : { from: customFrom, to: customTo })
+    : presetRange(preset);
+
+  const setPreset = (p: PeriodPreset) => {
+    if (p === '12m') { setParams({}, { replace: true }); return; }
+    if (p === 'custom') {
+      // Joriy oraliqdan boshlanadi — foydalanuvchi faqat kerakli sanani o'zgartiradi.
+      const r = range.from ? range : { from: toDayString(new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1)), to: toDayString(new Date()) };
+      setParams({ period: 'custom', from: r.from ?? '', to: r.to ?? '' }, { replace: true });
+      return;
+    }
+    setParams({ period: p }, { replace: true });
+  };
+  const setCustom = (from: string, to: string) => setParams({ period: 'custom', from, to }, { replace: true });
+
+  const statsQuery = useQuery({
+    queryKey: ['admin-stats', range.from, range.to],
+    queryFn: () => statsApi.get(range),
+    placeholderData: (prev) => prev,
+  });
   // So'nggi 24 soatdagi hal qilinmagan xatolar — API ro'yxat bilan birga qaytaradi.
   const { data: logsData } = useQuery({
     queryKey: ['admin-logs-badge'],
@@ -33,16 +65,21 @@ export default function DashboardPage() {
   const lang = i18n.language;
   const tt = (k: string, o?: Record<string, unknown>) => t(`admin.dashboardStats.${k}`, o);
 
-  // Oy yorlig'i: qisqa oy nomi (+ yanvar yoki birinchi ustunda 2 xonali yil).
-  // Nomlar locales'dan olinadi — brauzerlarda o'zbekcha `Intl` ma'lumoti yo'q («M11» chiqadi).
+  // Davr yorlig'i. Oylik: qisqa oy nomi (+ yanvar yoki birinchi ustunda 2 xonali yil).
+  // Kunlik: «12 Okt». Nomlar locales'dan olinadi — brauzerlarda o'zbekcha `Intl` ma'lumoti yo'q («M11» chiqadi).
   const monthNames = t('admin.dashboardStats.monthsShort', { returnObjects: true }) as string[];
-  const monthData = (rows: { month: string; count: number }[] = []): BarDatum[] =>
-    rows.map(({ month, count }, idx) => {
-      const [y, m] = month.split('-').map(Number);
-      const name = monthNames[m - 1] ?? month;
+  const periodData = (rows: { period: string; count: number }[] = []): BarDatum[] =>
+    rows.map(({ period, count }, idx) => {
+      const [y, m, d] = period.split('-').map(Number);
+      const name = monthNames[m - 1] ?? period;
+      if (d) return { label: `${d} ${name}`, value: count };
       const withYear = m === 1 || idx === 0;
       return { label: withYear ? `${name} ${String(y).slice(-2)}` : name, value: count };
     });
+  const fmtDay = (day: string) => {
+    const [y, m, d] = day.split('-').map(Number);
+    return `${d} ${monthNames[m - 1] ?? ''} ${y}`;
+  };
 
   const unitName = (u: { nameUz: string; nameEn: string; nameRu: string; unitId: string }) => {
     if (u.unitId === 'other') return tt('other');
@@ -73,6 +110,7 @@ export default function DashboardPage() {
   ] : [];
 
   const chartProps = { loading: statsQuery.isLoading, error: statsQuery.isError, onRetry: () => { void statsQuery.refetch(); } };
+  const tf = (k: string, o?: Record<string, unknown>) => tt(`filter.${k}`, o);
 
   return (
     <>
@@ -82,6 +120,25 @@ export default function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.dashboard')}</h1>
           <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{tt('welcome', { name: admin?.name })}</p>
         </div>
+
+        {/* Davr filtri */}
+        <section className="card p-5 mb-4" aria-labelledby="dash-filter-title">
+          <h2 id="dash-filter-title" className="sr-only">{tf('title')}</h2>
+          <DashboardFilters
+            preset={preset} from={customFrom} to={customTo} error={customError}
+            onPreset={setPreset} onCustom={setCustom}
+          />
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-3" aria-live="polite">
+            {stats && (
+              <>
+                <span className="font-medium">{fmtDay(stats.range.from)} — {fmtDay(stats.range.to)}</span>
+                {': '}
+                {tf('summary', { news: stats.period.news, appeals: stats.period.appeals, pubs: stats.period.publications })}
+                {statsQuery.isFetching && !statsQuery.isLoading && <span className="ml-2 text-gray-600 dark:text-gray-400">{tf('updating')}</span>}
+              </>
+            )}
+          </p>
+        </section>
 
         {/* KPI kartochkalari */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4" aria-live="polite">
@@ -120,11 +177,11 @@ export default function DashboardPage() {
 
         {/* Diagrammalar */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-          <BarCard {...chartProps} title={tt('chartNews')} data={monthData(stats?.newsByMonth)} />
-          <BarCard {...chartProps} title={tt('chartAppeals')} data={monthData(stats?.appealsByMonth)} />
+          <BarCard {...chartProps} title={tt(stats?.range.granularity === 'day' ? 'chartNewsDaily' : 'chartNews')} data={periodData(stats?.newsSeries)} />
+          <BarCard {...chartProps} title={tt(stats?.range.granularity === 'day' ? 'chartAppealsDaily' : 'chartAppeals')} data={periodData(stats?.appealsSeries)} />
           <BarCard {...chartProps} horizontal title={tt('chartStatus')} data={(stats?.appealsByStatus ?? []).map((s) => ({ label: tt(`status.${s.status}`), value: s.count }))} />
           <BarCard {...chartProps} title={tt('chartPubs')} data={(stats?.publicationsByYear ?? []).map((p) => ({ label: String(p.year), value: p.count }))} />
-          <BarCard {...chartProps} horizontal title={tt('chartUnits')} data={(stats?.employeesByUnit ?? []).map((u) => ({ label: unitName(u), value: u.count }))} />
+          <BarCard {...chartProps} horizontal title={tt('chartUnits')} note={tf('snapshot')} data={(stats?.employeesByUnit ?? []).map((u) => ({ label: unitName(u), value: u.count }))} />
         </div>
 
         {/* Recent news */}

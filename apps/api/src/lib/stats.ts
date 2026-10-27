@@ -3,7 +3,8 @@
 /** Toshkent UTC+5, yozgi vaqt yo'q. */
 const TASHKENT_OFFSET_MS = 5 * 60 * 60 * 1000;
 
-export interface MonthCount { month: string; count: number }
+/** Davr kaliti: `YYYY-MM-DD` (kunlik) yoki `YYYY-MM` (oylik). */
+export interface PeriodCount { period: string; count: number }
 export interface YearCount { year: number; count: number }
 export interface UnitCount {
   unitId: string;
@@ -17,37 +18,85 @@ function tashkentYearMonth(now: Date): [number, number] {
   return [t.getUTCFullYear(), t.getUTCMonth()];
 }
 
-/** Oxirgi `n` oy kalitlari (`YYYY-MM`), joriy oy bilan, eskisidan yangisiga. */
-export function lastMonthKeys(now: Date, n = 12): string[] {
+export type Granularity = 'day' | 'month';
+
+/** Oraliq shu kundan oshmasa kunlik, aks holda oylik guruhlanadi. */
+export const DAY_GRANULARITY_MAX_DAYS = 62;
+/** Ruxsat etilgan eng uzun oraliq (kun) — ~10 yil. */
+export const MAX_RANGE_DAYS = 3660;
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+const DAY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** `YYYY-MM-DD` → shu kunning UTC yarim tuni (kalendar kuni sifatida). Noto'g'ri sana — `null`. */
+export function parseDay(s: string): Date | null {
+  const m = DAY_RE.exec(s);
+  if (!m) return null;
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  return d.toISOString().slice(0, 10) === s ? d : null;
+}
+
+const dayKey = (d: Date) => d.toISOString().slice(0, 10);
+const monthKey = (d: Date) => d.toISOString().slice(0, 7);
+
+export interface StatsRange {
+  /** Kalendar kunlari, `YYYY-MM-DD` (ikkalasi ham kiradi). */
+  from: string;
+  to: string;
+  /** SQL uchun: `from` kuni 00:00 (Toshkent) va `to` dan keyingi kun 00:00 (Toshkent). */
+  start: Date;
+  end: Date;
+  granularity: Granularity;
+  keys: string[];
+}
+
+/**
+ * So'rovdagi `from`/`to` dan oraliq yasaydi. Berilmasa — oxirgi 12 oy (joriy oy bilan).
+ * Xato (noto'g'ri sana, `from > to`, juda uzun oraliq) — `null`.
+ */
+export function resolveRange(now: Date, from?: string, to?: string): StatsRange | null {
   const [y, m] = tashkentYearMonth(now);
+  const today = dayKey(new Date(now.getTime() + TASHKENT_OFFSET_MS));
+  const fromDay = from ? parseDay(from) : new Date(Date.UTC(y, m - 11, 1));
+  const toDay = parseDay(to ?? today);
+  if (!fromDay || !toDay || fromDay > toDay) return null;
+  const spanDays = (toDay.getTime() - fromDay.getTime()) / DAY_MS + 1;
+  if (spanDays > MAX_RANGE_DAYS) return null;
+
+  const granularity: Granularity = spanDays <= DAY_GRANULARITY_MAX_DAYS ? 'day' : 'month';
   const keys: string[] = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(Date.UTC(y, m - i, 1));
-    keys.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`);
+  if (granularity === 'day') {
+    for (let t = fromDay.getTime(); t <= toDay.getTime(); t += DAY_MS) keys.push(dayKey(new Date(t)));
+  } else {
+    const end = monthKey(toDay);
+    for (let i = 0; ; i++) {
+      const k = monthKey(new Date(Date.UTC(fromDay.getUTCFullYear(), fromDay.getUTCMonth() + i, 1)));
+      keys.push(k);
+      if (k === end) break;
+    }
   }
-  return keys;
+  return {
+    from: dayKey(fromDay),
+    to: dayKey(toDay),
+    start: new Date(fromDay.getTime() - TASHKENT_OFFSET_MS),
+    end: new Date(toDay.getTime() + DAY_MS - TASHKENT_OFFSET_MS),
+    granularity,
+    keys,
+  };
 }
 
-/** Oyna boshi: eng eski oyning 1-kuni 00:00 (Toshkent) — UTC lahzasi sifatida. */
-export function monthWindowStart(now: Date, n = 12): Date {
-  const [y, m] = tashkentYearMonth(now);
-  return new Date(Date.UTC(y, m - (n - 1), 1) - TASHKENT_OFFSET_MS);
-}
-
-/** Bazadan kelgan oylarni kalitlarga joylab, bo'sh oylarni 0 bilan to'ldiradi. */
-export function fillMonths(keys: string[], rows: MonthCount[]): MonthCount[] {
-  const map = new Map(rows.map((r) => [r.month, r.count]));
-  return keys.map((month) => ({ month, count: map.get(month) ?? 0 }));
-}
-
-/** Ma'lumotdagi eng katta yildan orqaga `n` yil, o'sish tartibida, bo'shlari 0. */
-export function fillYears(rows: YearCount[], n = 8): YearCount[] {
-  if (rows.length === 0) return [];
-  const max = Math.max(...rows.map((r) => r.year));
+/** `fromYear..toYear` oralig'idagi har bir yil, bo'shlari 0. */
+export function fillYearRange(rows: YearCount[], fromYear: number, toYear: number): YearCount[] {
   const map = new Map(rows.map((r) => [r.year, r.count]));
   const out: YearCount[] = [];
-  for (let y = max - n + 1; y <= max; y++) out.push({ year: y, count: map.get(y) ?? 0 });
+  for (let y = fromYear; y <= toYear; y++) out.push({ year: y, count: map.get(y) ?? 0 });
   return out;
+}
+
+/** Bazadan kelgan davrlarni kalitlarga joylab, bo'shlarini 0 bilan to'ldiradi. */
+export function fillPeriods(keys: string[], rows: PeriodCount[]): PeriodCount[] {
+  const map = new Map(rows.map((r) => [r.period, r.count]));
+  return keys.map((period) => ({ period, count: map.get(period) ?? 0 }));
 }
 
 export interface UnitRow {

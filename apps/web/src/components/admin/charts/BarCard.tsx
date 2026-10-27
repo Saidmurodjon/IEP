@@ -14,6 +14,8 @@ interface BarCardProps {
   loading?: boolean;
   error?: boolean;
   onRetry?: () => void;
+  /** Sarlavha yonidagi qisqa izoh (masalan, «joriy holat»). */
+  note?: string;
 }
 
 // Yagona qator — barcha diagrammalarda bitta rang.
@@ -25,7 +27,7 @@ const CHART_COLORS = {
 } as const;
 
 /** Qayta ishlatiladigan ustunli diagramma kartochkasi (vertikal/gorizontal). */
-export default function BarCard({ title, data, horizontal = false, loading, error, onRetry }: BarCardProps) {
+export default function BarCard({ title, data, horizontal = false, loading, error, onRetry, note }: BarCardProps) {
   const { t } = useTranslation();
   const theme = useResolvedAdminTheme();
   const c = CHART_COLORS[theme];
@@ -75,7 +77,8 @@ export default function BarCard({ title, data, horizontal = false, loading, erro
                 </>
               ) : (
                 <>
-                  <XAxis dataKey="label" axisLine={false} tickLine={false} tick={TICK} interval={0} />
+                  {/* Ko'p ustunda (kunlik) har yorliq sig'maydi — recharts o'zi siyraklashtiradi. */}
+                  <XAxis dataKey="label" axisLine={false} tickLine={false} tick={TICK} interval={data.length > 14 ? 'preserveStartEnd' : 0} minTickGap={8} />
                   <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={TICK} width={32} />
                 </>
               )}
@@ -119,7 +122,10 @@ export default function BarCard({ title, data, horizontal = false, loading, erro
 
   return (
     <section className="card p-5">
-      <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">{title}</h2>
+      <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        {title}
+        {note && <span className="ml-2 text-xs font-normal text-gray-600 dark:text-gray-400">({note})</span>}
+      </h2>
       {body}
     </section>
   );

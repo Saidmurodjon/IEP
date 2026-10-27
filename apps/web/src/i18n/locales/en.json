@@ -272,8 +272,8 @@
       "kpiDocs": "Active documents",
       "kpiAppeals": "Open appeals",
       "kpiStorage": "Storage used",
-      "chartNews": "Published news per month",
-      "chartAppeals": "Appeals per month",
+      "chartNews": "Published news (by month)",
+      "chartAppeals": "Appeals (by month)",
       "chartStatus": "Appeals by status",
       "chartPubs": "Publications by year",
       "chartUnits": "Employees by unit",
@@ -289,6 +289,27 @@
         "in_review": "Under review",
         "answered": "Answered",
         "closed": "Closed"
+      },
+      "chartNewsDaily": "Published news (by day)",
+      "chartAppealsDaily": "Appeals (by day)",
+      "filter": {
+        "title": "Period filter",
+        "period": "Period",
+        "presets": {
+          "7d": "7 days",
+          "30d": "30 days",
+          "90d": "3 months",
+          "12m": "1 year",
+          "year": "This year",
+          "custom": "Custom"
+        },
+        "start": "Start date",
+        "end": "End date",
+        "required": "Enter both dates",
+        "invalid": "Start date must not be after end date",
+        "summary": "{{news}} news, {{appeals}} appeals, {{pubs}} publications",
+        "updating": "updating…",
+        "snapshot": "current state"
       }
     },
     "back_to_list": "Back to list",
@@ -596,7 +617,30 @@
     "theme_dark": "Dark theme",
     "theme_system": "System theme",
     "profile_menu": "Profile menu",
-    "profile": "Profile"
+    "profile": "Profile",
+    "search": {
+      "label": "Search",
+      "placeholder": "News, publication, employee or appeal number…",
+      "clear": "Clear search",
+      "loading": "Searching…",
+      "error": "Search failed",
+      "noResults": "Nothing found",
+      "found": "{{count}} results",
+      "minChars": "Enter at least {{count}} characters",
+      "draft": "Draft",
+      "inactive": "Inactive",
+      "openSection": "Open section →",
+      "groups": {
+        "news": "News",
+        "publications": "Publications",
+        "employees": "Employees",
+        "appeals": "Appeals"
+      },
+      "open": "Search (Ctrl+K)",
+      "close": "Close",
+      "hint": "Across news, publications, employees and appeals",
+      "trigger": "Search news, publications, people…"
+    }
   },
   "profile": {
     "title": "Profile",

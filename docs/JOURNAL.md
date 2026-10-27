@@ -14,6 +14,10 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🆕 Dashboard davr filtri + admin navbar qidiruvi LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+`GET /api/stats?from&to` (62 kungacha kunlik, aks holda oylik), `GET /api/stats/search?q`.
+iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
+
 **🆕 Hamkorlar kartochkasi (responsiv) LOKALDA tayyor, production'ga CHIQARILMAGAN.** Lokal bazaga
 namuna: Fanlar akademiyasi. iep.uz uchun: web deploy + admin orqali haqiqiy hamkorlarni kiritish.
 
@@ -222,6 +226,26 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-27 — feat: dashboard davr filtri va admin navbar qidiruvi
+- API `GET /api/stats`: `from`/`to` (`YYYY-MM-DD`, zod), standart — oxirgi 12 oy. ≤62 kun → kunlik,
+  aks holda oylik (`newsSeries`/`appealsSeries`, `range`, `period`). Holat bo'yicha murojaatlar va
+  nashrlar (yil bo'yicha) oraliqqa bog'liq; xodimlar bo'linmalar bo'yicha — joriy holat. Xato oraliq → 400.
+- Tuzatildi: `timestamp without time zone` ustunida `AT TIME ZONE 'Asia/Tashkent'` vaqtni 5 soat
+  ORQAGA surardi (15:00, 01:00 o'rniga) — endi `AT TIME ZONE 'UTC' AT TIME ZONE 'Asia/Tashkent'`.
+- API `GET /api/stats/search?q` (requireAuth, 2–100 belgi): yangiliklar (qoralama ham), nashrlar,
+  xodimlar, murojaatlar (raqam/ism/mavzu), har turdan 5 ta, `contains` insensitive.
+- Web: `DashboardFilters` — bitta qatorda segmentli tugmalar (7 kun…1 yil, Joriy yil, Oraliq),
+  «Oraliq»da shu qatorda ikki sana; holat URL da (`?period=`). `AdminSearch` — navbar chapida keng
+  qidiruv tugmasi (mobil: ikonka), `Ctrl/⌘+K`, modal (`useFocusTrap`, Escape, `aria-live`).
+  `BarCard`: `note` prop, ko'p ustunda yorliqlar siyraklashadi. Matnlar uz/en/ru.
+- `lib/stats.ts`: `resolveRange`, `fillPeriods`, `fillYearRange`; eski oylik yordamchilar o'chirildi.
+- Tekshirildi: 68 vitest, `tsc` (api/web), `wrangler --dry-run`; HTTP (lokal, mint qilingan token):
+  standart/kunlik/oylik javoblar, 400 (from>to, noto'g'ri sana, q=1 belgi), 401 tokensiz, qidiruv
+  natijalari bazaga mos; SQL da TZ ifodasi solishtirildi. Brauzer: 30d/oraliq URL, kunlik grafiklar,
+  modal qidiruv, Escape → fokus qaytadi, `/admin/news` da Ctrl+K, konsolda xato yo'q.
+- Tekshirilmadi: mobil kenglikda filtr qatori (flex-wrap), ochiq rejim skrinshoti, production.
+- Qidiruv natijasi bo'lim ro'yxatiga olib boradi (yozuvning o'ziga emas) — sahifalarda chuqur havola yo'q.
 
 ### 2026-10-27 — feat(web): hamkorlar kartochkasi barcha qurilmalar uchun
 - `PartnersStrip.tsx`: logotip o'rniga kartochka (oq fon, chegara, soya, hover ko'tarilish), ichida
