@@ -122,45 +122,48 @@ export default function LabsPage() {
                     className="block h-1 origin-left scale-x-0 bg-gradient-to-r from-accent-400 to-accent-600 transition-transform duration-500 group-hover:scale-x-100 motion-reduce:transition-none"
                   />
 
-                  <div className="flex flex-1 flex-col p-6 pt-5">
-                    <h2 className="text-lg font-bold leading-snug text-gray-900 mb-2 transition-colors group-hover:text-primary-700">{name}</h2>
-                    {summary && <p className="text-sm text-gray-600 mb-4 line-clamp-3">{summary}</p>}
+                  <div className="flex flex-1 flex-col p-4 sm:p-5">
+                    <h2 className="text-base font-bold leading-snug text-gray-900 mb-1.5 transition-colors group-hover:text-primary-700 sm:text-lg">{name}</h2>
+                    {summary && (
+                      <p className="text-sm text-gray-600 mb-3 line-clamp-3 text-justify hyphens-auto">{summary}</p>
+                    )}
 
-                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm text-gray-700">
-                      <span className="flex items-center gap-1.5">
+                    {head && headName && (
+                      <p className="mb-3 flex min-w-0 items-center gap-2 text-sm text-gray-700">
+                        {head.photoUrl ? (
+                          <A11yImage
+                            src={head.photoUrl}
+                            alt=""
+                            className="h-6 w-6 flex-shrink-0 rounded-full object-cover"
+                          />
+                        ) : (
+                          <span
+                            aria-hidden="true"
+                            className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 text-[10px] font-semibold text-primary-800"
+                          >
+                            {initials(headName)}
+                          </span>
+                        )}
+                        <span className="truncate">
+                          <span className="sr-only">{t('labs.head')}: </span>
+                          {headName}
+                        </span>
+                      </p>
+                    )}
+
+                    <div className="mt-auto flex items-center justify-between gap-3 border-t border-gray-100 pt-3 text-sm">
+                      <span className="flex items-center gap-1.5 text-gray-700">
                         <Users aria-hidden="true" className="h-4 w-4 text-primary-700" />
                         {staff.length} {t('labs.staff')}
                       </span>
-                      {head && headName && (
-                        <span className="flex min-w-0 items-center gap-2">
-                          {head.photoUrl ? (
-                            <A11yImage
-                              src={head.photoUrl}
-                              alt=""
-                              className="h-7 w-7 flex-shrink-0 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span
-                              aria-hidden="true"
-                              className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-primary-100 text-xs font-semibold text-primary-800"
-                            >
-                              {initials(headName)}
-                            </span>
-                          )}
-                          <span className="truncate">
-                            <span className="sr-only">{t('labs.head')}: </span>
-                            {headName}
-                          </span>
-                        </span>
-                      )}
+                      <span className="inline-flex flex-shrink-0 items-center gap-1 font-semibold text-primary-700">
+                        {t('labs.more')}
+                        <ArrowRight
+                          aria-hidden="true"
+                          className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
+                        />
+                      </span>
                     </div>
-                    <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-700">
-                      {t('labs.more')}
-                      <ArrowRight
-                        aria-hidden="true"
-                        className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
-                      />
-                    </span>
                   </div>
                 </LocalizedLink>
               </li>

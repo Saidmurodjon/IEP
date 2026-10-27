@@ -220,6 +220,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-27 — feat: laboratoriya kartochkasi ixchamlashtirildi
+- `LabsPage.tsx`: kartochka tanasi `p-6` → `p-4 sm:p-5`, sarlavha mobil'da `text-base`, tavsif
+  `text-justify`; «N xodim» va «Batafsil →» pastki bitta qatorda (chap/o'ng); rahbar (bo'lsa) tavsif
+  ostida alohida kichik qatorga ko'chirildi.
+- Tekshirildi: `tsc --noEmit` (web) toza; `/uz/laboratories` brauzerda ochib ko'rildi (desktop, 6 lab).
+- Tekshirilmadi: mobil kenglik; rahbari bor lab (lokal bazada hamma labda 0 xodim). Tor ustunda
+  `text-justify` so'zlar orasini kengaytiradi — o'zbek tili uchun brauzerda defis lug'ati yo'q.
+- Eslatma: jurnal 250 qatordan oshgan — keyingi sessiya arxivlashi kerak.
+
 ### 2026-10-27 — fix: admin tahrirlagichda rasm ko'rinmasdi
 - Sabab: tiptap `<img src="/api/files/...">` ni nisbiy manzil bilan chizardi → so'rov Vite (5173) ga
   ketardi, API esa boshqa domenda (lokal 8787, prod alohida domen). Ochiq sahifa `sanitize.ts` orqali
