@@ -38,6 +38,7 @@ const AdminPartnersPage = lazy(() => import('@/pages/admin/AdminPartnersPage'));
 const AdminDocumentsPage = lazy(() => import('@/pages/admin/AdminDocumentsPage'));
 const AdminLogsPage = lazy(() => import('@/pages/admin/AdminLogsPage'));
 const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'));
+const AdminProfilePage = lazy(() => import('@/pages/admin/AdminProfilePage'));
 const AdminNotFoundPage = lazy(() => import('@/pages/admin/AdminNotFoundPage'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -135,6 +136,7 @@ export default function App() {
           <Route path="documents" element={<AdminDocumentsPage />} />
           <Route path="logs" element={<SuperAdminRoute><AdminLogsPage /></SuperAdminRoute>} />
           <Route path="users" element={<SuperAdminRoute><AdminUsersPage /></SuperAdminRoute>} />
+          <Route path="profile" element={<AdminProfilePage />} />
           <Route path="messages" element={<AdminMessagesPage />} />
           {/* Admin ichidagi noma'lum manzil — ochiq saytnikidan alohida sahifa */}
           <Route path="*" element={<AdminNotFoundPage />} />

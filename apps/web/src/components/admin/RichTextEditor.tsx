@@ -17,7 +17,7 @@ export default function RichTextEditor(props: Props) {
   return (
     <Suspense
       fallback={
-        <div className="rounded-lg border border-gray-300 min-h-[300px] bg-gray-50 animate-pulse" />
+        <div className="rounded-lg border border-gray-300 dark:border-gray-700 min-h-[300px] bg-gray-50 dark:bg-gray-800 animate-pulse" />
       }
     >
       <RichTextEditorInner {...props} />

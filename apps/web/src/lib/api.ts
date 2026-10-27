@@ -108,6 +108,9 @@ export const authApi = {
   login: (email: string, password: string) =>
     api.post('/api/auth/login', { email, password }),
   me: () => api.get('/api/auth/me'),
+  updateMe: (name: string) => api.patch('/api/auth/me', { name }),
+  changePassword: (currentPassword: string, newPassword: string) =>
+    api.post('/api/auth/change-password', { currentPassword, newPassword }),
 };
 
 // --- Adminlar (faqat SUPER_ADMIN) ---

@@ -39,11 +39,11 @@ function ModalShell({
         aria-modal="true"
         aria-labelledby={titleId}
         tabIndex={-1}
-        className="bg-white rounded-2xl w-full max-w-md my-4"
+        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md my-4"
       >
-        <div className="flex items-center justify-between p-5 border-b">
-          <h2 id={titleId} className="font-semibold text-gray-900">{title}</h2>
-          <button type="button" onClick={onClose} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
+        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
+          <h2 id={titleId} className="font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+          <button type="button" onClick={onClose} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
             <X className="h-5 w-5" aria-hidden="true" />
           </button>
         </div>
@@ -125,7 +125,7 @@ export default function AdminUsersPage() {
   };
   const openReset = (item: AdminDto) => { resetForm.reset({ password: '' }); setModal({ kind: 'reset', item }); };
 
-  const iconBtn = 'p-2 text-gray-500 hover:text-primary-700 disabled:opacity-40 disabled:hover:text-gray-500';
+  const iconBtn = 'p-2 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 disabled:opacity-40 disabled:hover:text-gray-500';
 
   return (
     <>
@@ -133,8 +133,8 @@ export default function AdminUsersPage() {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6 gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t('usersPage.title')}</h1>
-            <p className="text-sm text-gray-600 mt-1">{t('usersPage.subtitle')}</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('usersPage.title')}</h1>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{t('usersPage.subtitle')}</p>
           </div>
           <button type="button" onClick={openCreate} className="btn-primary gap-2">
             <Plus className="h-4 w-4" aria-hidden="true" /> {t('usersPage.add')}
@@ -146,7 +146,7 @@ export default function AdminUsersPage() {
         ) : (
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-600">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
                 <tr>
                   <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.name')}</th>
                   <th scope="col" className="text-left font-medium px-4 py-3">{t('usersPage.email')}</th>
@@ -160,27 +160,27 @@ export default function AdminUsersPage() {
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-gray-600">{t('usersPage.empty')}</td>
+                    <td colSpan={7} className="px-4 py-10 text-center text-gray-600 dark:text-gray-400">{t('usersPage.empty')}</td>
                   </tr>
                 )}
                 {items.map((item) => {
                   const isSelf = item.id === me?.id;
                   return (
-                    <tr key={item.id} className="border-t border-gray-100">
-                      <td className="px-4 py-3 font-medium text-gray-900">
+                    <tr key={item.id} className="border-t border-gray-100 dark:border-gray-800">
+                      <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
                         {item.name}
                         {isSelf && (
-                          <span className="ml-2 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-normal text-gray-700">
+                          <span className="ml-2 rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-xs font-normal text-gray-700 dark:text-gray-300">
                             {t('usersPage.you')}
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-gray-700">{item.email}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{item.email}</td>
                       <td className="px-4 py-3">
                         <span
                           className={clsx(
                             'rounded px-2 py-0.5 text-xs font-medium',
-                            item.role === 'SUPER_ADMIN' ? 'bg-primary-100 text-primary-900' : 'bg-gray-100 text-gray-800'
+                            item.role === 'SUPER_ADMIN' ? 'bg-primary-100 text-primary-900 dark:bg-primary-900/40 dark:text-primary-200' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
                           )}
                         >
                           {t(`usersPage.role_${item.role}`)}
@@ -190,7 +190,7 @@ export default function AdminUsersPage() {
                         <span
                           className={clsx(
                             'inline-flex items-center gap-1 text-xs font-medium',
-                            item.isActive ? 'text-emerald-800' : 'text-red-700'
+                            item.isActive ? 'text-emerald-800 dark:text-emerald-300' : 'text-red-700 dark:text-red-300'
                           )}
                         >
                           {item.isActive
@@ -199,10 +199,10 @@ export default function AdminUsersPage() {
                           {item.isActive ? t('usersPage.active') : t('usersPage.blocked')}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-gray-700">
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                         {item.lastLoginAt ? formatDateTime(item.lastLoginAt) : t('usersPage.never')}
                       </td>
-                      <td className="px-4 py-3 text-gray-700">{formatDate(item.createdAt)}</td>
+                      <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{formatDate(item.createdAt)}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
                           <button type="button" onClick={() => openEdit(item)} aria-label={`${t('usersPage.edit')}: ${item.name}`} title={t('usersPage.edit')} className={iconBtn}>
@@ -229,7 +229,7 @@ export default function AdminUsersPage() {
                             onClick={() => setModal({ kind: 'delete', item })}
                             aria-label={`${t('usersPage.delete')}: ${item.name}`}
                             title={t('usersPage.delete')}
-                            className={clsx(iconBtn, 'hover:text-red-700')}
+                            className={clsx(iconBtn, 'hover:text-red-700 dark:hover:text-red-300')}
                           >
                             <Trash2 className="h-4 w-4" aria-hidden="true" />
                           </button>
@@ -265,7 +265,7 @@ export default function AdminUsersPage() {
                 <input id="user-password" type="password" className="input" autoComplete="new-password"
                   aria-invalid={!!createForm.formState.errors.password} aria-describedby="user-password-hint user-password-err"
                   {...createForm.register('password')} />
-                <p id="user-password-hint" className="text-xs text-gray-600 mt-1">{t('usersPage.password_hint')}</p>
+                <p id="user-password-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('usersPage.password_hint')}</p>
                 <FieldError id="user-password-err" message={createForm.formState.errors.password?.message} />
               </div>
               <div>
@@ -324,7 +324,7 @@ export default function AdminUsersPage() {
                 <input id="reset-password" type="password" className="input" autoComplete="new-password"
                   aria-invalid={!!resetForm.formState.errors.password} aria-describedby="reset-password-hint reset-password-err"
                   {...resetForm.register('password')} />
-                <p id="reset-password-hint" className="text-xs text-gray-600 mt-1">{t('usersPage.password_hint')}</p>
+                <p id="reset-password-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('usersPage.password_hint')}</p>
                 <FieldError id="reset-password-err" message={resetForm.formState.errors.password?.message} />
               </div>
               <div className="flex gap-3 pt-2">
@@ -338,7 +338,7 @@ export default function AdminUsersPage() {
         {modal?.kind === 'delete' && (
           <ModalShell titleId="users-modal-title" title={t('usersPage.delete_title')} onClose={closeModal}>
             <div className="p-5 space-y-4">
-              <p className="text-sm text-gray-800">
+              <p className="text-sm text-gray-800 dark:text-gray-200">
                 {t('usersPage.delete_text', { name: modal.item.name, email: modal.item.email })}
               </p>
               <div className="flex gap-3 pt-2">

@@ -16,7 +16,7 @@ import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
   titleUz: z.string().min(1), titleEn: z.string().min(1), titleRu: z.string().min(1),
-  authors: z.string().min(1),
+  authors: z.string().min(1, 'adminD.publications.authors_required'),
   journal: z.string().optional(),
   year: z.coerce.number().int().min(1900).max(2100),
   doi: z.string().optional(),
@@ -113,10 +113,10 @@ export default function AdminPublicationsPage() {
 
   return (
     <>
-      <Helmet><title>Nashrlar | Admin</title></Helmet>
+      <Helmet><title>{t('adminD.publications.helmet')}</title></Helmet>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.publications')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.publications')}</h1>
           <button onClick={() => { reset({ category: 'article', year: new Date().getFullYear() }); setShowForm(true); }} className="btn-primary gap-2">
             <Plus className="h-4 w-4" /> {t('admin.add_new')}
           </button>
@@ -125,16 +125,16 @@ export default function AdminPublicationsPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
             <div
-              className="bg-white rounded-2xl w-full max-w-2xl my-4"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl my-4"
               ref={formRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="admin-form-title"
               tabIndex={-1}
             >
-              <div className="flex items-center justify-between p-5 border-b">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900">{editItem ? t('admin.edit') : t('admin.add_new')} — Nashr</h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700"><X className="h-5 w-5" /></button>
+              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">{editItem ? t('admin.edit') : t('admin.add_new')} — {t('adminD.publications.modal_suffix')}</h2>
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"><X className="h-5 w-5" /></button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
                 {/* Language tabs */}
@@ -142,7 +142,7 @@ export default function AdminPublicationsPage() {
                   {TABS.map((tab) => (
                     <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
                       className={clsx('px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-                        activeTab === tab.key ? 'border-primary-600 text-primary-700' : 'border-transparent text-gray-500 hover:text-gray-700')}>
+                        activeTab === tab.key ? 'border-primary-600 text-primary-700 dark:text-primary-300' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200')}>
                       {tab.label}
                     </button>
                   ))}
@@ -156,23 +156,23 @@ export default function AdminPublicationsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Mualliflar</label>
-                    <input {...register('authors')} className="input" placeholder="Familiya I.I., ..." />
-                    {errors.authors && <p className="text-red-500 text-xs mt-1">{errors.authors.message}</p>}
+                    <label htmlFor="pub-authors" className="label">{t('adminD.publications.authors')}</label>
+                    <input id="pub-authors" {...register('authors')} className="input" placeholder={t('adminD.publications.authors_placeholder')} />
+                    {errors.authors && <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t(errors.authors.message ?? '')}</p>}
                   </div>
                   <div>
-                    <label className="label">Yil</label>
+                    <label className="label">{t('adminD.publications.year')}</label>
                     <input {...register('year')} type="number" className="input" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Jurnal</label>
+                    <label className="label">{t('adminD.publications.journal')}</label>
                     <input {...register('journal')} className="input" />
                   </div>
                   <div>
-                    <label className="label">Kategoriya</label>
+                    <label className="label">{t('adminD.publications.category')}</label>
                     <select {...register('category')} className="input">
                       {CATS.map((c) => <option key={c} value={c}>{t(`publications.${c}`)}</option>)}
                     </select>
@@ -182,7 +182,7 @@ export default function AdminPublicationsPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="label">DOI</label>
-                    <input {...register('doi')} className="input" placeholder="10.xxxx/..." />
+                    <input {...register('doi')} className="input" placeholder={t('adminD.publications.doi_placeholder')} />
                   </div>
                 </div>
 
@@ -194,7 +194,7 @@ export default function AdminPublicationsPage() {
                 */}
                 <FileUploadField
                   kind="document"
-                  label="Nashr fayli (PDF, DOC, XLS)"
+                  label={t('adminD.publications.file_label')}
                   value={watch('fileUrl') ? fileUrl(watch('fileUrl')) : null}
                   onChange={(url) => setValue('fileUrl', url ? fileUrl(url) : '', { shouldDirty: true })}
                   ownerType="publication"
@@ -210,21 +210,21 @@ export default function AdminPublicationsPage() {
           </div>
         )}
 
-        {isLoading ? <div className="text-center py-8 text-gray-400">Yuklanmoqda...</div> : (
+        {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (
           <>
             <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
               <button
                 type="button"
                 onClick={() => void bulkDelete()}
                 disabled={bulkBusy}
-                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+                className="btn-secondary !text-red-600 dark:!text-red-300 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/30 disabled:opacity-60"
               >
                 {t('admin.bulk_delete')}
               </button>
             </BulkActionsBar>
           <div className="card overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input
@@ -234,15 +234,15 @@ export default function AdminPublicationsPage() {
                       onChange={() => bulk.toggleAll(items.map((item) => item.id))}
                     />
                   </th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium">Sarlavha</th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium hidden md:table-cell">Mualliflar</th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium hidden sm:table-cell">Yil</th>
-                  <th className="text-right px-4 py-3 text-gray-600 font-medium">Amallar</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.publications.th_title')}</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden md:table-cell">{t('adminD.publications.th_authors')}</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.publications.th_year')}</th>
+                  <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
+                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -253,21 +253,21 @@ export default function AdminPublicationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <BookOpen className="h-4 w-4 text-gray-300 flex-shrink-0" />
-                        <span className="truncate max-w-xs font-medium text-gray-900">{item.titleUz}</span>
+                        <BookOpen className="h-4 w-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                        <span className="truncate max-w-xs font-medium text-gray-900 dark:text-gray-100">{item.titleUz}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell truncate max-w-xs">{item.authors}</td>
-                    <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">{item.year}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell truncate max-w-xs">{item.authors}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{item.year}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openEdit(item)} className="p-1.5 text-gray-400 hover:text-primary-700 hover:bg-primary-50 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
-                        <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMutation.mutate(item.id); }} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={() => openEdit(item)} aria-label={t('admin.edit')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
+                        <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMutation.mutate(item.id); }} aria-label={t('admin.delete')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>
                   </tr>
                 ))}
-                {items.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">Nashrlar yo'q</td></tr>}
+                {items.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{t('adminD.publications.empty')}</td></tr>}
               </tbody>
             </table>
           </div>

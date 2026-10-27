@@ -7,6 +7,7 @@ import { signToken } from '../lib/jwt';
 import { ConfigError, getJwtSecret } from '../lib/env';
 import { requireAuth } from '../middleware/auth';
 import { logEvent } from '../lib/error-log';
+import { fail } from '../lib/errors';
 import type { AppContext } from '../index';
 
 export const authRouter = new Hono<AppContext>();
@@ -18,7 +19,11 @@ const loginSchema = z.object({
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),
-  newPassword: z.string().min(10),
+  newPassword: z.string().min(10).max(200),
+});
+
+const updateMeSchema = z.object({
+  name: z.string().trim().min(2).max(100),
 });
 
 // --- Rate limiting -------------------------------------------------------
@@ -147,9 +152,36 @@ authRouter.get('/me', requireAuth, async (c) => {
   const adminId = c.get('adminId');
   const admin = await db.admin.findUnique({
     where: { id: adminId },
-    select: { id: true, email: true, name: true, role: true, createdAt: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      createdAt: true,
+      lastLoginAt: true,
+    },
   });
-  if (!admin) return c.json({ error: 'Not found' }, 404);
+  if (!admin) return fail(c, 'NOT_FOUND', 'Not found');
+  return c.json({ data: admin });
+});
+
+// Faqat o'z ismini o'zgartiradi (email va rol emas).
+authRouter.patch('/me', requireAuth, zValidator('json', updateMeSchema), async (c) => {
+  const db = c.get('db');
+  const adminId = c.get('adminId');
+  const { name } = c.req.valid('json');
+  const admin = await db.admin.update({
+    where: { id: adminId },
+    data: { name },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      createdAt: true,
+      lastLoginAt: true,
+    },
+  });
   return c.json({ data: admin });
 });
 
@@ -163,20 +195,32 @@ authRouter.post(
     const adminId = c.get('adminId');
 
     const admin = await db.admin.findUnique({ where: { id: adminId } });
-    if (!admin) return c.json({ error: 'Not found' }, 404);
+    if (!admin) return fail(c, 'NOT_FOUND', 'Not found');
 
     const currentMatches = await verifyPassword(currentPassword, admin.password);
     if (!currentMatches) {
-      return c.json({ error: 'Invalid credentials' }, 401);
+      return fail(c, 'WRONG_PASSWORD', 'Current password is incorrect');
     }
 
     if (newPassword === currentPassword) {
-      return c.json({ error: 'New password must be different from the current one' }, 400);
+      return fail(c, 'SAME_PASSWORD', 'New password must be different from the current one');
     }
 
     await db.admin.update({
       where: { id: adminId },
       data: { password: await hashPassword(newPassword) },
+    });
+
+    // Parol jurnalga tushmaydi — faqat hodisa fakti.
+    logEvent(c, {
+      source: 'server',
+      level: 'info',
+      code: 'PASSWORD_CHANGED',
+      message: 'Admin changed own password',
+      path: new URL(c.req.url).pathname,
+      method: c.req.method,
+      statusCode: 200,
+      userAgent: c.req.header('User-Agent') ?? null,
     });
 
     return c.json({ data: { success: true } });

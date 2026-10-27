@@ -80,10 +80,10 @@ export default function AdminUnitsPage() {
 
   return (
     <>
-      <Helmet><title>Bo'linmalar | Admin</title></Helmet>
+      <Helmet><title>{t('adminD.units.helmet')}</title></Helmet>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.units')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.units')}</h1>
           <button onClick={() => { reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); setShowForm(true); }} className="btn-primary gap-2">
             <Plus className="h-4 w-4" /> {t('admin.add_new')}
           </button>
@@ -92,23 +92,23 @@ export default function AdminUnitsPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
             <div
-              className="bg-white rounded-2xl w-full max-w-xl my-4"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-xl my-4"
               ref={formRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="admin-form-title"
               tabIndex={-1}
             >
-              <div className="flex items-center justify-between p-5 border-b">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900">{editItem ? 'Tahrirlash' : 'Yangi bo\'lim'}</h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700"><X className="h-5 w-5" /></button>
+              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">{editItem ? t('adminD.units.edit_title') : t('adminD.units.new_title')}</h2>
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"><X className="h-5 w-5" /></button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
                 <div className="flex gap-1 border-b mb-4">
                   {TABS.map((tab) => (
                     <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
                       className={clsx('px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-                        activeTab === tab.key ? 'border-primary-600 text-primary-700' : 'border-transparent text-gray-500')}>
+                        activeTab === tab.key ? 'border-primary-600 text-primary-700 dark:text-primary-300' : 'border-transparent text-gray-500 dark:text-gray-400')}>
                       {tab.label}
                     </button>
                   ))}
@@ -117,11 +117,11 @@ export default function AdminUnitsPage() {
                 {TABS.map((tab) => (
                   <div key={tab.key} className={activeTab === tab.key ? 'space-y-3' : 'hidden'}>
                     <div>
-                      <label className="label">Nomi ({tab.key.toUpperCase()})</label>
+                      <label className="label">{t('adminD.units.name_lang', { lang: tab.key.toUpperCase() })}</label>
                       <input {...register(`name${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} className="input" />
                     </div>
                     <div>
-                      <label className="label">Tavsif ({tab.key.toUpperCase()})</label>
+                      <label className="label">{t('adminD.units.description_lang', { lang: tab.key.toUpperCase() })}</label>
                       <textarea {...register(`description${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} rows={2} className="input resize-none" />
                     </div>
                   </div>
@@ -129,26 +129,26 @@ export default function AdminUnitsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Tur</label>
+                    <label className="label">{t('adminD.units.type')}</label>
                     <select {...register('type')} className="input">
                       {UNIT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="label">Tartib</label>
+                    <label className="label">{t('adminD.units.order')}</label>
                     <input {...register('order')} type="number" className="input" />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Rahbar</label>
-                    <input {...register('head')} className="input" placeholder="F.I.O." />
+                    <label className="label">{t('adminD.units.head')}</label>
+                    <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
                   </div>
                   <div>
-                    <label className="label">Yuqori bo'lim</label>
+                    <label className="label">{t('adminD.units.parent')}</label>
                     <select {...register('parentId')} className="input">
-                      <option value="">— Asosiy —</option>
+                      <option value="">{t('adminD.units.parent_none')}</option>
                       {flat.filter((u) => u.id !== editItem?.id).map((u) => (
                         <option key={u.id} value={u.id}>{u.nameUz}</option>
                       ))}
@@ -165,32 +165,32 @@ export default function AdminUnitsPage() {
           </div>
         )}
 
-        {isLoading ? <div className="text-center py-8 text-gray-400">Yuklanmoqda...</div> : (
+        {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (
           <div className="card overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium">Nomi</th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium hidden sm:table-cell">Tur</th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium hidden md:table-cell">Rahbar</th>
-                  <th className="text-right px-4 py-3 text-gray-600 font-medium">Amallar</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.units.th_name')}</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.units.th_type')}</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden md:table-cell">{t('adminD.units.th_head')}</th>
+                  <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                 {flat.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{item.nameUz}</td>
-                    <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">{item.type}</td>
-                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell">{item.head ?? '—'}</td>
+                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{item.type}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{item.head ?? '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button onClick={() => openEdit(item)} className="p-1.5 text-gray-400 hover:text-primary-700 hover:bg-primary-50 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
-                        <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(item.id); }} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
+                        <button onClick={() => openEdit(item)} aria-label={t('admin.edit')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
+                        <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(item.id); }} aria-label={t('admin.delete')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
                       </div>
                     </td>
                   </tr>
                 ))}
-                {flat.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-400">Bo'limlar yo'q</td></tr>}
+                {flat.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{t('adminD.units.empty')}</td></tr>}
               </tbody>
             </table>
           </div>

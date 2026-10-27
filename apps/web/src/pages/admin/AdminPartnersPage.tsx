@@ -16,11 +16,11 @@ import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
-  nameUz: z.string().min(1, 'Nomini kiriting'),
-  nameEn: z.string().min(1, 'Nomini kiriting'),
-  nameRu: z.string().min(1, 'Nomini kiriting'),
-  logoUrl: z.string().min(1, 'Logotip manzilini kiriting'),
-  websiteUrl: z.string().url("Havola noto'g'ri").optional().or(z.literal('')),
+  nameUz: z.string().min(1, 'adminC.partners.err_name'),
+  nameEn: z.string().min(1, 'adminC.partners.err_name'),
+  nameRu: z.string().min(1, 'adminC.partners.err_name'),
+  logoUrl: z.string().min(1, 'adminC.partners.err_logo'),
+  websiteUrl: z.string().url('adminC.partners.err_url').optional().or(z.literal('')),
   order: z.coerce.number().int().optional(),
   isActive: z.boolean().optional(),
 });
@@ -109,7 +109,7 @@ export default function AdminPartnersPage() {
       <Helmet><title>{t('admin.partners')} | Admin</title></Helmet>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.partners')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.partners')}</h1>
           <button onClick={() => { reset(); setEditItem(null); setShowForm(true); }} className="btn-primary gap-2">
             <Plus className="h-4 w-4" /> {t('admin.add_new')}
           </button>
@@ -119,43 +119,41 @@ export default function AdminPartnersPage() {
           Hamkor logotipi — tashkilotning savdo belgisi. Faqat institut bilan
           haqiqatan hamkorlik qiladigan tashkilotlar qo'yiladi (06-topshiriq).
         */}
-        <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 mb-6">
-          <p className="text-xs text-amber-900 leading-relaxed">
-            <span className="font-semibold">Diqqat.</span> Hamkor tashkilot logotipi uning savdo
-            belgisi hisoblanadi. Saytga faqat institut bilan haqiqatan hamkorlik qiladigan
-            tashkilotlar logotipi qo'yiladi. Logotip fayllari hozircha{' '}
-            <code className="bg-white px-1 py-0.5 rounded">public/images/partners/</code> papkasida
-            saqlanadi, manzil <code className="bg-white px-1 py-0.5 rounded">/images/partners/nom.png</code>{' '}
-            ko'rinishida yoziladi.
+        <div className="rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-900/30 p-4 mb-6">
+          <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
+            <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.partners.warn_1')}{' '}
+            <code className="bg-white dark:bg-gray-800 px-1 py-0.5 rounded">public/images/partners/</code> {t('adminC.partners.warn_2')}{' '}
+            <code className="bg-white dark:bg-gray-800 px-1 py-0.5 rounded">/images/partners/{t('adminC.partners.warn_file')}.png</code>{' '}
+            {t('adminC.partners.warn_3')}
           </p>
         </div>
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
             <div
-              className="bg-white rounded-2xl w-full max-w-xl my-4"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-xl my-4"
               ref={formRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="admin-form-title"
               tabIndex={-1}
             >
-              <div className="flex items-center justify-between p-5 border-b">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900">
+              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
                   {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.partners')}
                 </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                   <X className="h-5 w-5" />
                 </button>
               </div>
               <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
                 {(['Uz', 'En', 'Ru'] as const).map((suffix) => (
                   <div key={suffix}>
-                    <label className="label">Tashkilot nomi ({suffix.toUpperCase()}) *</label>
+                    <label className="label">{t('adminC.partners.name_label', { lang: suffix.toUpperCase() })}</label>
                     <input {...register(`name${suffix}` as keyof FormData)} className="input" />
                     {errors[`name${suffix}` as keyof FormData] && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors[`name${suffix}` as keyof FormData]?.message as string}
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">
+                        {t(errors[`name${suffix}` as keyof FormData]?.message as string)}
                       </p>
                     )}
                   </div>
@@ -163,29 +161,29 @@ export default function AdminPartnersPage() {
                 <div>
                   <FileUploadField
                     kind="image"
-                    label="Logotip *"
+                    label={t('adminC.partners.logo')}
                     value={logoUrl ?? null}
                     onChange={(url) => setValue('logoUrl', url ?? '', { shouldDirty: true })}
                     ownerType="partner"
                     ownerId={editItem?.id}
                   />
                   <input type="hidden" {...register('logoUrl')} />
-                  {errors.logoUrl && <p className="text-red-500 text-xs mt-1">{errors.logoUrl.message}</p>}
+                  {errors.logoUrl && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.logoUrl.message as string)}</p>}
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="label">Veb-sayti</label>
+                    <label className="label">{t('adminC.partners.website')}</label>
                     <input {...register('websiteUrl')} className="input" placeholder="https://..." />
-                    {errors.websiteUrl && <p className="text-red-500 text-xs mt-1">{errors.websiteUrl.message}</p>}
+                    {errors.websiteUrl && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.websiteUrl.message as string)}</p>}
                   </div>
                   <div>
-                    <label className="label">Tartib raqami</label>
+                    <label className="label">{t('adminC.common.order_number')}</label>
                     <input type="number" {...register('order')} className="input" defaultValue={0} />
                   </div>
                 </div>
-                <label className="flex items-center gap-2 text-sm text-gray-700">
+                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-                  Saytda ko'rsatilsin
+                  {t('adminC.common.show_on_site')}
                 </label>
                 <div className="flex gap-3 pt-2">
                   <button
@@ -213,14 +211,14 @@ export default function AdminPartnersPage() {
                 type="button"
                 onClick={() => void bulkDelete()}
                 disabled={bulkBusy}
-                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 dark:!text-red-300 dark:!border-red-800 dark:hover:!bg-red-900/30 disabled:opacity-60"
               >
                 {t('admin.bulk_delete')}
               </button>
             </BulkActionsBar>
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-500">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input
@@ -230,23 +228,23 @@ export default function AdminPartnersPage() {
                       onChange={() => bulk.toggleAll(items.map((item) => item.id))}
                     />
                   </th>
-                  <th className="text-left font-medium px-4 py-3">Logotip</th>
-                  <th className="text-left font-medium px-4 py-3">Nomi</th>
-                  <th className="text-left font-medium px-4 py-3">Veb-sayt</th>
-                  <th className="text-left font-medium px-4 py-3">Tartib</th>
-                  <th className="text-right font-medium px-4 py-3">Amallar</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.partners.th_logo')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.common.th_name')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.partners.th_website')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.common.th_order')}</th>
+                  <th className="text-right font-medium px-4 py-3">{t('adminC.common.th_actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                      Hamkorlar hali kiritilmagan. Ro'yxat bo'sh bo'lganda saytda bo'lim ko'rinmaydi.
+                    <td colSpan={6} className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
+                      {t('adminC.partners.empty')}
                     </td>
                   </tr>
                 )}
                 {items.map((item) => (
-                  <tr key={item.id} className={clsx('border-t border-gray-100', !item.isActive && 'opacity-50')}>
+                  <tr key={item.id} className={clsx('border-t border-gray-100 dark:border-gray-800', !item.isActive && 'opacity-50')}>
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -258,26 +256,26 @@ export default function AdminPartnersPage() {
                     <td className="px-4 py-3">
                       <img src={fileUrl(item.logoUrl)} alt={item.nameUz} className="h-8 w-auto max-w-[120px] object-contain" />
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{item.nameUz}</td>
-                    <td className="px-4 py-3 text-gray-500 truncate max-w-[200px]">{item.websiteUrl ?? '—'}</td>
-                    <td className="px-4 py-3 text-gray-500">{item.order}</td>
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 truncate max-w-[200px]">{item.websiteUrl ?? '—'}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{item.order}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button
                           onClick={() => updateMutation.mutate({ id: item.id, values: { isActive: !item.isActive } })}
-                          title={item.isActive ? 'Yashirish' : "Ko'rsatish"}
-                          className="p-2 text-gray-400 hover:text-primary-700"
+                          title={item.isActive ? t('adminC.common.hide') : t('adminC.common.show')}
+                          className="p-2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-300"
                         >
                           {item.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                         </button>
-                        <button onClick={() => openEdit(item)} className="p-2 text-gray-400 hover:text-primary-700">
+                        <button onClick={() => openEdit(item)} className="p-2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-300">
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => {
                             if (confirm(t('admin.confirm_delete'))) deleteMutation.mutate(item.id);
                           }}
-                          className="p-2 text-gray-400 hover:text-red-600"
+                          className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

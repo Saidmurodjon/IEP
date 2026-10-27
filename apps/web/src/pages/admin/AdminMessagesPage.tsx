@@ -26,10 +26,10 @@ interface Appeal {
 }
 
 const STATUS_STYLE: Record<AppealStatus, string> = {
-  new: 'bg-primary-50 text-primary-700 border-primary-200',
-  in_review: 'bg-amber-50 text-amber-800 border-amber-200',
-  answered: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  closed: 'bg-gray-100 text-gray-600 border-gray-200',
+  new: 'bg-primary-50 text-primary-700 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800',
+  in_review: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800',
+  answered: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800',
+  closed: 'bg-gray-100 text-gray-600 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-800',
 };
 
 const STATUSES: AppealStatus[] = ['new', 'in_review', 'answered', 'closed'];
@@ -89,13 +89,13 @@ export default function AdminMessagesPage() {
       <div className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{t('admin.messages')}</h1>
-            <p className="text-sm text-gray-500 mt-1">
-              {t('appeals.unanswered')}: <span className="font-semibold text-gray-700">{unanswered}</span>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.messages')}</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {t('appeals.unanswered')}: <span className="font-semibold text-gray-700 dark:text-gray-300">{unanswered}</span>
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-500">{t('appeals.filter')}</label>
+            <label className="text-sm text-gray-500 dark:text-gray-400">{t('appeals.filter')}</label>
             <select value={filter} onChange={(e) => setFilter(e.target.value)} className="input w-auto">
               <option value="">{t('logs.all')}</option>
               {STATUSES.map((status) => (
@@ -119,48 +119,48 @@ export default function AdminMessagesPage() {
             >
               <button
                 onClick={() => toggle(appeal)}
-                className="w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors"
+                className="w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 {openId === appeal.id ? (
-                  <ChevronDown className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                  <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-1 flex-shrink-0" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-1 flex-shrink-0" />
                 )}
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <span className="font-mono text-xs text-gray-500">{appeal.ticketNumber}</span>
+                    <span className="font-mono text-xs text-gray-500 dark:text-gray-400">{appeal.ticketNumber}</span>
                     <span className={clsx('px-2 py-0.5 rounded-full text-xs font-medium border', STATUS_STYLE[appeal.status])}>
                       {t(`appeal.status_${appeal.status}`)}
                     </span>
                     {!appeal.notifiedAt && (
-                      <span className="text-xs text-amber-700" title={t('appeals.not_notified_hint')}>
+                      <span className="text-xs text-amber-700 dark:text-amber-300" title={t('appeals.not_notified_hint')}>
                         {t('appeals.not_notified')}
                       </span>
                     )}
                   </div>
-                  <p className="font-medium text-gray-900 truncate">{appeal.subject}</p>
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="font-medium text-gray-900 dark:text-gray-100 truncate">{appeal.subject}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {appeal.name} · {formatDateTime(appeal.createdAt)}
                   </p>
                 </div>
               </button>
 
               {openId === appeal.id && (
-                <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50/60">
+                <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-4 bg-gray-50/60 dark:bg-gray-800/50">
                   <div className="flex flex-wrap gap-x-5 gap-y-1 text-sm">
-                    <a href={`mailto:${appeal.email}`} className="inline-flex items-center gap-1.5 text-primary-700 hover:underline">
+                    <a href={`mailto:${appeal.email}`} className="inline-flex items-center gap-1.5 text-primary-700 dark:text-primary-300 hover:underline">
                       <Mail className="h-3.5 w-3.5" /> {appeal.email}
                     </a>
                     {appeal.phone && (
-                      <span className="inline-flex items-center gap-1.5 text-gray-600">
-                        <Phone className="h-3.5 w-3.5 text-gray-400" /> {appeal.phone}
+                      <span className="inline-flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                        <Phone className="h-3.5 w-3.5 text-gray-400 dark:text-gray-500" /> {appeal.phone}
                       </span>
                     )}
                   </div>
 
                   <div>
-                    <div className="text-xs font-medium text-gray-500 mb-1">{t('appeals.message')}</div>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap bg-white border border-gray-200 rounded-lg p-3">
+                    <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('appeals.message')}</div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-3">
                       {appeal.message}
                     </p>
                   </div>
@@ -174,7 +174,7 @@ export default function AdminMessagesPage() {
                       className="input resize-none"
                       placeholder={t('appeals.note_placeholder')}
                     />
-                    <p className="text-xs text-gray-400 mt-1">{t('appeals.note_hint')}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t('appeals.note_hint')}</p>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
@@ -186,7 +186,7 @@ export default function AdminMessagesPage() {
                           'text-sm px-4 py-2 rounded-lg border transition-colors',
                           status === 'answered'
                             ? 'btn-primary gap-2'
-                            : 'bg-white border-gray-200 text-gray-600 hover:border-primary-300 hover:text-primary-700'
+                            : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:border-primary-300 hover:text-primary-700 dark:hover:text-primary-300'
                         )}
                       >
                         {status === 'answered' && <Send className="h-4 w-4" />}
@@ -203,7 +203,7 @@ export default function AdminMessagesPage() {
                       onClick={() => {
                         if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(appeal.id);
                       }}
-                      className="btn-secondary gap-2 text-sm px-4 py-2 text-red-600"
+                      className="btn-secondary gap-2 text-sm px-4 py-2 text-red-600 dark:text-red-400"
                     >
                       <Trash2 className="h-4 w-4" /> {t('admin.delete')}
                     </button>

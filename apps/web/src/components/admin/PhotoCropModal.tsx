@@ -32,18 +32,18 @@ export default function PhotoCropModal({ imageUrl, onCancel, onConfirm }: Props)
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
       <div
-        className="bg-white rounded-2xl w-full max-w-md"
+        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md"
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="crop-modal-title"
         tabIndex={-1}
       >
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 id="crop-modal-title" className="font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-4 border-b dark:border-gray-800">
+          <h2 id="crop-modal-title" className="font-semibold text-gray-900 dark:text-gray-100">
             {t('upload.crop_title')}
           </h2>
-          <button onClick={onCancel} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
+          <button onClick={onCancel} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -78,7 +78,7 @@ export default function PhotoCropModal({ imageUrl, onCancel, onConfirm }: Props)
               className="w-full"
             />
           </div>
-          <p className="text-xs text-gray-400">{t('upload.crop_hint')}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('upload.crop_hint')}</p>
           <div className="flex gap-3 pt-1">
             <button
               type="button"

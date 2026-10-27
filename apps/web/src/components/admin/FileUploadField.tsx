@@ -113,25 +113,25 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
       <label className="label">{label}</label>
 
       {value ? (
-        <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3">
+        <div className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3">
           {isImage ? (
             <img
               src={fileUrl(value)}
               alt=""
-              className={`${kind === 'photo' ? 'h-16 w-12' : 'h-14 w-14'} rounded object-cover bg-gray-100 flex-shrink-0`}
+              className={`${kind === 'photo' ? 'h-16 w-12' : 'h-14 w-14'} rounded object-cover bg-gray-100 dark:bg-gray-800 flex-shrink-0`}
             />
           ) : (
-            <div className="h-14 w-14 rounded bg-gray-100 flex items-center justify-center">
-              <FileText className="h-6 w-6 text-gray-400" />
+            <div className="h-14 w-14 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              <FileText className="h-6 w-6 text-gray-500 dark:text-gray-400" />
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-500 truncate font-mono">{value}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate font-mono">{value}</p>
           </div>
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="text-xs font-medium text-primary-700 hover:underline"
+            className="text-xs font-medium text-primary-700 dark:text-primary-300 hover:underline"
           >
             {t('upload.replace')}
           </button>
@@ -139,7 +139,7 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
             type="button"
             onClick={() => onChange(null)}
             aria-label={t('upload.remove')}
-            className="p-1.5 text-gray-400 hover:text-red-600"
+            className="p-1.5 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
           >
             <X className="h-4 w-4" />
           </button>
@@ -149,17 +149,17 @@ export default function FileUploadField({ kind, value, onChange, label, ownerTyp
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy !== null}
-          className="w-full rounded-lg border-2 border-dashed border-gray-200 p-5 text-center hover:border-primary-300 transition-colors disabled:opacity-60"
+          className="w-full rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-700 p-5 text-center hover:border-primary-300 dark:hover:border-primary-600 transition-colors disabled:opacity-60"
         >
           {busy ? (
-            <span className="inline-flex items-center gap-2 text-sm text-gray-500">
+            <span className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Loader2 className="h-4 w-4 animate-spin" />
               {t(busy === 'preparing' ? 'upload.preparing' : 'upload.uploading')}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-2 text-sm text-gray-500">
-              <Icon className="h-4 w-4 text-gray-300" />
-              <Upload className="h-4 w-4 text-gray-300" />
+            <span className="inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <Icon className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+              <Upload className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               {t(isImage ? 'upload.choose_image' : 'upload.choose_file')}
             </span>
           )}

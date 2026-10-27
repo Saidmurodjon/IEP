@@ -46,16 +46,16 @@ export default function StructureChartCard() {
 
   return (
     <section aria-labelledby="chart-card-title" className="card p-5 mb-6">
-      <h2 id="chart-card-title" className="font-semibold text-gray-900">{t('admin_chart.title')}</h2>
-      <p id="chart-card-hint" className="text-sm text-gray-600 mt-1 mb-4">{t('admin_chart.hint')}</p>
+      <h2 id="chart-card-title" className="font-semibold text-gray-900 dark:text-gray-100">{t('admin_chart.title')}</h2>
+      <p id="chart-card-hint" className="text-sm text-gray-600 dark:text-gray-300 mt-1 mb-4">{t('admin_chart.hint')}</p>
 
       <div aria-live="polite" className="mb-4">
         {chart ? (
-          <div className="flex items-center gap-3 rounded-lg border border-gray-200 p-3">
-            <FileText className="h-6 w-6 text-gray-500 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-800 p-3">
+            <FileText className="h-6 w-6 text-gray-500 dark:text-gray-400 flex-shrink-0" aria-hidden="true" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-gray-900 truncate">{chart.name}</p>
-              <p className="text-xs text-gray-600">
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{chart.name}</p>
+              <p className="text-xs text-gray-600 dark:text-gray-300">
                 {chart.mime}{dateText && ` · ${t('admin_chart.updated', { date: dateText })}`}
               </p>
             </div>
@@ -63,7 +63,7 @@ export default function StructureChartCard() {
               href={fileUrl(chart.url)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-sm font-medium text-primary-700 hover:underline"
+              className="inline-flex items-center gap-1 text-sm font-medium text-primary-700 dark:text-primary-300 hover:underline"
             >
               <ExternalLink className="h-4 w-4" aria-hidden="true" />
               {t('admin_chart.open')}
@@ -71,7 +71,7 @@ export default function StructureChartCard() {
             </a>
           </div>
         ) : (
-          <p className="text-sm text-gray-600">{t('admin_chart.none')}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">{t('admin_chart.none')}</p>
         )}
       </div>
 
@@ -92,7 +92,7 @@ export default function StructureChartCard() {
             type="button"
             onClick={() => { if (window.confirm(t('admin_chart.remove_confirm'))) removeMut.mutate(); }}
             disabled={busy || removeMut.isPending}
-            className="btn-secondary gap-2 text-red-700"
+            className="btn-secondary gap-2 text-red-700 dark:text-red-300"
           >
             <Trash2 className="h-4 w-4" aria-hidden="true" />
             {t('admin_chart.remove')}

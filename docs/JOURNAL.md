@@ -18,8 +18,10 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 18-B: `GET /api/stats` + dashboard'da KPI kartochkalar va 5 ta grafik (recharts 2.15.4).
 ⚠️ Lokal bazada 15 ta nashr 18-B davomida noma'lum sabab bilan o'chib ketdi — foydalanuvchidan so'raldi.
 Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqarish: migratsiya +
-API + web, foydalanuvchi tasdig'i bilan. Keyingi bosqichlar:
-C (admin panelda til + qorong'i mavzu), D (kiritish qulayligi, profil sahifasi).
+API + web, foydalanuvchi tasdig'i bilan.
+
+**🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
+production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
@@ -202,6 +204,27 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · 19-C — admin navbar, til, qorong'i mavzu, profil
+**Kommit:** `feat(admin): topbar with language, dark theme and profile page`
+**Qilindi:** Tailwind `darkMode: 'class'`; `store/adminPrefs.ts` (`admin_theme` light/dark/system,
+`admin_lang`) — `dark` klassi va `html lang` faqat admin ochiqligida, chiqishda olib tashlanadi.
+`AdminTopbar`: UZ/EN/RU, mavzu, profil menyusi (Escape, fokus qaytishi). `/admin/profile`: ism tahriri,
+parol almashtirish. API: `PATCH /api/auth/me` (faqat `name`), `/me` da `lastLoginAt`; change-password
+endi `WRONG_PASSWORD`/`SAME_PASSWORD` (400) — avval 401 qaytib, interceptor foydalanuvchini chiqarib
+yuborardi. Barcha admin sahifalaridagi hard-code matnlar `adminC/D/E`, `adminShell`, `profile` ga.
+Web `ERROR_CODES` ga 18-A dan qolib ketgan FORBIDDEN/CONFLICT/LAST_SUPER_ADMIN/SELF_ACTION ham qo'shildi.
+Login'ga `label htmlFor` + `FieldError`.
+**Tekshirildi:** tsc api+web, vitest 66/66, wrangler dry-run, vite build (CSS'da `.dark` 66, media 0).
+HTTP (vaqtinchalik test admin, keyin o'chirildi): PATCH /me 400/200, rol/email e'tiborsiz; noto'g'ri,
+bir xil, to'g'ri parol 400/400/200, yangi parol bilan login 200. Barcha `t()` kalitlari 3 tilda bor
+(skript). Brauzer: dashboard qorong'i+EN, profil RU, menyu Escape, WRONG_PASSWORD toast (chiqarmadi),
+xodim modali qorong'ida, yorug' mavzu; OS qorong'i bo'lsa ham ochiq sayt yorug' qoladi.
+**Muhim:** `tailwind.config` o'zgarganda vite dev QAYTA ISHGA TUSHIRILSIN — eski jarayon `media`
+rejimida qoldi va ochiq saytni ham qorong'i qilardi (build'da muammo yo'q).
+**Tekshirilmadi:** mobil kenglikda topbar; har bir sahifa qorong'ida ko'z bilan (faqat dashboard,
+profil, xodimlar); Tiptap qorong'ida; change-password'ga alohida rate limit yo'q (token talab qilinadi).
+**Qoldi:** `AdminUnitsPage` tur ro'yxati xom qiymat; profil `<title>` da «| Admin» yo'q.
+
 ### 2026-10-27 · 18-B — dashboard statistikasi va grafiklar
 **Kommit:** `feat(admin): dashboard statistics with charts`
 **Qilindi:** `GET /api/stats` (requireAuth, ikkala rol): jami ko'rsatkichlar, 12 oylik yangilik va
@@ -238,14 +261,3 @@ dashboard'ga yo'naltirildi. Test hisoblar o'chirildi.
 `admin-guard.test.ts` da sinovdan o'tgan); modallarning Escape/fokus tuzog'i qo'lda sinalmadi.
 **Qarorlar:** rol tokenga yozilmaydi — bazadan o'qiladi (har so'rovga +1 so'rov, evaziga darhol
 bekor qilish). Production'ga migratsiya foydalanuvchi tasdig'idan keyin.
-
-### 2026-10-27 · 17b — tuzilma sahifasi faqat rasm, bo'linmalar alohida admin bo'limida
-**Nima:** foydalanuvchi "tagidagi avvalgi qismlarni olib tashla" dedi. Bo'linmalar ma'lumoti
-Labs/LabDetail/About/Employees da ishlatilgani uchun so'raldi → "admin'da alohida bo'limga
-ko'chir". Ochiq `StructurePage` — faqat `StructureChart` + bo'sh holat (`structure.chart_empty`).
-`AdminStructurePage` — faqat rasm kartasi; yangi `AdminUnitsPage` (`/admin/units`, menyuda
-«Bo'linmalar»). Ma'lumot o'chirilmadi. Koder: Sonnet.
-**Tekshirildi:** web tsc, vite build; brauzerda `/uz/structure` — bitta h1, faqat rasm
-(foydalanuvchi yuklagan haqiqiy sxema ko'rindi → admin karta ham ishlaydi).
-**Tekshirilmadi:** `/admin/units` brauzerda (login kerak). Ishlatilmay qolgan
-`structure.type_*`, `structure.advisory/staff` kalitlari qoldirildi (boshqa joyda bo'lishi mumkin).

@@ -78,25 +78,25 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={item.id}
             role={item.kind === 'error' ? 'alert' : 'status'}
             className={clsx(
-              'flex items-start gap-3 rounded-xl border p-4 shadow-lg bg-white',
-              item.kind === 'success' ? 'border-emerald-200' : 'border-red-200'
+              'flex items-start gap-3 rounded-xl border p-4 shadow-lg bg-white dark:bg-gray-900',
+              item.kind === 'success' ? 'border-emerald-200 dark:border-emerald-800' : 'border-red-200 dark:border-red-800'
             )}
           >
             {item.kind === 'success' ? (
-              <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+              <CheckCircle2 className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
             ) : (
-              <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
             )}
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-gray-800 leading-relaxed">{item.text}</p>
+              <p className="text-sm text-gray-800 dark:text-gray-100 leading-relaxed">{item.text}</p>
               {item.code && (
-                <p className="mt-1 text-[11px] font-mono text-gray-500">{item.code}</p>
+                <p className="mt-1 text-[11px] font-mono text-gray-500 dark:text-gray-400">{item.code}</p>
               )}
             </div>
             <button
               onClick={() => remove(item.id)}
               aria-label={t('common.close')}
-              className="text-gray-500 hover:text-gray-600 flex-shrink-0"
+              className="text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 flex-shrink-0"
             >
               <X className="h-4 w-4" />
             </button>

@@ -30,9 +30,9 @@ interface LogRow {
 }
 
 const LEVEL_STYLE: Record<string, string> = {
-  error: 'bg-red-50 text-red-700 border-red-200',
-  warning: 'bg-amber-50 text-amber-800 border-amber-200',
-  info: 'bg-primary-50 text-primary-700 border-primary-200',
+  error: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800',
+  warning: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800',
+  info: 'bg-primary-50 text-primary-700 border-primary-200 dark:bg-primary-900/40 dark:text-primary-300 dark:border-primary-800',
 };
 
 export default function AdminLogsPage() {
@@ -102,7 +102,7 @@ export default function AdminLogsPage() {
       <Helmet><title>{t('admin.logs')} | Admin</title></Helmet>
       <div className="p-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.logs')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.logs')}</h1>
           <button
             onClick={() => cleanupMutation.mutate()}
             disabled={cleanupMutation.isPending}
@@ -161,12 +161,12 @@ export default function AdminLogsPage() {
             <div key={row.id} className={clsx('card', row.isResolved && 'opacity-60')}>
               <button
                 onClick={() => toggleRow(row)}
-                className="w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50 transition-colors"
+                className="w-full text-left p-4 flex items-start gap-3 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 {openId === row.id ? (
-                  <ChevronDown className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                  <ChevronDown className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-1 flex-shrink-0" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
+                  <ChevronRight className="h-4 w-4 text-gray-400 dark:text-gray-500 mt-1 flex-shrink-0" />
                 )}
 
                 <div className="min-w-0 flex-1">
@@ -174,44 +174,44 @@ export default function AdminLogsPage() {
                     <span className={clsx('px-2 py-0.5 rounded-full text-xs font-medium border', LEVEL_STYLE[row.level])}>
                       {t(`logs.level_${row.level}`)}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs text-gray-500">
+                    <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                       {row.source === 'server' ? <Server className="h-3 w-3" /> : <Monitor className="h-3 w-3" />}
                       {t(`logs.${row.source}`)}
                     </span>
-                    {row.code && <span className="text-xs font-mono text-gray-400">{row.code}</span>}
+                    {row.code && <span className="text-xs font-mono text-gray-500 dark:text-gray-400">{row.code}</span>}
                     {row.isResolved && (
-                      <span className="text-xs text-emerald-600 font-medium">{t('logs.resolved')}</span>
+                      <span className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">{t('logs.resolved')}</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-900 break-words">{row.message}</p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400 mt-1.5">
+                  <p className="text-sm text-gray-900 dark:text-gray-100 break-words">{row.message}</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500 dark:text-gray-400 mt-1.5">
                     {row.path && <span className="font-mono">{row.method} {row.path}</span>}
                     <span>{t('logs.first_seen')}: {formatDateTime(row.firstSeenAt)}</span>
                     <span>{t('logs.last_seen')}: {formatDateTime(row.lastSeenAt)}</span>
                   </div>
                 </div>
 
-                <span className="flex-shrink-0 px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
+                <span className="flex-shrink-0 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs font-semibold">
                   ×{row.count}
                 </span>
               </button>
 
               {openId === row.id && (
-                <div className="border-t border-gray-100 p-4 space-y-4 bg-gray-50/60">
+                <div className="border-t border-gray-100 dark:border-gray-800 p-4 space-y-4 bg-gray-50/60 dark:bg-gray-800/50">
                   {full?.stack && (
                     <div>
-                      <div className="text-xs font-medium text-gray-500 mb-1">{t('logs.stack')}</div>
-                      <pre className="text-xs bg-white border border-gray-200 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words text-gray-700">
+                      <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{t('logs.stack')}</div>
+                      <pre className="text-xs bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap break-words text-gray-700 dark:text-gray-300">
                         {full.stack}
                       </pre>
                     </div>
                   )}
                   {full?.userAgent && (
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
                       <span className="font-medium">User-Agent:</span> {full.userAgent}
                     </div>
                   )}
-                  <div className="text-xs text-gray-400 font-mono">fingerprint: {row.fingerprint}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">fingerprint: {row.fingerprint}</div>
 
                   <div>
                     <label className="label">{t('logs.note')}</label>
@@ -244,7 +244,7 @@ export default function AdminLogsPage() {
                       onClick={() => {
                         if (confirm(t('admin.confirm_delete'))) deleteMutation.mutate(row.id);
                       }}
-                      className="btn-secondary gap-2 text-sm px-4 py-2 text-red-600"
+                      className="btn-secondary gap-2 text-sm px-4 py-2 text-red-600 dark:text-red-400"
                     >
                       <Trash2 className="h-4 w-4" />
                       {t('admin.delete')}
@@ -261,7 +261,7 @@ export default function AdminLogsPage() {
             <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="btn-secondary px-3 py-2 disabled:opacity-40">
               ‹
             </button>
-            <span className="text-sm text-gray-600">{page} / {totalPages}</span>
+            <span className="text-sm text-gray-600 dark:text-gray-300">{page} / {totalPages}</span>
             <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="btn-secondary px-3 py-2 disabled:opacity-40">
               ›
             </button>

@@ -25,6 +25,8 @@ export const ERROR_CODES = [
   'CONFLICT',
   'LAST_SUPER_ADMIN',
   'SELF_ACTION',
+  'WRONG_PASSWORD',
+  'SAME_PASSWORD',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -46,6 +48,8 @@ const STATUS: Record<ErrorCode, ContentfulStatusCode> = {
   CONFLICT: 409,
   LAST_SUPER_ADMIN: 409,
   SELF_ACTION: 409,
+  WRONG_PASSWORD: 400,
+  SAME_PASSWORD: 400,
 };
 
 /**

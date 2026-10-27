@@ -376,7 +376,9 @@
     "FORBIDDEN": "You do not have permission for this action.",
     "CONFLICT": "This email is already in use.",
     "LAST_SUPER_ADMIN": "The last active Super admin cannot be changed or deleted.",
-    "SELF_ACTION": "You cannot change your own role or status, or delete yourself."
+    "SELF_ACTION": "You cannot change your own role or status, or delete yourself.",
+    "WRONG_PASSWORD": "The current password is incorrect",
+    "SAME_PASSWORD": "The new password must differ from the current one"
   },
   "toast": {
     "news_saved": "News item saved.",
@@ -558,5 +560,198 @@
     "unblocked_ok": "User unblocked.",
     "reset_ok": "Password updated.",
     "deleted_ok": "User deleted."
+  },
+  "adminShell": {
+    "panel_title": "Admin panel",
+    "language": "Language",
+    "lang_uz": "O'zbekcha",
+    "lang_en": "English",
+    "lang_ru": "Русский",
+    "theme": "Theme",
+    "theme_light": "Light theme",
+    "theme_dark": "Dark theme",
+    "theme_system": "System theme",
+    "profile_menu": "Profile menu",
+    "profile": "Profile"
+  },
+  "profile": {
+    "title": "Profile",
+    "info": "Personal information",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "last_login": "Last sign-in",
+    "never": "No sign-in yet",
+    "name_saved": "Name saved",
+    "change_password": "Change password",
+    "current_password": "Current password",
+    "new_password": "New password",
+    "confirm_password": "Confirm new password",
+    "password_saved": "Password changed",
+    "v_name": "Name must be 2 to 100 characters",
+    "v_current": "Enter your current password",
+    "v_new": "Password must be 10 to 200 characters",
+    "v_confirm": "Confirm the password",
+    "v_mismatch": "Passwords do not match"
+  },
+  "adminC": {
+    "common": {
+      "th_name": "Name",
+      "th_actions": "Actions",
+      "th_order": "Order",
+      "order_number": "Display order",
+      "show_on_site": "Show on the website",
+      "attention": "Note.",
+      "hide": "Hide",
+      "show": "Show"
+    },
+    "employees": {
+      "err_name": "Enter the name",
+      "err_position": "Enter the position",
+      "err_email": "Invalid email address",
+      "fullname_label": "Full name ({{lang}}) *",
+      "position_label": "Position ({{lang}}) *",
+      "degree_label": "Academic degree ({{lang}})",
+      "title_label": "Academic title ({{lang}})",
+      "research_label": "Research area ({{lang}})",
+      "reception_label": "Reception days ({{lang}})",
+      "reception_placeholder": "Monday and Wednesday, 15:00 – 17:00",
+      "reception_hint": "Free text. If left empty, the reception hours line is not shown on the page at all.",
+      "warn_before": "Only the",
+      "warn_bold": "work phone and work email",
+      "warn_after": "are published on the website. Do not enter a personal mobile number or personal email address. The employee must consent to the publication of their data.",
+      "phone": "Work phone",
+      "email": "Work email",
+      "office": "Office room",
+      "photo": "Employee photo",
+      "unit": "Department / laboratory",
+      "unit_none": "— not assigned —",
+      "is_management": "Member of the management",
+      "is_unit_head": "Head of department / laboratory",
+      "active": "Active",
+      "th_name": "Full name",
+      "th_position": "Position",
+      "th_unit": "Department",
+      "empty": "No employees have been added yet.",
+      "badge_management": "management",
+      "badge_head": "head",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    },
+    "partners": {
+      "err_name": "Enter the name",
+      "err_logo": "Enter the logo path",
+      "err_url": "Invalid link",
+      "name_label": "Organization name ({{lang}}) *",
+      "logo": "Logo *",
+      "website": "Website",
+      "warn_1": "A partner organization logo is its trademark. Only logos of organizations that genuinely cooperate with the institute may be placed on the site. For now, logo files are stored in the",
+      "warn_2": "folder, and the path is written as",
+      "warn_file": "name",
+      "warn_3": ".",
+      "th_logo": "Logo",
+      "th_website": "Website",
+      "empty": "No partners have been added yet. When the list is empty, the section is not shown on the website."
+    },
+    "documents": {
+      "err_title": "Enter the document title.",
+      "err_file": "Upload a file",
+      "file": "Document file *",
+      "title_label": "Document title ({{lang}})",
+      "description_label": "Description ({{lang}})",
+      "number_placeholder": "No. 373",
+      "th_number": "Number",
+      "th_date": "Date",
+      "empty": "No documents have been added yet."
+    }
+  },
+  "adminD": {
+    "common": {
+      "th_actions": "Actions"
+    },
+    "structure": {
+      "helmet": "Structure | Admin"
+    },
+    "settings": {
+      "helmet": "Settings | Admin",
+      "saved": "Saved!",
+      "saving": "Saving...",
+      "group_general": "General",
+      "group_contact": "Contact information",
+      "site_name_uz": "Site name (UZ)",
+      "site_name_en": "Site name (EN)",
+      "site_name_ru": "Site name (RU)",
+      "site_url": "Site address (for canonical/hreflang)",
+      "email": "Fallback email for appeal notifications",
+      "appeals_email": "Email for appeal notifications",
+      "appeals_retention_days": "Retention period for closed appeals (days)"
+    },
+    "units": {
+      "helmet": "Units | Admin",
+      "edit_title": "Edit",
+      "new_title": "New unit",
+      "name_lang": "Name ({{lang}})",
+      "description_lang": "Description ({{lang}})",
+      "type": "Type",
+      "order": "Order",
+      "head": "Head",
+      "head_placeholder": "Full name",
+      "parent": "Parent unit",
+      "parent_none": "— Top level —",
+      "th_name": "Name",
+      "th_type": "Type",
+      "th_head": "Head",
+      "empty": "No units"
+    },
+    "publications": {
+      "helmet": "Publications | Admin",
+      "modal_suffix": "Publication",
+      "authors": "Authors",
+      "authors_placeholder": "Surname I.I., ...",
+      "authors_required": "Enter the authors.",
+      "year": "Year",
+      "journal": "Journal",
+      "category": "Category",
+      "doi_placeholder": "10.xxxx/...",
+      "file_label": "Publication file (PDF, DOC, XLS)",
+      "th_title": "Title",
+      "th_authors": "Authors",
+      "th_year": "Year",
+      "empty": "No publications"
+    },
+    "news": {
+      "helmet": "News | Admin",
+      "modal_suffix": "News item",
+      "slug": "Link (slug)",
+      "slug_placeholder": "news-slug",
+      "slug_required": "Enter a slug.",
+      "slug_hint": "Generated automatically from the title. Do not change it after saving — old links will break.",
+      "published_at": "Publication date",
+      "cover_image": "Cover image",
+      "title_required": "Enter a title.",
+      "summary_lang": "Summary ({{lang}})",
+      "paste_hint": "Copy an image and press Cmd+V, or drag the file onto the editor.",
+      "source_notice": "<b>Attention.</b> If the material comes from another source, citing the source is <b>mandatory</b> (Cabinet of Ministers Resolution No. 373 of 15 June 2021, clause 4). Leave these fields empty for the Institute's own material.",
+      "source_name": "Source name",
+      "source_name_placeholder": "E.g. UzA",
+      "source_url": "Source link",
+      "th_title": "Title",
+      "th_date": "Date",
+      "empty": "No news"
+    }
+  },
+  "adminE": {
+    "dashboard": {
+      "title": "Dashboard"
+    },
+    "login": {
+      "pageTitle": "Admin login | Institute of Energy Problems",
+      "heading": "Admin panel",
+      "subtitle": "Institute of Energy Problems",
+      "invalid": "Incorrect email or password",
+      "emailInvalid": "Invalid email address",
+      "passwordShort": "Password must be at least 8 characters",
+      "language": "Language"
+    }
   }
 }

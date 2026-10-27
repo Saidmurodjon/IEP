@@ -18,13 +18,13 @@ import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
-  titleUz: z.string().min(1, 'Nomini kiriting'),
-  titleEn: z.string().min(1, 'Nomini kiriting'),
-  titleRu: z.string().min(1, 'Nomini kiriting'),
+  titleUz: z.string().min(1, 'adminC.documents.err_title'),
+  titleEn: z.string().min(1, 'adminC.documents.err_title'),
+  titleRu: z.string().min(1, 'adminC.documents.err_title'),
   descriptionUz: z.string().optional(),
   descriptionEn: z.string().optional(),
   descriptionRu: z.string().optional(),
-  fileKey: z.string().min(1, 'Fayl yuklang'),
+  fileKey: z.string().min(1, 'adminC.documents.err_file'),
   documentNumber: z.string().optional(),
   documentDate: z.string().optional(),
   category: z.string().optional(),
@@ -150,7 +150,7 @@ export default function AdminDocumentsPage() {
       <Helmet><title>{t('admin.documents')} | Admin</title></Helmet>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.documents')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.documents')}</h1>
           <button
             onClick={() => { reset({ isActive: true, order: 0 }); setEditItem(null); setShowForm(true); }}
             className="btn-primary gap-2"
@@ -162,18 +162,18 @@ export default function AdminDocumentsPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
             <div
-              className="bg-white rounded-2xl w-full max-w-2xl my-4"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl my-4"
               ref={formRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="admin-form-title"
               tabIndex={-1}
             >
-              <div className="flex items-center justify-between p-5 border-b">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900">
+              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
                   {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.documents')}
                 </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                   <X className="h-5 w-5" />
                 </button>
               </div>
@@ -183,28 +183,28 @@ export default function AdminDocumentsPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="label">{t('documents.number')}</label>
-                    <input {...register('documentNumber')} className="input" placeholder="373-son" />
+                    <input {...register('documentNumber')} className="input" placeholder={t('adminC.documents.number_placeholder')} />
                   </div>
                   <div>
                     <label className="label">{t('documents.date')}</label>
                     <input type="date" {...register('documentDate')} className="input" />
                   </div>
                   <div>
-                    <label className="label">Tartib raqami</label>
+                    <label className="label">{t('adminC.common.order_number')}</label>
                     <input type="number" {...register('order')} className="input" defaultValue={0} />
                   </div>
                 </div>
 
                 <FileUploadField
                   kind="document"
-                  label="Hujjat fayli *"
+                  label={t('adminC.documents.file')}
                   value={toUrl(values.fileKey)}
                   onChange={(url) => setValue('fileKey', toKey(url), { shouldDirty: true })}
                   ownerType="document"
                   ownerId={editItem?.id}
                 />
                 <input type="hidden" {...register('fileKey')} />
-                {errors.fileKey && <p className="text-red-500 text-xs">{errors.fileKey.message}</p>}
+                {errors.fileKey && <p className="text-red-500 dark:text-red-400 text-xs">{t(errors.fileKey.message as string)}</p>}
 
                 <div>
                   <LangTabs active={activeTab} onChange={setActiveTab} filled={filled} onCopyFromUz={copyFromUz} />
@@ -212,18 +212,18 @@ export default function AdminDocumentsPage() {
                     <div key={tab.key} className={clsx('pt-4 space-y-3', activeTab === tab.key ? '' : 'hidden')}>
                       <div>
                         <label className="label">
-                          Hujjat nomi ({tab.key.toUpperCase()}) <span className="text-red-500">*</span>
+                          {t('adminC.documents.title_label', { lang: tab.key.toUpperCase() })} <span className="text-red-500 dark:text-red-400" aria-hidden="true">*</span>
                         </label>
                         <input
                           {...register(`title${tab.key}` as keyof FormData)}
-                          className={clsx('input', errors[`title${tab.key}` as keyof FormData] && 'border-red-400')}
+                          className={clsx('input', errors[`title${tab.key}` as keyof FormData] && 'border-red-400 dark:border-red-500')}
                         />
                         {errors[`title${tab.key}` as keyof FormData] && (
-                          <p className="text-red-500 text-xs mt-1">Hujjat nomini kiriting.</p>
+                          <p className="text-red-500 dark:text-red-400 text-xs mt-1">Hujjat nomini kiriting.</p>
                         )}
                       </div>
                       <div>
-                        <label className="label">Izoh ({tab.key.toUpperCase()})</label>
+                        <label className="label">{t('adminC.documents.description_label', { lang: tab.key.toUpperCase() })}</label>
                         <textarea
                           {...register(`description${tab.key}` as keyof FormData)}
                           rows={3}
@@ -234,9 +234,9 @@ export default function AdminDocumentsPage() {
                   ))}
                 </div>
 
-                <label className="flex items-center gap-2 text-sm text-gray-700">
+                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                   <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-                  Saytda ko'rsatilsin
+                  {t('adminC.common.show_on_site')}
                 </label>
 
                 <div className="flex gap-3 pt-2">
@@ -265,14 +265,14 @@ export default function AdminDocumentsPage() {
                 type="button"
                 onClick={() => void bulkDelete()}
                 disabled={bulkBusy}
-                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 dark:!text-red-300 dark:!border-red-800 dark:hover:!bg-red-900/30 disabled:opacity-60"
               >
                 {t('admin.bulk_delete')}
               </button>
             </BulkActionsBar>
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-500">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input
@@ -282,22 +282,22 @@ export default function AdminDocumentsPage() {
                       onChange={() => bulk.toggleAll(items.map((item) => item.id))}
                     />
                   </th>
-                  <th className="text-left font-medium px-4 py-3">Nomi</th>
-                  <th className="text-left font-medium px-4 py-3">Raqami</th>
-                  <th className="text-left font-medium px-4 py-3">Sanasi</th>
-                  <th className="text-right font-medium px-4 py-3">Amallar</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.common.th_name')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.documents.th_number')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.documents.th_date')}</th>
+                  <th className="text-right font-medium px-4 py-3">{t('adminC.common.th_actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-10 text-center text-gray-400">
-                      Hujjatlar hali kiritilmagan.
+                    <td colSpan={5} className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
+                      {t('adminC.documents.empty')}
                     </td>
                   </tr>
                 )}
                 {items.map((item) => (
-                  <tr key={item.id} className={clsx('border-t border-gray-100', !item.isActive && 'opacity-50')}>
+                  <tr key={item.id} className={clsx('border-t border-gray-100 dark:border-gray-800', !item.isActive && 'opacity-50')}>
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -306,9 +306,9 @@ export default function AdminDocumentsPage() {
                         onChange={() => bulk.toggle(item.id)}
                       />
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">{item.titleUz}</td>
-                    <td className="px-4 py-3 text-gray-500">{item.documentNumber ?? '—'}</td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.titleUz}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{item.documentNumber ?? '—'}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                       {item.documentDate ? formatDate(item.documentDate) : '—'}
                     </td>
                     <td className="px-4 py-3">
@@ -317,18 +317,18 @@ export default function AdminDocumentsPage() {
                           onClick={() =>
                             updateMutation.mutate({ id: item.id, payload: { isActive: !item.isActive } })
                           }
-                          className="p-2 text-gray-400 hover:text-primary-700"
+                          className="p-2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-300"
                         >
                           {item.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                         </button>
-                        <button onClick={() => openEdit(item)} className="p-2 text-gray-400 hover:text-primary-700">
+                        <button onClick={() => openEdit(item)} className="p-2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-300">
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => {
                             if (confirm(t('admin.confirm_delete'))) deleteMutation.mutate(item.id);
                           }}
-                          className="p-2 text-gray-400 hover:text-red-600"
+                          className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>

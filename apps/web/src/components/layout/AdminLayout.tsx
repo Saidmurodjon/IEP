@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Newspaper, BookOpen, Building2,
-  Settings, MessageSquare, LogOut, Zap, Menu, X,
+  Settings, MessageSquare, Zap,
   Users, Handshake, FileText, Bug, Network, UserCog,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,8 @@ import clsx from 'clsx';
 import { useAuthStore, isSuperAdmin } from '@/store/auth';
 import { authApi } from '@/lib/api';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import AdminTopbar from '@/components/admin/AdminTopbar';
+import { useApplyAdminPrefs } from '@/store/adminPrefs';
 
 interface NavItem {
   to: string;
@@ -37,6 +39,7 @@ const navItems: NavItem[] = [
 export default function AdminLayout() {
   const { t } = useTranslation();
   const { admin, logout, updateAdmin } = useAuthStore();
+  useApplyAdminPrefs();
   const superAdmin = isSuperAdmin(admin);
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -64,15 +67,15 @@ export default function AdminLayout() {
   };
 
   const Sidebar = () => (
-    <aside className="flex flex-col h-full bg-primary-950 text-white w-64">
-      <div className="p-4 border-b border-primary-800">
+    <aside className="flex flex-col h-full bg-primary-950 text-white w-64 dark:bg-gray-900 dark:border-r dark:border-gray-800">
+      <div className="p-4 border-b border-primary-800 dark:border-gray-800">
         <div className="flex items-center gap-2">
           <div className="bg-primary-600 p-1.5 rounded-lg">
             <Zap className="h-4 w-4" />
           </div>
           <div>
             <div className="text-sm font-bold">Energetika</div>
-            <div className="text-xs text-primary-400">Admin Panel</div>
+            <div className="text-xs text-primary-300">{t('adminShell.panel_title')}</div>
           </div>
         </div>
       </div>
@@ -98,29 +101,11 @@ export default function AdminLayout() {
         ))}
       </nav>
 
-      <div className="p-3 border-t border-primary-800">
-        <div className="px-3 py-2 mb-2">
-          <div className="text-xs text-primary-400">Kirgan:</div>
-          <div className="text-sm text-white truncate">{admin?.email}</div>
-          {admin?.role && (
-            <span className="inline-block mt-1 rounded bg-primary-800 px-2 py-0.5 text-xs text-primary-100">
-              {t(`usersPage.role_${admin.role}`)}
-            </span>
-          )}
-        </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-primary-200 hover:bg-primary-800 hover:text-white transition-colors"
-        >
-          <LogOut className="h-4 w-4" />
-          {t('admin.logout')}
-        </button>
-      </div>
     </aside>
   );
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-950 overflow-hidden">
       {/*
         Ochiq qismdagi bilan bir xil yondashuv (`PublicLayout`) — klaviatura
         bilan yon menyudan o'tmasdan to'g'ridan-to'g'ri mazmunga o'tish uchun.
@@ -146,18 +131,7 @@ export default function AdminLayout() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Mobile header */}
-        <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            aria-label={t('a11y.open_menu')}
-            className="text-gray-600"
-          >
-            <Menu className="h-5 w-5" aria-hidden="true" />
-          </button>
-          <span className="text-sm font-semibold text-gray-800">Admin Panel</span>
-          <div />
-        </div>
+        <AdminTopbar onOpenSidebar={() => setSidebarOpen(true)} onLogout={handleLogout} />
 
         {/* `tabIndex={-1}` — skip-link havolasi shu elementga fokus beradi */}
         <main id="main-content" tabIndex={-1} className="flex-1 overflow-auto focus:outline-none">

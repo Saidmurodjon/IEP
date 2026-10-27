@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -20,7 +20,7 @@ import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
-  slug: z.string().min(1, 'Slug kiriting'),
+  slug: z.string().min(1, 'adminD.news.slug_required'),
   titleUz: z.string().min(1), titleEn: z.string().min(1), titleRu: z.string().min(1),
   summaryUz: z.string().min(1), summaryEn: z.string().min(1), summaryRu: z.string().min(1),
   contentUz: z.string().min(1), contentEn: z.string().min(1), contentRu: z.string().min(1),
@@ -183,10 +183,10 @@ export default function AdminNewsPage() {
 
   return (
     <>
-      <Helmet><title>Yangiliklar | Admin</title></Helmet>
+      <Helmet><title>{t('adminD.news.helmet')}</title></Helmet>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.news')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.news')}</h1>
           <button
             onClick={() => {
               // Nashr sanasi sukut bo'yicha bugungi kun.
@@ -204,18 +204,18 @@ export default function AdminNewsPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
             <div
-              className="bg-white rounded-2xl w-full max-w-2xl my-4"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl my-4"
               ref={formRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="admin-form-title"
               tabIndex={-1}
             >
-              <div className="flex items-center justify-between p-5 border-b">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900">
-                  {editItem ? t('admin.edit') : t('admin.add_new')} — Yangilik
+              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
+                  {editItem ? t('admin.edit') : t('admin.add_new')} — {t('adminD.news.modal_suffix')}
                 </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
                   <X className="h-5 w-5" />
                 </button>
               </div>
@@ -226,32 +226,32 @@ export default function AdminNewsPage() {
                 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="label">
-                      Havola (slug) <span className="text-red-500">*</span>
+                    <label htmlFor="news-slug" className="label">
+                      {t('adminD.news.slug')} <span className="text-red-600 dark:text-red-300">*</span>
                     </label>
                     <input
+                      id="news-slug"
                       {...register('slug')}
                       className={clsx('input', errors.slug && 'border-red-400 focus:ring-red-400')}
-                      placeholder="yangilik-slugi"
+                      placeholder={t('adminD.news.slug_placeholder')}
                     />
                     {errors.slug ? (
-                      <p className="text-red-500 text-xs mt-1">{errors.slug.message}</p>
+                      <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t(errors.slug.message ?? '')}</p>
                     ) : (
-                      <p className="text-xs text-gray-400 mt-1">
-                        Sarlavhadan avtomatik hosil bo'ladi. Saqlangandan keyin o'zgartirmang —
-                        eski havolalar buziladi.
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {t('adminD.news.slug_hint')}
                       </p>
                     )}
                   </div>
                   <div>
-                    <label className="label">Nashr sanasi</label>
+                    <label className="label">{t('adminD.news.published_at')}</label>
                     <input type="date" {...register('publishedAt')} className="input" />
                   </div>
                 </div>
 
                 <FileUploadField
                   kind="image"
-                  label="Bosh rasm"
+                  label={t('adminD.news.cover_image')}
                   value={imageUrl ?? null}
                   onChange={(url) => setValue('imageUrl', url ?? '', { shouldDirty: true })}
                   ownerType="news"
@@ -273,7 +273,7 @@ export default function AdminNewsPage() {
                         <div>
                           <label className="label">
                             {t(`admin.title_${tab.key.toLowerCase()}`)}
-                            {tab.key === 'Uz' && <span className="text-red-500"> *</span>}
+                            {tab.key === 'Uz' && <span className="text-red-600 dark:text-red-300"> *</span>}
                           </label>
                           <input
                             {...register(`title${tab.key}` as keyof FormData)}
@@ -283,11 +283,11 @@ export default function AdminNewsPage() {
                             )}
                           />
                           {errors[`title${tab.key}` as keyof FormData] && (
-                            <p className="text-red-500 text-xs mt-1">Sarlavhani kiriting.</p>
+                            <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t('adminD.news.title_required')}</p>
                           )}
                         </div>
                         <div>
-                          <label className="label">Qisqacha ({tab.key.toUpperCase()})</label>
+                          <label className="label">{t('adminD.news.summary_lang', { lang: tab.key.toUpperCase() })}</label>
                           <textarea
                             {...register(`summary${tab.key}` as keyof FormData)}
                             rows={2}
@@ -305,8 +305,8 @@ export default function AdminNewsPage() {
                             ownerType="news"
                             ownerId={editItem?.id}
                           />
-                          <p className="text-xs text-gray-400 mt-1">
-                            Rasmni nusxalab Cmd+V bosing yoki faylni tahrirlagich ustiga sudrab tashlang.
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            {t('adminD.news.paste_hint')}
                           </p>
                         </div>
                       </div>
@@ -318,24 +318,24 @@ export default function AdminNewsPage() {
                   373-son qarorning 4-bandi: boshqa manbadan olingan axborot
                   faqat manba ko'rsatilgan holda joylashtiriladi.
                 */}
-                <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 space-y-3">
-                  <p className="text-xs text-amber-900 leading-relaxed">
-                    <span className="font-semibold">Diqqat.</span> Agar material boshqa manbadan
-                    olingan bo'lsa, manbani ko'rsatish <span className="font-semibold">majburiy</span>
-                    {' '}(Vazirlar Mahkamasining 2021-yil 15-iyundagi 373-son qarori, 4-band).
-                    Institutning o'z materiali bo'lsa, bu maydonlar bo'sh qoladi.
+                <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/30 p-4 space-y-3">
+                  <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
+                    <Trans
+                      i18nKey="adminD.news.source_notice"
+                      components={{ b: <span className="font-semibold" /> }}
+                    />
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="label">Manba nomi</label>
+                      <label className="label">{t('adminD.news.source_name')}</label>
                       <input
                         {...register('sourceName')}
                         className="input"
-                        placeholder="Masalan: UzA"
+                        placeholder={t('adminD.news.source_name_placeholder')}
                       />
                     </div>
                     <div>
-                      <label className="label">Manba havolasi</label>
+                      <label className="label">{t('adminD.news.source_url')}</label>
                       <input
                         {...register('sourceUrl')}
                         className="input"
@@ -348,7 +348,7 @@ export default function AdminNewsPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100">
+                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 dark:border-gray-800">
                   <button
                     type="submit"
                     disabled={createMutation.isPending || updateMutation.isPending}
@@ -386,7 +386,7 @@ export default function AdminNewsPage() {
 
         {/* List */}
         {isLoading ? (
-          <div className="text-center py-8 text-gray-400">Yuklanmoqda...</div>
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div>
         ) : (
           <>
             <BulkActionsBar count={bulk.selected.size} onCancel={bulk.clear}>
@@ -394,7 +394,7 @@ export default function AdminNewsPage() {
                 type="button"
                 onClick={() => void bulkDelete()}
                 disabled={bulkBusy}
-                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+                className="btn-secondary !text-red-600 dark:!text-red-300 !border-red-200 dark:!border-red-800 hover:!bg-red-50 dark:hover:!bg-red-900/30 disabled:opacity-60"
               >
                 {t('admin.bulk_delete')}
               </button>
@@ -409,7 +409,7 @@ export default function AdminNewsPage() {
             </BulkActionsBar>
           <div className="card overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-gray-800">
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input
@@ -419,14 +419,14 @@ export default function AdminNewsPage() {
                       onChange={() => bulk.toggleAll(items.map((item) => item.id))}
                     />
                   </th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium">Sarlavha</th>
-                  <th className="text-left px-4 py-3 text-gray-600 font-medium hidden sm:table-cell">Sana</th>
-                  <th className="text-right px-4 py-3 text-gray-600 font-medium">Amallar</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.news.th_title')}</th>
+                  <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.news.th_date')}</th>
+                  <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                 {items.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:bg-gray-800 transition-colors">
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -437,17 +437,17 @@ export default function AdminNewsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900 truncate max-w-xs">{item.titleUz}</span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-xs">{item.titleUz}</span>
                         {item.isPublished === false && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-xs font-medium flex-shrink-0">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs font-medium flex-shrink-0">
                             <FileEdit className="h-3 w-3" />
                             {t('admin.draft')}
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-gray-400">{item.slug}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{item.slug}</div>
                     </td>
-                    <td className="px-4 py-3 text-gray-500 hidden sm:table-cell">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         {formatDate(item.publishedAt)}
@@ -457,7 +457,8 @@ export default function AdminNewsPage() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => void openEdit(item)}
-                          className="p-1.5 text-gray-400 hover:text-primary-700 hover:bg-primary-50 rounded transition-colors"
+                          aria-label={t('admin.edit')}
+                          className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
@@ -467,7 +468,8 @@ export default function AdminNewsPage() {
                               deleteMutation.mutate(item.id);
                             }
                           }}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                          aria-label={t('admin.delete')}
+                          className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -477,8 +479,8 @@ export default function AdminNewsPage() {
                 ))}
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
-                      Yangiliklar yo'q
+                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                      {t('adminD.news.empty')}
                     </td>
                   </tr>
                 )}

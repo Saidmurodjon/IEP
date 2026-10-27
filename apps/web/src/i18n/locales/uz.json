@@ -376,7 +376,9 @@
     "FORBIDDEN": "Bu amal uchun huquqingiz yetarli emas.",
     "CONFLICT": "Bu email allaqachon band.",
     "LAST_SUPER_ADMIN": "Oxirgi faol Super adminni o'zgartirish yoki o'chirish mumkin emas.",
-    "SELF_ACTION": "O'zingizning rolingiz yoki holatingizni o'zgartirib, o'zingizni o'chirib bo'lmaydi."
+    "SELF_ACTION": "O'zingizning rolingiz yoki holatingizni o'zgartirib, o'zingizni o'chirib bo'lmaydi.",
+    "WRONG_PASSWORD": "Joriy parol noto'g'ri",
+    "SAME_PASSWORD": "Yangi parol joriy paroldan farq qilishi kerak"
   },
   "toast": {
     "news_saved": "Yangilik saqlandi.",
@@ -558,5 +560,198 @@
     "unblocked_ok": "Foydalanuvchi blokdan chiqarildi.",
     "reset_ok": "Parol yangilandi.",
     "deleted_ok": "Foydalanuvchi o'chirildi."
+  },
+  "adminShell": {
+    "panel_title": "Admin panel",
+    "language": "Til",
+    "lang_uz": "O'zbekcha",
+    "lang_en": "English",
+    "lang_ru": "Русский",
+    "theme": "Mavzu",
+    "theme_light": "Yorug' mavzu",
+    "theme_dark": "Qorong'i mavzu",
+    "theme_system": "Tizim mavzusi",
+    "profile_menu": "Profil menyusi",
+    "profile": "Profil"
+  },
+  "profile": {
+    "title": "Profil",
+    "info": "Shaxsiy ma'lumotlar",
+    "name": "Ism",
+    "email": "Email",
+    "role": "Rol",
+    "last_login": "Oxirgi kirish",
+    "never": "Hali kirilmagan",
+    "name_saved": "Ism saqlandi",
+    "change_password": "Parolni o'zgartirish",
+    "current_password": "Joriy parol",
+    "new_password": "Yangi parol",
+    "confirm_password": "Yangi parolni tasdiqlang",
+    "password_saved": "Parol o'zgartirildi",
+    "v_name": "Ism 2 dan 100 gacha belgi bo'lishi kerak",
+    "v_current": "Joriy parolni kiriting",
+    "v_new": "Parol 10 dan 200 gacha belgi bo'lishi kerak",
+    "v_confirm": "Parolni tasdiqlang",
+    "v_mismatch": "Parollar mos kelmadi"
+  },
+  "adminC": {
+    "common": {
+      "th_name": "Nomi",
+      "th_actions": "Amallar",
+      "th_order": "Tartib",
+      "order_number": "Tartib raqami",
+      "show_on_site": "Saytda ko'rsatilsin",
+      "attention": "Diqqat.",
+      "hide": "Yashirish",
+      "show": "Ko'rsatish"
+    },
+    "employees": {
+      "err_name": "Ism kiriting",
+      "err_position": "Lavozim kiriting",
+      "err_email": "Pochta noto'g'ri",
+      "fullname_label": "Ism-sharif ({{lang}}) *",
+      "position_label": "Lavozimi ({{lang}}) *",
+      "degree_label": "Ilmiy darajasi ({{lang}})",
+      "title_label": "Ilmiy unvoni ({{lang}})",
+      "research_label": "Ilmiy yo'nalishi ({{lang}})",
+      "reception_label": "Qabul kunlari ({{lang}})",
+      "reception_placeholder": "Dushanba va chorshanba, 15:00 – 17:00",
+      "reception_hint": "Erkin matn. Bo'sh qoldirilsa, sahifada qabul vaqti qatori umuman ko'rinmaydi.",
+      "warn_before": "Saytda faqat",
+      "warn_bold": "xizmat telefoni va xizmat elektron pochtasi",
+      "warn_after": "e'lon qilinadi. Shaxsiy mobil raqam yoki shaxsiy pochta manzilini kiritmang. Ma'lumotni e'lon qilish uchun xodimning roziligi bo'lishi kerak.",
+      "phone": "Xizmat telefoni",
+      "email": "Xizmat pochtasi",
+      "office": "Xona raqami",
+      "photo": "Xodim rasmi",
+      "unit": "Bo'linma / laboratoriya",
+      "unit_none": "— biriktirilmagan —",
+      "is_management": "Rahbariyat tarkibida",
+      "is_unit_head": "Bo'linma / laboratoriya mudiri",
+      "active": "Faol",
+      "th_name": "Ism-sharif",
+      "th_position": "Lavozimi",
+      "th_unit": "Bo'linma",
+      "empty": "Xodimlar hali kiritilmagan.",
+      "badge_management": "rahbariyat",
+      "badge_head": "mudir",
+      "deactivate": "Nofaol qilish",
+      "activate": "Faol qilish"
+    },
+    "partners": {
+      "err_name": "Nomini kiriting",
+      "err_logo": "Logotip manzilini kiriting",
+      "err_url": "Havola noto'g'ri",
+      "name_label": "Tashkilot nomi ({{lang}}) *",
+      "logo": "Logotip *",
+      "website": "Veb-sayti",
+      "warn_1": "Hamkor tashkilot logotipi uning savdo belgisi hisoblanadi. Saytga faqat institut bilan haqiqatan hamkorlik qiladigan tashkilotlar logotipi qo'yiladi. Logotip fayllari hozircha",
+      "warn_2": "papkasida saqlanadi, manzil",
+      "warn_file": "nom",
+      "warn_3": "ko'rinishida yoziladi.",
+      "th_logo": "Logotip",
+      "th_website": "Veb-sayt",
+      "empty": "Hamkorlar hali kiritilmagan. Ro'yxat bo'sh bo'lganda saytda bo'lim ko'rinmaydi."
+    },
+    "documents": {
+      "err_title": "Hujjat nomini kiriting.",
+      "err_file": "Fayl yuklang",
+      "file": "Hujjat fayli *",
+      "title_label": "Hujjat nomi ({{lang}})",
+      "description_label": "Izoh ({{lang}})",
+      "number_placeholder": "373-son",
+      "th_number": "Raqami",
+      "th_date": "Sanasi",
+      "empty": "Hujjatlar hali kiritilmagan."
+    }
+  },
+  "adminD": {
+    "common": {
+      "th_actions": "Amallar"
+    },
+    "structure": {
+      "helmet": "Tuzilma | Admin"
+    },
+    "settings": {
+      "helmet": "Sozlamalar | Admin",
+      "saved": "Saqlandi!",
+      "saving": "Saqlanmoqda...",
+      "group_general": "Umumiy",
+      "group_contact": "Aloqa ma'lumotlari",
+      "site_name_uz": "Sayt nomi (UZ)",
+      "site_name_en": "Sayt nomi (EN)",
+      "site_name_ru": "Sayt nomi (RU)",
+      "site_url": "Sayt manzili (canonical/hreflang uchun)",
+      "email": "Murojaat bildirishnomalari uchun zaxira pochta",
+      "appeals_email": "Murojaat bildirishnomalari uchun pochta",
+      "appeals_retention_days": "Yopilgan murojaatlarni saqlash muddati (kun)"
+    },
+    "units": {
+      "helmet": "Bo'linmalar | Admin",
+      "edit_title": "Tahrirlash",
+      "new_title": "Yangi bo'lim",
+      "name_lang": "Nomi ({{lang}})",
+      "description_lang": "Tavsif ({{lang}})",
+      "type": "Tur",
+      "order": "Tartib",
+      "head": "Rahbar",
+      "head_placeholder": "F.I.O.",
+      "parent": "Yuqori bo'lim",
+      "parent_none": "— Asosiy —",
+      "th_name": "Nomi",
+      "th_type": "Tur",
+      "th_head": "Rahbar",
+      "empty": "Bo'limlar yo'q"
+    },
+    "publications": {
+      "helmet": "Nashrlar | Admin",
+      "modal_suffix": "Nashr",
+      "authors": "Mualliflar",
+      "authors_placeholder": "Familiya I.I., ...",
+      "authors_required": "Mualliflarni kiriting.",
+      "year": "Yil",
+      "journal": "Jurnal",
+      "category": "Kategoriya",
+      "doi_placeholder": "10.xxxx/...",
+      "file_label": "Nashr fayli (PDF, DOC, XLS)",
+      "th_title": "Sarlavha",
+      "th_authors": "Mualliflar",
+      "th_year": "Yil",
+      "empty": "Nashrlar yo'q"
+    },
+    "news": {
+      "helmet": "Yangiliklar | Admin",
+      "modal_suffix": "Yangilik",
+      "slug": "Havola (slug)",
+      "slug_placeholder": "yangilik-slugi",
+      "slug_required": "Havolani (slug) kiriting.",
+      "slug_hint": "Sarlavhadan avtomatik hosil bo'ladi. Saqlangandan keyin o'zgartirmang — eski havolalar buziladi.",
+      "published_at": "Nashr sanasi",
+      "cover_image": "Bosh rasm",
+      "title_required": "Sarlavhani kiriting.",
+      "summary_lang": "Qisqacha ({{lang}})",
+      "paste_hint": "Rasmni nusxalab Cmd+V bosing yoki faylni tahrirlagich ustiga sudrab tashlang.",
+      "source_notice": "<b>Diqqat.</b> Agar material boshqa manbadan olingan bo'lsa, manbani ko'rsatish <b>majburiy</b> (Vazirlar Mahkamasining 2021-yil 15-iyundagi 373-son qarori, 4-band). Institutning o'z materiali bo'lsa, bu maydonlar bo'sh qoladi.",
+      "source_name": "Manba nomi",
+      "source_name_placeholder": "Masalan: UzA",
+      "source_url": "Manba havolasi",
+      "th_title": "Sarlavha",
+      "th_date": "Sana",
+      "empty": "Yangiliklar yo'q"
+    }
+  },
+  "adminE": {
+    "dashboard": {
+      "title": "Boshqaruv paneli"
+    },
+    "login": {
+      "pageTitle": "Admin kirish | Energetika instituti",
+      "heading": "Admin panel",
+      "subtitle": "Energetika muammolari instituti",
+      "invalid": "Email yoki parol noto'g'ri",
+      "emailInvalid": "Email noto'g'ri",
+      "passwordShort": "Parol kamida 8 ta belgi",
+      "language": "Til"
+    }
   }
 }

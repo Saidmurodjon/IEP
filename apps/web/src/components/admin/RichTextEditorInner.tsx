@@ -34,7 +34,9 @@ function ToolbarButton({
       aria-pressed={active}
       className={clsx(
         'p-2 rounded-md transition-colors',
-        active ? 'bg-primary-100 text-primary-700' : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800'
+        active
+          ? 'bg-primary-100 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300'
+          : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100'
       )}
     >
       {children}
@@ -107,7 +109,7 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
     content: value,
     editorProps: {
       attributes: {
-        class: 'prose-content min-h-[260px] px-4 py-3 focus:outline-none',
+        class: 'prose-content min-h-[260px] px-4 py-3 focus:outline-none bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100',
       },
       // Word va veb sahifadan kelgan keraksiz belgilash shu yerda tozalanadi.
       transformPastedHTML: (html) => sanitizePastedHtml(html),
@@ -156,8 +158,8 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
   };
 
   return (
-    <div className="rounded-lg border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-primary-500">
-      <div className="flex flex-wrap items-center gap-0.5 border-b border-gray-200 bg-gray-50 px-2 py-1.5">
+    <div className="rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden focus-within:ring-2 focus-within:ring-primary-500">
+      <div className="flex flex-wrap items-center gap-0.5 border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 px-2 py-1.5">
         <ToolbarButton title={t('editor.bold')} active={editor.isActive('bold')}
           onClick={() => editor.chain().focus().toggleBold().run()}>
           <Bold className="h-4 w-4" />
@@ -167,7 +169,7 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
           <Italic className="h-4 w-4" />
         </ToolbarButton>
 
-        <span className="mx-1 h-5 w-px bg-gray-200" />
+        <span className="mx-1 h-5 w-px bg-gray-200 dark:bg-gray-700" />
 
         <ToolbarButton title={t('editor.h2')} active={editor.isActive('heading', { level: 2 })}
           onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}>
@@ -178,7 +180,7 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
           <Heading3 className="h-4 w-4" />
         </ToolbarButton>
 
-        <span className="mx-1 h-5 w-px bg-gray-200" />
+        <span className="mx-1 h-5 w-px bg-gray-200 dark:bg-gray-700" />
 
         <ToolbarButton title={t('editor.bullet_list')} active={editor.isActive('bulletList')}
           onClick={() => editor.chain().focus().toggleBulletList().run()}>
@@ -193,7 +195,7 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
           <Quote className="h-4 w-4" />
         </ToolbarButton>
 
-        <span className="mx-1 h-5 w-px bg-gray-200" />
+        <span className="mx-1 h-5 w-px bg-gray-200 dark:bg-gray-700" />
 
         <ToolbarButton title={t('editor.link')} active={editor.isActive('link')} onClick={setLink}>
           <Link2 className="h-4 w-4" />
@@ -209,7 +211,7 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
         </ToolbarButton>
 
         {uploading > 0 && (
-          <span className="ml-auto inline-flex items-center gap-1.5 pr-1 text-xs text-gray-500">
+          <span className="ml-auto inline-flex items-center gap-1.5 pr-1 text-xs text-gray-500 dark:text-gray-400">
             <Loader2 className="h-3.5 w-3.5 animate-spin" />
             {t('editor.uploading')}
           </span>

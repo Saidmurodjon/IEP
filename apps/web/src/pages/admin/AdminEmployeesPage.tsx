@@ -18,17 +18,17 @@ import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
-  fullNameUz: z.string().min(1, 'Ism kiriting'),
-  fullNameEn: z.string().min(1, 'Ism kiriting'),
-  fullNameRu: z.string().min(1, 'Ism kiriting'),
-  positionUz: z.string().min(1, 'Lavozim kiriting'),
-  positionEn: z.string().min(1, 'Lavozim kiriting'),
-  positionRu: z.string().min(1, 'Lavozim kiriting'),
+  fullNameUz: z.string().min(1, 'adminC.employees.err_name'),
+  fullNameEn: z.string().min(1, 'adminC.employees.err_name'),
+  fullNameRu: z.string().min(1, 'adminC.employees.err_name'),
+  positionUz: z.string().min(1, 'adminC.employees.err_position'),
+  positionEn: z.string().min(1, 'adminC.employees.err_position'),
+  positionRu: z.string().min(1, 'adminC.employees.err_position'),
   degreeUz: z.string().optional(), degreeEn: z.string().optional(), degreeRu: z.string().optional(),
   titleUz: z.string().optional(), titleEn: z.string().optional(), titleRu: z.string().optional(),
   researchAreaUz: z.string().optional(), researchAreaEn: z.string().optional(), researchAreaRu: z.string().optional(),
   receptionHoursUz: z.string().optional(), receptionHoursEn: z.string().optional(), receptionHoursRu: z.string().optional(),
-  email: z.string().email("Pochta noto'g'ri").optional().or(z.literal('')),
+  email: z.string().email('adminC.employees.err_email').optional().or(z.literal('')),
   phone: z.string().optional(),
   photoUrl: z.string().optional(),
   orcid: z.string().optional(),
@@ -144,7 +144,7 @@ export default function AdminEmployeesPage() {
       <Helmet><title>{t('admin.employees')} | Admin</title></Helmet>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{t('admin.employees')}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.employees')}</h1>
           <button onClick={() => { reset(); setEditItem(null); setShowForm(true); }} className="btn-primary gap-2">
             <Plus className="h-4 w-4" /> {t('admin.add_new')}
           </button>
@@ -153,24 +153,24 @@ export default function AdminEmployeesPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
             <div
-              className="bg-white rounded-2xl w-full max-w-3xl my-4"
+              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-3xl my-4"
               ref={formRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="admin-form-title"
               tabIndex={-1}
             >
-              <div className="flex items-center justify-between p-5 border-b">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900">
+              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
+                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
                   {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.employees')}
                 </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700">
+                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-                <div className="flex gap-1 border-b">
+                <div className="flex gap-1 border-b dark:border-gray-800">
                   {TABS.map((tab) => (
                     <button
                       key={tab.key}
@@ -179,8 +179,8 @@ export default function AdminEmployeesPage() {
                       className={clsx(
                         'px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
                         activeTab === tab.key
-                          ? 'border-primary-600 text-primary-700'
-                          : 'border-transparent text-gray-500 hover:text-gray-700'
+                          ? 'border-primary-600 text-primary-700 dark:border-primary-300 dark:text-primary-300'
+                          : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
                       )}
                     >
                       {tab.label}
@@ -191,41 +191,41 @@ export default function AdminEmployeesPage() {
                 {TABS.map((tab) => (
                   <div key={tab.key} className={clsx('space-y-3', activeTab === tab.key ? '' : 'hidden')}>
                     <div>
-                      <label className="label">Ism-sharif ({tab.key.toUpperCase()}) *</label>
+                      <label className="label">{t('adminC.employees.fullname_label', { lang: tab.key.toUpperCase() })}</label>
                       <input {...register(`fullName${tab.key}` as keyof FormData)} className="input" />
                       {errors[`fullName${tab.key}` as keyof FormData] && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors[`fullName${tab.key}` as keyof FormData]?.message as string}
+                        <p className="text-red-500 dark:text-red-400 text-xs mt-1">
+                          {t(errors[`fullName${tab.key}` as keyof FormData]?.message as string)}
                         </p>
                       )}
                     </div>
                     <div>
-                      <label className="label">Lavozimi ({tab.key.toUpperCase()}) *</label>
+                      <label className="label">{t('adminC.employees.position_label', { lang: tab.key.toUpperCase() })}</label>
                       <input {...register(`position${tab.key}` as keyof FormData)} className="input" />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="label">Ilmiy darajasi ({tab.key.toUpperCase()})</label>
+                        <label className="label">{t('adminC.employees.degree_label', { lang: tab.key.toUpperCase() })}</label>
                         <input {...register(`degree${tab.key}` as keyof FormData)} className="input" />
                       </div>
                       <div>
-                        <label className="label">Ilmiy unvoni ({tab.key.toUpperCase()})</label>
+                        <label className="label">{t('adminC.employees.title_label', { lang: tab.key.toUpperCase() })}</label>
                         <input {...register(`title${tab.key}` as keyof FormData)} className="input" />
                       </div>
                     </div>
                     <div>
-                      <label className="label">Ilmiy yo'nalishi ({tab.key.toUpperCase()})</label>
+                      <label className="label">{t('adminC.employees.research_label', { lang: tab.key.toUpperCase() })}</label>
                       <input {...register(`researchArea${tab.key}` as keyof FormData)} className="input" />
                     </div>
                     <div>
-                      <label className="label">Qabul kunlari ({tab.key.toUpperCase()})</label>
+                      <label className="label">{t('adminC.employees.reception_label', { lang: tab.key.toUpperCase() })}</label>
                       <input
                         {...register(`receptionHours${tab.key}` as keyof FormData)}
                         className="input"
-                        placeholder="Dushanba va chorshanba, 15:00 – 17:00"
+                        placeholder={t('adminC.employees.reception_placeholder')}
                       />
-                      <p className="text-xs text-gray-400 mt-1">
-                        Erkin matn. Bo'sh qoldirilsa, sahifada qabul vaqti qatori umuman ko'rinmaydi.
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        {t('adminC.employees.reception_hint')}
                       </p>
                     </div>
                   </div>
@@ -234,35 +234,34 @@ export default function AdminEmployeesPage() {
                 {/*
                   Shaxsiy ma'lumotlar bo'yicha ogohlantirish — 06-topshiriq talabi.
                 */}
-                <div className="rounded-lg border border-amber-200 bg-amber-50/60 p-4 space-y-3">
-                  <p className="text-xs text-amber-900 leading-relaxed">
-                    <span className="font-semibold">Diqqat.</span> Saytda faqat{' '}
-                    <span className="font-semibold">xizmat telefoni va xizmat elektron pochtasi</span>{' '}
-                    e'lon qilinadi. Shaxsiy mobil raqam yoki shaxsiy pochta manzilini kiritmang.
-                    Ma'lumotni e'lon qilish uchun xodimning roziligi bo'lishi kerak.
+                <div className="rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-900/30 p-4 space-y-3">
+                  <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
+                    <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.employees.warn_before')}{' '}
+                    <span className="font-semibold">{t('adminC.employees.warn_bold')}</span>{' '}
+                    {t('adminC.employees.warn_after')}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="label">Xizmat telefoni</label>
+                      <label className="label">{t('adminC.employees.phone')}</label>
                       <input {...register('phone')} className="input" placeholder="+998 71 ..." />
                     </div>
                     <div>
-                      <label className="label">Xizmat pochtasi</label>
+                      <label className="label">{t('adminC.employees.email')}</label>
                       <input {...register('email')} className="input" placeholder="ism@iep.uz" />
-                      {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                      {errors.email && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.email.message as string)}</p>}
                     </div>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="label">Xona raqami</label>
+                    <label className="label">{t('adminC.employees.office')}</label>
                     <input {...register('officeRoom')} className="input" />
                   </div>
                   <div className="sm:col-span-2">
                     <FileUploadField
                       kind="photo"
-                      label="Xodim rasmi"
+                      label={t('adminC.employees.photo')}
                       value={photoUrl ?? null}
                       onChange={(url) => setValue('photoUrl', url ?? '', { shouldDirty: true })}
                       ownerType="employee"
@@ -281,9 +280,9 @@ export default function AdminEmployeesPage() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="label">Bo'linma / laboratoriya</label>
+                    <label className="label">{t('adminC.employees.unit')}</label>
                     <select {...register('unitId')} className="input">
-                      <option value="">— biriktirilmagan —</option>
+                      <option value="">{t('adminC.employees.unit_none')}</option>
                       {units.map(({ unit, depth }) => (
                         <option key={unit.id} value={unit.id}>
                           {' '.repeat(depth * 3)}{unit.nameUz}
@@ -292,23 +291,23 @@ export default function AdminEmployeesPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="label">Tartib raqami</label>
+                    <label className="label">{t('adminC.common.order_number')}</label>
                     <input type="number" {...register('order')} className="input" defaultValue={0} />
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-5 pt-1">
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <input type="checkbox" {...register('isManagement')} className="rounded" />
-                    Rahbariyat tarkibida
+                    {t('adminC.employees.is_management')}
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <input type="checkbox" {...register('isUnitHead')} className="rounded" />
-                    Bo'linma / laboratoriya mudiri
+                    {t('adminC.employees.is_unit_head')}
                   </label>
-                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                  <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                     <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-                    Faol
+                    {t('adminC.employees.active')}
                   </label>
                 </div>
 
@@ -338,14 +337,14 @@ export default function AdminEmployeesPage() {
                 type="button"
                 onClick={() => void bulkDelete()}
                 disabled={bulkBusy}
-                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 disabled:opacity-60"
+                className="btn-secondary !text-red-600 !border-red-200 hover:!bg-red-50 dark:!text-red-300 dark:!border-red-800 dark:hover:!bg-red-900/30 disabled:opacity-60"
               >
                 {t('admin.bulk_delete')}
               </button>
             </BulkActionsBar>
           <div className="card overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-500">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
                 <tr>
                   <th className="px-4 py-3 w-10">
                     <input
@@ -355,23 +354,23 @@ export default function AdminEmployeesPage() {
                       onChange={() => bulk.toggleAll(items.map((item) => item.id))}
                     />
                   </th>
-                  <th className="text-left font-medium px-4 py-3">Ism-sharif</th>
-                  <th className="text-left font-medium px-4 py-3">Lavozimi</th>
-                  <th className="text-left font-medium px-4 py-3">Bo'linma</th>
-                  <th className="text-left font-medium px-4 py-3">Tartib</th>
-                  <th className="text-right font-medium px-4 py-3">Amallar</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.employees.th_name')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.employees.th_position')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.employees.th_unit')}</th>
+                  <th className="text-left font-medium px-4 py-3">{t('adminC.common.th_order')}</th>
+                  <th className="text-right font-medium px-4 py-3">{t('adminC.common.th_actions')}</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-10 text-center text-gray-400">
-                      Xodimlar hali kiritilmagan.
+                    <td colSpan={6} className="px-4 py-10 text-center text-gray-500 dark:text-gray-400">
+                      {t('adminC.employees.empty')}
                     </td>
                   </tr>
                 )}
                 {items.map((item) => (
-                  <tr key={item.id} className={clsx('border-t border-gray-100', !item.isActive && 'opacity-50')}>
+                  <tr key={item.id} className={clsx('border-t border-gray-100 dark:border-gray-800', !item.isActive && 'opacity-50')}>
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -380,33 +379,33 @@ export default function AdminEmployeesPage() {
                         onChange={() => bulk.toggle(item.id)}
                       />
                     </td>
-                    <td className="px-4 py-3 font-medium text-gray-900">
+                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
                       {item.fullNameUz}
-                      {item.isManagement && <span className="ml-2 text-xs text-accent-700">rahbariyat</span>}
-                      {item.isUnitHead && <span className="ml-2 text-xs text-primary-600">mudir</span>}
+                      {item.isManagement && <span className="ml-2 text-xs text-accent-700 dark:text-accent-300">{t('adminC.employees.badge_management')}</span>}
+                      {item.isUnitHead && <span className="ml-2 text-xs text-primary-600 dark:text-primary-300">{t('adminC.employees.badge_head')}</span>}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{item.positionUz}</td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{item.positionUz}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
                       {units.find(({ unit }) => unit.id === item.unitId)?.unit.nameUz ?? '—'}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">{item.order}</td>
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{item.order}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button
                           onClick={() => toggleActive(item)}
-                          title={item.isActive ? 'Nofaol qilish' : 'Faol qilish'}
-                          className="p-2 text-gray-400 hover:text-primary-700"
+                          title={item.isActive ? t('adminC.employees.deactivate') : t('adminC.employees.activate')}
+                          className="p-2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-300"
                         >
                           {item.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                         </button>
-                        <button onClick={() => openEdit(item)} className="p-2 text-gray-400 hover:text-primary-700">
+                        <button onClick={() => openEdit(item)} className="p-2 text-gray-500 hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-300">
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => {
                             if (confirm(t('admin.confirm_delete'))) deleteMutation.mutate(item.id);
                           }}
-                          className="p-2 text-gray-400 hover:text-red-600"
+                          className="p-2 text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
