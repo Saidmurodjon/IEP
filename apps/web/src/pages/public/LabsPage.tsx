@@ -75,7 +75,7 @@ export default function LabsPage() {
         )}
 
         <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 list-none p-0">
-          {labs.map((lab) => {
+          {labs.map((lab, index) => {
             const name = unitName(lab, lang);
             const record = lab as unknown as Record<string, unknown>;
             const summary = localized(record, 'description', lang);
@@ -88,25 +88,48 @@ export default function LabsPage() {
               <li key={lab.id} className="flex">
                 <LocalizedLink
                   to={`/laboratories/${lab.id}`}
-                  className="group flex w-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
+                  className="group flex w-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primary-900/15 hover:border-primary-200 motion-reduce:transition-none motion-reduce:hover:translate-y-0 focus-visible:ring-2 focus-visible:ring-primary-600 focus-visible:ring-offset-2"
                 >
-                  <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-primary-700 to-primary-900">
+                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-primary-700 via-primary-800 to-primary-950">
                     {lab.imageUrl ? (
-                      <A11yImage
-                        src={lab.imageUrl}
-                        alt={name}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-                      />
+                      <>
+                        <A11yImage
+                          src={lab.imageUrl}
+                          alt={name}
+                          loading="lazy"
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                        />
+                        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-primary-950/80 via-primary-950/20 to-transparent" />
+                      </>
                     ) : (
-                      <div aria-hidden="true" className="flex h-full w-full items-center justify-center">
-                        <Beaker className="h-14 w-14 text-white/70" />
+                      <div aria-hidden="true" className="absolute inset-0">
+                        <div className="absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.35)_1px,transparent_1px)] [background-size:16px_16px]" />
+                        <div className="absolute -right-10 -top-16 h-48 w-48 rounded-full bg-accent-400/30 blur-3xl transition-transform duration-700 group-hover:-translate-x-6 group-hover:translate-y-4 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0 motion-reduce:group-hover:translate-y-0" />
+                        <div className="absolute -bottom-20 -left-10 h-48 w-48 rounded-full bg-primary-400/30 blur-3xl" />
+                        <Beaker className="absolute -bottom-6 right-6 h-32 w-32 -rotate-12 text-white/[0.07]" />
                       </div>
                     )}
-                  </div>
 
-                  <div className="flex flex-1 flex-col p-5">
-                    <h2 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700">{name}</h2>
+                    <span
+                      aria-hidden="true"
+                      className="absolute right-5 top-3 text-5xl font-black tabular-nums tracking-tight text-white/15"
+                    >
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      className="absolute bottom-4 left-5 flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-white ring-1 ring-white/25 backdrop-blur-sm transition-transform duration-300 group-hover:scale-110 group-hover:bg-accent-500 group-hover:ring-accent-300 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    >
+                      <Beaker className="h-6 w-6" />
+                    </span>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    className="block h-1 origin-left scale-x-0 bg-gradient-to-r from-accent-400 to-accent-600 transition-transform duration-500 group-hover:scale-x-100 motion-reduce:transition-none"
+                  />
+
+                  <div className="flex flex-1 flex-col p-6 pt-5">
+                    <h2 className="text-lg font-bold leading-snug text-gray-900 mb-2 transition-colors group-hover:text-primary-700">{name}</h2>
                     {summary && <p className="text-sm text-gray-600 mb-4 line-clamp-3">{summary}</p>}
 
                     {directions.length > 0 && (

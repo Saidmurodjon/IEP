@@ -222,6 +222,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Laboratoriya kartochkalari — yangi dizayn
+
+`LabsPage` kartochkasi: baland bo'sh 16:9 blok o'rniga `h-40` sarlavha — nuqtali naqsh,
+oltin va ko'k nur (blur), katta xira tartib raqami (01–06), shisha ikonka plitkasi (hover'da
+oltin rangga o'tadi), sarlavha ostida hover'da chiziladigan oltin chiziq. Rasm bo'lsa — `object-cover`
+va pastdan qoraytirish. Kuchliroq soya/ko'tarilish; barcha animatsiyalarda `motion-reduce`.
+**Tekshirildi:** `tsc --noEmit` (web) toza; `/uz/laboratories` brauzerda ochildi, skrinshot ko'rildi.
+**Tekshirilmadi:** rasmli lab (lokal bazada yo'q), mobil kenglik, production.
+
 ### 2026-10-27 · Xodim kartochkasi — mobil va planshet uchun qayta dizayn
 
 `EmployeeCard`: `sm` dan tor ekranda vertikal — gradient lenta, 3x4 sm surat markazda lenta
@@ -242,9 +251,3 @@ o'lcham `h-[4cm] w-[3cm]` (CSS `cm`, ≈113x151 px) — xodimlar, rahbariyat va 
 **Tekshirildi:** `tsc --noEmit` (web) toza; `/uz/employees` da `getBoundingClientRect` —
 rasm ham, bosh harf joyi ham 113.4x151.2 px; skrinshot bilan joylashuv ko'rildi.
 **Tekshirilmadi:** mobil kenglik, production.
-
-### 2026-10-27 · Xodim formasidan shaxsiy ma'lumot ogohlantirishi olib tashlandi
-
-Foydalanuvchi so'rovi bilan «Aloqa» blokidagi sariq ogohlantirish (06-topshiriqdan) o'chirildi,
-`adminC.employees.warn_*` kalitlari uchala tildan olib tashlandi (boshqa joyda ishlatilmaydi).
-**Tekshirildi:** `tsc --noEmit` (web) toza. Brauzerda qayta ochilmadi (faqat bitta blok o'chdi).
