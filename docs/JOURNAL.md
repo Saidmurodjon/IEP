@@ -242,22 +242,3 @@ bilan dashboard (18-A da tekshirilgan qism o'zgarmagan); mobil kenglik.
 **Muammo:** lokal bazada `publications` 15 → 0 (18-B davomida). Koderlar nashrlarga tegmagan,
 boshqa sessiya yo'q, install-hook yo'q. Sabab noma'lum; `db:test` ildiz `.env` orqali Neon'ga
 yozgani uchun tiklash qilinmadi — foydalanuvchiga savol berildi.
-
-### 2026-10-27 · 18-A — admin rollari: SUPER_ADMIN va ADMIN
-**Kommit:** `feat(admin): super admin and admin roles with user management`
-**Qilindi:** `Admin` ga `role`/`isActive`/`lastLoginAt`, migratsiya 8 (mavjud adminlar → SUPER_ADMIN).
-`requireAuth` rol va faollikni HAR so'rovda bazadan o'qiydi (bloklangan admin tokeni darhol 401).
-`requireRole()`; `/api/admins` CRUD + parol tiklash. Super admin uchun: admins, sozlamalarni yozish,
-logs, uploads/cleanup. Xato kodlari FORBIDDEN, CONFLICT, LAST_SUPER_ADMIN, SELF_ACTION.
-Web: `/admin/users` sahifasi, `SuperAdminRoute`, menyuda `superOnly`, `/me` dan rol yangilanadi,
-dashboard'da xatolar kartochkasi faqat super admin'ga. 3 tilda matnlar.
-**Tekshirildi:** tsc (api+web), vitest 57/57, wrangler dry-run, vite build. Lokal bazada HTTP:
-yaratish 201, takror email 409, qisqa parol 400, ADMIN → admins/logs/settings/cleanup 403,
-kontent 200, o'zini pasaytirish/bloklash/o'chirish 409 SELF_ACTION, bloklangan token 401,
-bloklangan login 401, parol tiklash (eski parol 401), javobda parol yo'q. Brauzer: super admin
-menyusi va jadval; ADMIN localStorage'da soxta SUPER_ADMIN bilan ham `/me` dan ADMIN oldi va
-dashboard'ga yo'naltirildi. Test hisoblar o'chirildi.
-**Tekshirilmadi:** LAST_SUPER_ADMIN holati HTTP orqali (bazada 2 super admin bor; mantiq
-`admin-guard.test.ts` da sinovdan o'tgan); modallarning Escape/fokus tuzog'i qo'lda sinalmadi.
-**Qarorlar:** rol tokenga yozilmaydi — bazadan o'qiladi (har so'rovga +1 so'rov, evaziga darhol
-bekor qilish). Production'ga migratsiya foydalanuvchi tasdig'idan keyin.
