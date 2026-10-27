@@ -4,6 +4,7 @@
 //   server.cjs         — butun API bitta faylda (@prisma/client tashqarida)
 //   package.json       — serverda `npm install`, keyin ilova papkasida `npm run generate`
 //   prisma/            — schema.prisma va migrations/ (`npx prisma migrate deploy`)
+//   seed.cjs           — bo'sh bazaga admin, rasmiy tuzilma va sozlamalar (`npm run seed`)
 //
 // Secret'lar paketga TUSHMAYDI — ular cPanel formasida kiritiladi.
 import { build } from 'esbuild';
@@ -38,6 +39,20 @@ await build({
   logLevel: 'warning',
 });
 
+// Seed — yangi hostingda bazani noldan to'ldirish uchun. ADMIN_PASSWORD serverda
+// buyruq bilan beriladi, paketga tushmaydi.
+await build({
+  entryPoints: [join(rootDir, 'packages/db/src/seed.ts')],
+  outfile: join(outDir, 'seed.cjs'),
+  bundle: true,
+  platform: 'node',
+  target: 'node22',
+  format: 'cjs',
+  external: ['@prisma/client', '.prisma/client'],
+  legalComments: 'none',
+  logLevel: 'warning',
+});
+
 await cp(join(rootDir, 'packages/db/prisma/schema.prisma'), join(outDir, 'prisma/schema.prisma'));
 await cp(join(rootDir, 'packages/db/prisma/migrations'), join(outDir, 'prisma/migrations'), {
   recursive: true,
@@ -56,6 +71,7 @@ const pkg = {
     // ishga tushiradi, u yerda prisma/ papkasi yo'q. Ilova papkasida qo'lda.
     generate: 'prisma generate --schema=prisma/schema.prisma',
     migrate: 'prisma migrate deploy --schema=prisma/schema.prisma',
+    seed: 'node seed.cjs',
   },
   dependencies: {
     '@prisma/client': prismaVersion,

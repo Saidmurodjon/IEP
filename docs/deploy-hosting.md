@@ -25,14 +25,14 @@ Faqat maxfiy bo'lmagan ma'lumot. Parollar — parol menejerida, bu yerda emas.
 | Nima | Qiymat |
 |---|---|
 | Registrator / hosting | Arsenal-D |
-| Kabinet manzili | _(to'ldiring)_ |
+| Kabinet manzili | `https://webname.uz/domains/189190` (domen) |
 | Yuridik shaxs (STIR) | _(to'ldiring)_ |
-| Hosting paneli (DirectAdmin) manzili | _(masalan `https://webN.<host>:2222/evo/`)_ |
-| Server hostname / IP | _(panelda «Server nomi / IP»)_ |
-| Hosting foydalanuvchi nomi | _(panel login'i)_ |
-| NS serverlari | _(hosting beradi, masalan `dns1–4.<host>`)_ |
+| Hosting paneli (DirectAdmin) manzili | `https://web2.webspace.uz:2222/evo/` |
+| Server hostname / IP | `web2.webspace.uz` / `95.46.96.12` |
+| Hosting foydalanuvchi nomi | `iepuz` (SSH kaliti `~/.ssh/iep_prod`) |
+| NS serverlari | `dns1–4.webspace.uz` |
 | Hosting muddati | _(to'ldiring)_ |
-| Domen muddati | _(to'ldiring)_ |
+| Domen muddati | 05.10.2027 |
 
 ---
 
@@ -81,7 +81,7 @@ Faqat maxfiy bo'lmagan ma'lumot. Parollar — parol menejerida, bu yerda emas.
 
 | Nomi | Qiymat formati | Eslatma |
 |---|---|---|
-| `DATABASE_URL` | `postgresql://USER:PAROL@localhost:5432/BAZA` | `postgresql:` dan keyin **ikkita** `//`. Paroldagi `@ : / # ? %` URL-kodlanadi (`@` → `%40`) |
+| `DATABASE_URL` | `postgresql://USER:PAROL@127.0.0.1:5432/BAZA` | `postgresql:` dan keyin **ikkita** `//`. Paroldagi `@ : / # ? %` URL-kodlanadi (`@` → `%40`) |
 | `JWT_SECRET` | ≥ 32 belgi, `openssl rand -hex 32` | Yangi yarating, hech qayerga ko'chirmang, chatga yozmang |
 | `FRONTEND_URL` | `https://iep.uz` | **Bosh/oxirgi bo'sh joysiz**, oxirida `/` yo'q — aks holda CORS ishlamaydi |
 | `MEDIA_DIR` | `/home/<user>/iep-media` | Papka `public_html` dan tashqarida |
@@ -91,6 +91,11 @@ Faqat maxfiy bo'lmagan ma'lumot. Parollar — parol menejerida, bu yerda emas.
 | `TOKIO_WORKER_THREADS` | ixtiyoriy, standart `2` (kodda) | Oshirmang — 9-bo'limga qarang |
 
 Saqlagandan keyin **Restart**.
+
+**Tezroq yo'l (2026-10-27 da ishlatilgan):** ilovani `cloudlinux-selector create` bilan SSH
+orqali yarating, keyin Mac Terminal'da `bash apps/api/scripts/setup-hosting.sh` — u parollarni
+so'raydi (ekranga chiqmaydi), `JWT_SECRET` ni yaratadi, env'ni o'rnatadi, `migrate` + `seed`
+bajaradi va restart qiladi. Qayta ishga tushirish xavfsiz.
 
 ## 6. Build va yuklash (Mac'da)
 
@@ -153,6 +158,10 @@ daqiqalab yashaydi (bir necha soniyada qayta tug'ilsa — 9-bo'lim).
 | NodeApp jarayonlari 4–12 s yashaydi, SSH `Connection reset by peer` | CloudLinux LVE oqimlarni sanaydi; Prisma tokio yadro soniga teng oqim ochadi (~52) | Kodda `TOKIO_WORKER_THREADS=2` (tayyor) |
 | Rasmlar ko'rinmaydi | `<img>` nisbiy `/api/files/` yoki bazada `localhost:3000` | `fileUrl()` (tayyor) |
 | Serverda `._*` fayllar | macOS tar AppleDouble | `COPYFILE_DISABLE=1` |
+| Prisma `P1001: Can't reach database server at localhost:5432`, `psql` esa ulanadi | Serverda `localhost` → `::1`, PostgreSQL faqat IPv4 | `DATABASE_URL` da `127.0.0.1` |
+| `activate: CL_VIRTUAL_ENV: unbound variable` | CloudLinux `activate` `set -u` bilan ishlamaydi | `set +u` → `source` → `set -u` |
+| SSH `kex_exchange_identification: Connection reset by peer` | Server qisqa vaqtda ko'p ulanishni rad etadi | 20–30 s kutib qayta urinish |
+| API ishga tushmasa Passenger stack trace ko'rsatadi | Passenger friendly error pages | Ochiq ish — 10-bo'lim |
 | `!` bilan buyruq Terminal'da ishlamadi | `!` faqat Claude Code oynasida | Terminal'da `!` siz |
 | Server terminalida `ssh ... iep_webname` parol so'raydi | Buyruq Mac'da emas, serverda terilgan | Mac Terminal'da |
 | Claude Code serverga yozolmaydi | auto-mode production'ga yozishni bloklaydi | Buyruqni foydalanuvchi ishga tushiradi yoki Fayl menejeri |
@@ -164,4 +173,5 @@ daqiqalab yashaydi (bir necha soniyada qayta tug'ilsa — 9-bo'lim).
 - Asosiy JS bundle 505 KB (gzip 161 KB) — bo'laklarga ajratish.
 - Hosting o'zi ham sarlavha qo'shadi (`X-Frame-Options: SAMEORIGIN` — biznikidan farqli).
 - Rate limit xotirada — Passenger bir nechta jarayon ochsa, limit har biriga alohida.
+- Passenger xato sahifasi (ilova ishga tushmaganda) stack trace va yo'llarni ochiq ko'rsatadi.
 - Baza zaxirasi: kunlik `pg_dump` cron (7 kun saqlash) — hali sozlanmagan.

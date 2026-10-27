@@ -12,15 +12,17 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
-**Oxirgi yangilanish:** 2026-09-23
+**Oxirgi yangilanish:** 2026-10-27
 
-**✅ 16 — hosting production sinovidan O'TDI (2026-09-23), foydalanuvchi qarori: holat yetarli.**
-Sinov: https://iep-95-46-96-12.sslip.io (webname, `iepuz@web2.webspace.uz`, kalit
-`~/.ssh/iep_webname`; muddati **28.09.2026**). **Keyingi:** `iep.uz` yuridik shaxs nomidan
-sotib olinadi, **Arsenal-D** orqali ro'yxatdan o'tkaziladi, hosting olinadi va sayt yuridik
-shaxs kabinetida ishga tushiriladi — to'liq qo'llanma: **`docs/deploy-hosting.md`**
-(sozlamalar, env nomlari, ko'chirish, tuzoqlar). Joriy hostingdagi baza/media — ko'chirish
-manbai, 28.09 dan oldin zaxira olinsin.
+**🟡 16 — `iep.uz` PRODUCTION'ga joylandi (2026-10-27), DNS tarqalishi va SSL kutilmoqda.**
+Hosting: webname, yangi hisob `iepuz@web2.webspace.uz` (IP 95.46.96.12), SSH kaliti
+`~/.ssh/iep_prod`. Domen Arsenal-D'da, NS → `dns1–4.webspace.uz` (whois'da yangilandi,
+`.uz` zonasiga hali tushmagan). Baza `iepuz_mainv1` — NOLDAN: 7 migratsiya + seed (admin,
+rasmiy tuzilma, `site_url=https://iep.uz`), eski ma'lumot ko'chirilMADI (foydalanuvchi qarori,
+eski hisob 28.09 da yopilgan). API (IP orqali) 200, CORS faqat `https://iep.uz`.
+**Qolgan:** DNS tarqalgach panelda Let's Encrypt (`iep.uz`, `www`, `api`) + Force SSL —
+foydalanuvchi (auto-mode DNS/sertifikat o'zgarishini bloklaydi); keyin brauzerda tekshiruv,
+admin login, `RESEND_API_KEY`/`MAIL_FROM`. Qo'llanma: `docs/deploy-hosting.md`.
 
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
 (`e177810..3a013da`), shu jumladan 13-navbar Bosqich C/D, test-rejim banneri va qidiruv/
@@ -172,6 +174,26 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · 16 — iep.uz production'ga joylandi
+
+**Kim:** Claude Code (Opus 5.5). Panel/DNS/parollar — foydalanuvchi.
+**Qilindi:** `api` subdomeni (panel, Chrome orqali); Node.js 22 ilovasi `cloudlinux-selector
+create` bilan (SSH); frontend va API paketi SSH orqali yuklandi; `npm install` + `generate`.
+`build-node.mjs` endi `seed.cjs` ni ham yig'adi; `seed.ts` `SITE_URL` ni o'qiydi. Yangi
+`apps/api/scripts/setup-hosting.sh` — foydalanuvchi Mac Terminal'da ishga tushiradi: parollar
+`read -s`, JWT_SECRET `openssl` bilan, serverga stdin orqali; env → migrate → seed → restart.
+**Topildi:** serverda `localhost` → `::1`, PostgreSQL faqat IPv4 → Prisma P1001; endi
+`127.0.0.1`. CloudLinux `activate` `set -u` bilan yiqiladi. SSH tez-tez `Connection reset`
+(skriptda 10 marta qayta urinish). Passenger ishga tushmaganda xato sahifasi stack trace
+ko'rsatadi (ochiq ish). Auto-mode Arsenal-D NS va SSL o'zgarishini blokladi.
+**Tekshirildi (`--resolve` bilan IP orqali, HTTP):** settings/news/structure/publications/
+employees/search 200; 12 parallel 200; noto'g'ri login → 401 `Invalid credentials`; POST
+auth'siz 401; CORS `https://iep.uz` ha, begona origin yo'q; `site_url=https://iep.uz`;
+NodeApp 15 oqim. Frontend IP orqali 200, `.htaccess` sarlavhalari bor. `tsc` toza,
+50/50 test.
+**Tekshirilmadi:** HTTPS (sertifikat yo'q), brauzerda sahifa+API, admin login (parol
+foydalanuvchida), fayl yuklash, kontakt xati (Resend yo'q).
+
 ### 2026-09-23 · 16 — o'lchov, qaror, qo'llanma
 
 **Kim:** Claude Code (Opus 5.5). **O'lchandi (foydalanuvchi Mac'idan, RTT ~5 ms):** API TTFB
@@ -211,21 +233,3 @@ fallback), `/_headers` 403, `robots.txt` 200; bizning sarlavhalar va CSP Report-
 `/assets/*.js` `immutable`, `index.html` `no-cache`; API `Access-Control-Allow-Origin: https://iep.uz`.
 **Tekshirilmadi:** brauzerda render (API `https://api.iep.uz` DNS/SSL'siz ochilmaydi), HTTPS.
 **Topildi:** hosting o'z sarlavhalarini qo'shadi — `X-Frame-Options` ikki xil qiymat bilan keladi.
-
-### 2026-09-23 · 16 — B + C (qisman): server'da API, media, frontend paketi
-
-**Kim:** Claude Code (Opus 5.5). SSH ochildi (DirectAdmin → SSH kalitlari, ed25519).
-**Qilindi:** `scripts/export-media.mjs` (`npm run export:media`) — miniflare R2 sqlite'dan
-`<key>` + `<key>.meta.json`, kalit `isValidKey` regex'i, hajm tekshiruvi, `COPYFILE_DISABLE`
-(macOS `._*` fayllari tushmasin — birinchi yuklashda tushgan, serverda o'chirildi).
-`apps/web/public/.htaccess` — SPA fallback, `_headers` dagi sarlavhalar (HSTS faqat HTTPS'da,
-CSP Report-Only `api.iep.uz` bilan), kesh; HTTPS redirect yo'q (sertifikat hali yo'q).
-**Serverda topildi:** `DATABASE_URL` `postgresql:/` (bitta slash) → 500; foydalanuvchi panelda
-tuzatdi. `FRONTEND_URL` boshida bo'sh joy → `Access-Control-Allow-Origin` chiqmaydi (tuzatilmagan).
-**Tekshirildi (HTTP, `--resolve api.iep.uz:80:95.46.96.12`):** news/structure/search 200,
-29 xodim; noto'g'ri login 401; auth'siz upload 401; `/api/files/...png` 200, `image/png`,
-bayt lokal fayl bilan bir xil. api `tsc`, vitest 50/50, `wrangler --dry-run`, web `tsc`, build.
-**Tekshirilmadi:** frontend serverda (yuklanmagan), `.htaccess` Apache'da, HTTPS, haqiqiy
-admin login (parol yo'q), CORS (FRONTEND_URL tuzatilmaguncha).
-
-> Eski yozuvlar: `docs/journal-archive/` (2026-08.md, 2026-09.md).

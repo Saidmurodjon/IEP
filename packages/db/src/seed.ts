@@ -183,9 +183,10 @@ async function main() {
     { key: 'site_name_uz', value: 'Energetika muammolari instituti' },
     { key: 'site_name_en', value: 'Institute of Energy Problems' },
     { key: 'site_name_ru', value: 'Институт проблем энергетики' },
-    // canonical / hreflang havolalari uchun asosiy manzil. Domen ulangach
-    // (iep.uz) admin paneldan o'zgartiriladi — kodga yozilmaydi.
-    { key: 'site_url', value: 'https://energetika-institute.pages.dev' },
+    // canonical / hreflang havolalari uchun asosiy manzil. Production'da
+    // SITE_URL bilan beriladi (masalan `https://iep.uz`), keyin admin paneldan
+    // o'zgartiriladi — kodga yozilmaydi.
+    { key: 'site_url', value: process.env.SITE_URL ?? 'https://energetika-institute.pages.dev' },
     // Manzil, telefon va ish vaqti endi STATIK — `apps/web/src/config/contact.ts`.
     // `email` shu yerda qoladi: sayt aloqa emaili emas, murojaat bildirishnomalari
     // uchun ZAXIRA manzil (`appeals_email` bo'sh bo'lganda ishlatiladi).
