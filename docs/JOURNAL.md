@@ -15,7 +15,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 **Oxirgi yangilanish:** 2026-10-27
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
-Admin → Tuzilma sahifasida rasm yuklanadi, `/structure` tepasida ko'rinadi. Production
+`/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
+yangi «Bo'linmalar» (`/admin/units`) — bo'linma/laboratoriya tahriri (laboratoriyalar,
+«Institut haqida», xodimlar shunga bog'liq). Production
 deploy foydalanuvchi tasdig'ini kutmoqda.
 
 **🧹 Production'dagi test ma'lumotlari o'chirildi (2026-10-27)** — yozuvlar va 45 ta fayl
@@ -192,6 +194,17 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · 17b — tuzilma sahifasi faqat rasm, bo'linmalar alohida admin bo'limida
+**Nima:** foydalanuvchi "tagidagi avvalgi qismlarni olib tashla" dedi. Bo'linmalar ma'lumoti
+Labs/LabDetail/About/Employees da ishlatilgani uchun so'raldi → "admin'da alohida bo'limga
+ko'chir". Ochiq `StructurePage` — faqat `StructureChart` + bo'sh holat (`structure.chart_empty`).
+`AdminStructurePage` — faqat rasm kartasi; yangi `AdminUnitsPage` (`/admin/units`, menyuda
+«Bo'linmalar»). Ma'lumot o'chirilmadi. Koder: Sonnet.
+**Tekshirildi:** web tsc, vite build; brauzerda `/uz/structure` — bitta h1, faqat rasm
+(foydalanuvchi yuklagan haqiqiy sxema ko'rindi → admin karta ham ishlaydi).
+**Tekshirilmadi:** `/admin/units` brauzerda (login kerak). Ishlatilmay qolgan
+`structure.type_*`, `structure.advisory/staff` kalitlari qoldirildi (boshqa joyda bo'lishi mumkin).
 
 ### 2026-10-27 · 17 — tasdiqlangan tuzilma sxemasi (rasm)
 **Nima:** admin rasmiy tuzilma sxemasini yuklaydi, ochiq `/structure` sahifasi tepasida chiqadi.

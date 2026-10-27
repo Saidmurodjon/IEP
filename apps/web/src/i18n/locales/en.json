@@ -94,7 +94,8 @@
     "chart_updated": "Updated: {{date}}",
     "chart_open": "Open in new tab",
     "chart_download": "Download",
-    "chart_image_alt": "Institute's officially approved structure chart"
+    "chart_image_alt": "Institute's officially approved structure chart",
+    "chart_empty": "The approved structure chart will be published soon."
   },
   "labs": {
     "title": "Scientific Laboratories",
@@ -197,6 +198,7 @@
     "news": "News",
     "publications": "Publications",
     "structure": "Structure",
+    "units": "Units",
     "settings": "Settings",
     "messages": "Messages",
     "add_new": "Add New",

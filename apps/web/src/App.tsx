@@ -30,6 +30,7 @@ const DashboardPage = lazy(() => import('@/pages/admin/DashboardPage'));
 const AdminNewsPage = lazy(() => import('@/pages/admin/AdminNewsPage'));
 const AdminPublicationsPage = lazy(() => import('@/pages/admin/AdminPublicationsPage'));
 const AdminStructurePage = lazy(() => import('@/pages/admin/AdminStructurePage'));
+const AdminUnitsPage = lazy(() => import('@/pages/admin/AdminUnitsPage'));
 const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
 const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
 const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'));
@@ -118,6 +119,7 @@ export default function App() {
           <Route path="news" element={<AdminNewsPage />} />
           <Route path="publications" element={<AdminPublicationsPage />} />
           <Route path="structure" element={<AdminStructurePage />} />
+          <Route path="units" element={<AdminUnitsPage />} />
           <Route path="settings" element={<AdminSettingsPage />} />
           <Route path="employees" element={<AdminEmployeesPage />} />
           <Route path="partners" element={<AdminPartnersPage />} />

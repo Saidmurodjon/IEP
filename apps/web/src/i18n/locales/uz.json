@@ -94,7 +94,8 @@
     "chart_updated": "Yangilangan: {{date}}",
     "chart_open": "Yangi oynada ochish",
     "chart_download": "Yuklab olish",
-    "chart_image_alt": "Institutning rasman tasdiqlangan tuzilma sxemasi"
+    "chart_image_alt": "Institutning rasman tasdiqlangan tuzilma sxemasi",
+    "chart_empty": "Tasdiqlangan tuzilma sxemasi tez orada joylanadi."
   },
   "labs": {
     "title": "Ilmiy laboratoriyalar",
@@ -197,6 +198,7 @@
     "news": "Yangiliklar",
     "publications": "Nashrlar",
     "structure": "Tuzilma",
+    "units": "Bo'linmalar",
     "settings": "Sozlamalar",
     "messages": "Xabarlar",
     "add_new": "Yangi qo'shish",
