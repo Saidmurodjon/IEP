@@ -8,10 +8,36 @@ import {
   Link2, Link2Off, ImagePlus, Loader2,
 } from 'lucide-react';
 import clsx from 'clsx';
-import { uploadsApi } from '@/lib/api';
+import { uploadsApi, fileUrl } from '@/lib/api';
 import { useToast } from '@/components/Toast';
 import { sanitizePastedHtml } from '@/lib/sanitize';
 import { formatBytes, prepareImage, MAX_WIDTH_DEFAULT } from '@/lib/image-prepare';
+
+/**
+ * Bazada rasm manzili nisbiy (`/api/files/...`) saqlanadi, lekin frontend va
+ * API turli domenda — tahrirlagich ichida ko'rsatishda manzil API domeniga
+ * ko'chiriladi. `getHTML()` natijasi o'zgarmaydi: atribut nisbiy qoladi.
+ */
+const EditorImage = Image.extend({
+  addNodeView() {
+    return ({ node }) => {
+      const img = document.createElement('img');
+      const apply = (attrs: Record<string, unknown>) => {
+        img.src = fileUrl(typeof attrs.src === 'string' ? attrs.src : '');
+        img.alt = typeof attrs.alt === 'string' ? attrs.alt : '';
+      };
+      apply(node.attrs);
+      return {
+        dom: img,
+        update: (updated) => {
+          if (updated.type !== node.type) return false;
+          apply(updated.attrs);
+          return true;
+        },
+      };
+    };
+  },
+});
 
 interface Props {
   value: string;
@@ -104,7 +130,7 @@ export default function RichTextEditorInner({ value, onChange, ownerType, ownerI
         heading: { levels: [2, 3] },
         link: { openOnClick: false, autolink: true, HTMLAttributes: { rel: 'noopener noreferrer' } },
       }),
-      Image.configure({ inline: false, allowBase64: false }),
+      EditorImage.configure({ inline: false, allowBase64: false }),
     ],
     content: value,
     editorProps: {

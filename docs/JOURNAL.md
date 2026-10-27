@@ -220,6 +220,19 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-27 — fix: admin tahrirlagichda rasm ko'rinmasdi
+- Sabab: tiptap `<img src="/api/files/...">` ni nisbiy manzil bilan chizardi → so'rov Vite (5173) ga
+  ketardi, API esa boshqa domenda (lokal 8787, prod alohida domen). Ochiq sahifa `sanitize.ts` orqali
+  `fileUrl()` qo'llagani uchun u yerda ishlardi.
+- Tuzatish: `RichTextEditorInner.tsx` — `EditorImage` (Image.extend + addNodeView), ko'rsatishda
+  `fileUrl()`; `getHTML()` o'zgarmaydi, bazaga nisbiy manzil yoziladi.
+- Tekshirildi: `tsc --noEmit` (web) toza; brauzerda `/admin/labs/lab-energy-security` — rasm
+  `localhost:8787` dan yuklandi (naturalWidth>0). Ochiq lab sahifasi ko'rib chiqildi.
+- Tekshirilmadi: yangi rasm yuklab saqlash oqimi (o'zgarmagan kod), prod.
+- Eslatma: lokal `lab-energy-security` dagi kontent test ma'lumot (takroriy matn, admin skrinshoti
+  rasm sifatida, shaxsiy pochta) — haqiqiy ma'lumot foydalanuvchidan kutilmoqda.
+
+
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
 ### 2026-10-27 · `/laboratories` sarlavha bloki ixchamlashtirildi
