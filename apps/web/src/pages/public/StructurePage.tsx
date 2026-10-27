@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Users, ChevronDown, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { structureApi } from '@/lib/api';
+import StructureChart from '@/components/StructureChart';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import type { Lang } from '@energetika/shared';
 import clsx from 'clsx';
@@ -129,6 +130,7 @@ export default function StructurePage() {
       </div>
 
       <div className="container py-12">
+        <div className="max-w-5xl mx-auto"><StructureChart /></div>
         {isLoading && <LoadingSpinner />}
         {error && <p role="alert" className="text-red-600 text-center">{t('common.error')}</p>}
         {!isLoading && tree.length === 0 && (

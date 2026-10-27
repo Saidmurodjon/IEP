@@ -10,7 +10,7 @@ import type { AppContext } from '../index';
 
 export const uploadsRouter = new Hono<AppContext>();
 
-const KINDS: UploadKind[] = ['image', 'photo', 'document'];
+const KINDS: UploadKind[] = ['image', 'photo', 'document', 'chart'];
 
 /** Egasiz fayl shu muddatdan keyin tozalanadi. */
 const ORPHAN_MAX_AGE_MS = 24 * 60 * 60 * 1000;

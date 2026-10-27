@@ -89,7 +89,12 @@
     "type_position": "Lavozim",
     "type_service": "Xizmat",
     "advisory": "Maslahat organi",
-    "staff": "xodim"
+    "staff": "xodim",
+    "chart_title": "Tasdiqlangan tuzilma",
+    "chart_updated": "Yangilangan: {{date}}",
+    "chart_open": "Yangi oynada ochish",
+    "chart_download": "Yuklab olish",
+    "chart_image_alt": "Institutning rasman tasdiqlangan tuzilma sxemasi"
   },
   "labs": {
     "title": "Ilmiy laboratoriyalar",
@@ -277,7 +282,8 @@
     "next_page": "Keyingi sahifa",
     "expand": "Ichki bo'linmalarni ochish",
     "collapse": "Ichki bo'linmalarni yopish",
-    "pagination": "Sahifalar"
+    "pagination": "Sahifalar",
+    "new_tab": "(yangi oynada ochiladi)"
   },
   "notFound": {
     "title": "Sahifa topilmadi",
@@ -456,5 +462,21 @@
     "not_notified_hint": "Tasdiq xati yuborilmagan. RESEND_API_KEY sozlanmagan bo'lishi mumkin.",
     "empty": "Murojaatlar yo'q.",
     "empty_hint": "Fuqarolar yuborgan murojaatlar shu yerda ko'rinadi."
+  },
+  "admin_chart": {
+    "title": "Tasdiqlangan tuzilma hujjati",
+    "hint": "Ochiq sahifada ko'rsatiladigan rasmiy tuzilma sxemasi. JPEG, PNG yoki WebP rasm, eng ko'pi 10 MB.",
+    "current": "Joriy hujjat",
+    "none": "Hujjat yuklanmagan.",
+    "updated": "Yangilangan: {{date}}",
+    "open": "Ochish",
+    "upload": "Hujjat yuklash",
+    "replace": "Almashtirish",
+    "remove": "Olib tashlash",
+    "remove_confirm": "Tasdiqlangan tuzilma hujjatini olib tashlaysizmi?",
+    "uploading": "Yuklanmoqda...",
+    "saved": "Tuzilma hujjati saqlandi.",
+    "removed": "Tuzilma hujjati olib tashlandi.",
+    "file_label": "Tuzilma hujjati faylini tanlang"
   }
 }

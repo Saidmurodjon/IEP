@@ -9,6 +9,7 @@ import { structureApi } from '@/lib/api';
 import { Plus, Pencil, Trash2, X } from 'lucide-react';
 import clsx from 'clsx';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
+import StructureChartCard from '@/components/admin/StructureChartCard';
 
 const schema = z.object({
   nameUz: z.string().min(1), nameEn: z.string().min(1), nameRu: z.string().min(1),
@@ -88,6 +89,8 @@ export default function AdminStructurePage() {
             <Plus className="h-4 w-4" /> {t('admin.add_new')}
           </button>
         </div>
+
+        <StructureChartCard />
 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">

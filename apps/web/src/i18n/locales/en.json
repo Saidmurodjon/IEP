@@ -89,7 +89,12 @@
     "type_position": "Position",
     "type_service": "Service",
     "advisory": "Advisory body",
-    "staff": "staff"
+    "staff": "staff",
+    "chart_title": "Approved structure",
+    "chart_updated": "Updated: {{date}}",
+    "chart_open": "Open in new tab",
+    "chart_download": "Download",
+    "chart_image_alt": "Institute's officially approved structure chart"
   },
   "labs": {
     "title": "Scientific Laboratories",
@@ -277,7 +282,8 @@
     "next_page": "Next page",
     "expand": "Show sub-units",
     "collapse": "Hide sub-units",
-    "pagination": "Pagination"
+    "pagination": "Pagination",
+    "new_tab": "(opens in a new tab)"
   },
   "notFound": {
     "title": "Page not found",
@@ -456,5 +462,21 @@
     "not_notified_hint": "The confirmation email was not sent. RESEND_API_KEY may not be configured.",
     "empty": "No appeals.",
     "empty_hint": "Appeals submitted by citizens will appear here."
+  },
+  "admin_chart": {
+    "title": "Approved structure document",
+    "hint": "The official structure chart shown on the public page. JPEG, PNG or WebP image, up to 10 MB.",
+    "current": "Current document",
+    "none": "No document uploaded.",
+    "updated": "Updated: {{date}}",
+    "open": "Open",
+    "upload": "Upload document",
+    "replace": "Replace",
+    "remove": "Remove",
+    "remove_confirm": "Remove the approved structure document?",
+    "uploading": "Uploading...",
+    "saved": "Structure document saved.",
+    "removed": "Structure document removed.",
+    "file_label": "Choose the structure document file"
   }
 }

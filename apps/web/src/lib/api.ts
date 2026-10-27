@@ -138,7 +138,39 @@ export const structureApi = {
   create: (data: unknown) => api.post('/api/structure', data),
   update: (id: string, data: unknown) => api.put(`/api/structure/${id}`, data),
   delete: (id: string) => api.delete(`/api/structure/${id}`),
+  /** Tasdiqlangan tuzilma sxemasi: `url` bilan saqlanadi, `null` bilan olib tashlanadi. */
+  setChart: (url: string | null) => api.put('/api/structure/chart', { url }),
 };
+
+/** Tasdiqlangan tuzilma sxemasi (`settings.structureChart` ichidagi JSON). */
+export interface StructureChart {
+  url: string;
+  mime: string;
+  name: string;
+  updatedAt: string;
+}
+
+/**
+ * `structureChart` sozlamasini xavfsiz o'qiydi: JSON buzuq yoki shakl noto'g'ri
+ * bo'lsa `null` qaytaradi (sahifa sxemasiz ishlayveradi).
+ */
+export function parseStructureChart(raw: string | null | undefined): StructureChart | null {
+  if (!raw) return null;
+  try {
+    const v: unknown = JSON.parse(raw);
+    if (typeof v !== 'object' || v === null) return null;
+    const o = v as Record<string, unknown>;
+    if (
+      typeof o.url !== 'string' || !o.url ||
+      typeof o.mime !== 'string' ||
+      typeof o.name !== 'string' ||
+      typeof o.updatedAt !== 'string'
+    ) return null;
+    return { url: o.url, mime: o.mime, name: o.name, updatedAt: o.updatedAt };
+  } catch {
+    return null;
+  }
+}
 
 // --- Settings ---
 export const employeesApi = {
@@ -165,7 +197,7 @@ export const uploadsApi = {
    */
   upload: (
     file: File,
-    kind: 'image' | 'photo' | 'document',
+    kind: 'image' | 'photo' | 'document' | 'chart',
     extra: { width?: number; height?: number; ownerType?: string; ownerId?: string } = {}
   ) => {
     const form = new FormData();

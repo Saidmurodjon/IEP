@@ -10,7 +10,7 @@
  * mumkin va saqlangan XSS uchun keng ishlatiladigan yo'l.
  */
 
-export type UploadKind = 'image' | 'photo' | 'document';
+export type UploadKind = 'image' | 'photo' | 'document' | 'chart';
 
 export interface DetectedType {
   mime: string;
@@ -78,6 +78,12 @@ export const LIMITS: Record<UploadKind, { maxBytes: number; label: string; mimes
     label: '20 MB',
     mimes: ['application/pdf', 'application/zip', 'application/msword'],
   },
+  // Tasdiqlangan tuzilma sxemasi: faqat rasm (yirik sxema uchun 10 MB).
+  chart: {
+    maxBytes: 10 * 1024 * 1024,
+    label: '10 MB',
+    mimes: ['image/jpeg', 'image/png', 'image/webp'],
+  },
 };
 
 /** Foydalanuvchiga ko'rsatiladigan format ro'yxati. */
@@ -85,6 +91,7 @@ export const FORMAT_LABELS: Record<UploadKind, string> = {
   image: 'JPEG, PNG, WebP',
   photo: 'JPEG, PNG, WebP',
   document: 'PDF, DOC, DOCX, XLS, XLSX',
+  chart: 'JPEG, PNG, WebP',
 };
 
 /**

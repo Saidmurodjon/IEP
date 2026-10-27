@@ -14,6 +14,10 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+Admin → Tuzilma sahifasida rasm yuklanadi, `/structure` tepasida ko'rinadi. Production
+deploy foydalanuvchi tasdig'ini kutmoqda.
+
 **🧹 Production'dagi test ma'lumotlari o'chirildi (2026-10-27)** — yozuvlar va 45 ta fayl
 (fayllar `cleanup` ni foydalanuvchi ishga tushirdi). Admin parolini almashtirish tavsiya etilgan.
 
@@ -167,7 +171,7 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 | Sessiya | Topshiriq | Tegilayotgan fayllar | Boshlangan |
 |---|---|---|---|
-| Opus (nazoratchi) | Sayt o'zgarishlari — topshiriqlar kutilmoqda | `docs/JOURNAL.md` | 2026-10-27 |
+| — | — | — | — |
 
 **Ish tartibi (2026-10-27 dan, foydalanuvchi qarori):**
 - **Nazoratchi — Opus.** Topshiriqni bo'ladi, fayllarni sessiyalarga taqsimlaydi, natijani
@@ -188,6 +192,22 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · 17 — tasdiqlangan tuzilma sxemasi (rasm)
+**Nima:** admin rasmiy tuzilma sxemasini yuklaydi, ochiq `/structure` sahifasi tepasida chiqadi.
+API: `kind=chart` (faqat JPEG/PNG/WebP, 10 MB, magic bayt), `PUT /api/structure/chart`
+(requireAuth, zod; fayl `media_files` da bo'lishi, boshqa egaga tegishli bo'lmasligi shart;
+`ownerType=structure/ownerId=chart` — cleanup o'chirmaydi; almashtirilsa eskisi o'chadi).
+Qiymat `SiteSetting.structureChart` (JSON) da, o'qish ochiq `GET /api/settings` orqali.
+Web: `components/StructureChart.tsx`, `components/admin/StructureChartCard.tsx`, uch til.
+**Qaror:** dastlab PDF (iframe) ham qilingan edi; foydalanuvchi "rasm yetarli va qulayroq"
+dedi → PDF olib tashlandi, `/api/files` uchun `frame-ancestors` o'zgarishi va CSP `frame-src`
+QAYTARILDI (X-Frame-Options: DENY saqlandi). Ish tartibi: Opus nazoratchi, 2 Sonnet koder.
+**Tekshirildi:** tsc (api+web), 53/53 vitest, wrangler dry-run, vite build; HTTP bilan:
+login → PNG yuklash → PUT → settings'da chiqdi; almashtirishda eski fayl 404; PDF/zip
+`UNSUPPORTED_TYPE`; auth'siz PUT 401. Brauzerda: rasm, alt, havolalar, bitta h1, sana `27.10.2026`.
+**Tekshirilmadi:** admin kartaning UI'si brauzerda (token klassifikator tomonidan bloklandi —
+foydalanuvchi o'zi ko'radi); production.
 
 ### 2026-10-27 · 16 — test ma'lumoti manbai: seed emas, dump
 

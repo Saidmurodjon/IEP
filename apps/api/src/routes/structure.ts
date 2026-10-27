@@ -3,6 +3,9 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
 import { reindex } from '../lib/search-index';
+import { fail } from '../lib/errors';
+import { extractFileKeys, deleteKeys } from '../lib/media';
+import { LIMITS } from '../lib/file-types';
 import type { AppContext } from '../index';
 
 export const structureRouter = new Hono<AppContext>();
@@ -47,6 +50,61 @@ structureRouter.post('/', requireAuth, zValidator('json', unitSchema), async (c)
   const unit = await db.structureUnit.create({ data: c.req.valid('json') });
   await reindex(c, 'structure_units', unit.id);
   return c.json({ data: unit }, 201);
+});
+
+const chartSchema = z.object({ url: z.string().max(500).nullable() });
+
+/** Eski `structureChart` qiymatidan fayl kalitini xavfsiz ajratadi. */
+function oldChartKey(raw: string | undefined): string | null {
+  if (!raw) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object' && 'url' in parsed && typeof parsed.url === 'string') {
+      return extractFileKeys(parsed.url)[0] ?? null;
+    }
+  } catch {
+    // buzilgan JSON — eski qiymat yo'q deb hisoblanadi
+  }
+  return null;
+}
+
+// `/:id` dan OLDIN ro'yxatdan o'tadi, aks holda "chart" id sifatida ushlanadi.
+structureRouter.put('/chart', requireAuth, zValidator('json', chartSchema), async (c) => {
+  const db = c.get('db');
+  const { url } = c.req.valid('json');
+  const KEY = 'structureChart';
+  const previous = await db.siteSetting.findUnique({ where: { key: KEY } });
+  const prevKey = oldChartKey(previous?.value);
+
+  if (url === null) {
+    await db.siteSetting.deleteMany({ where: { key: KEY } });
+    if (prevKey) await deleteKeys(c.env, db, [prevKey]);
+    return c.json({ data: null });
+  }
+
+  const keys = extractFileKeys(url);
+  if (keys.length !== 1) return fail(c, 'VALIDATION_ERROR', 'Invalid chart file url');
+  const [key] = keys;
+  const media = await db.mediaFile.findUnique({ where: { key } });
+  if (!media || !LIMITS.chart.mimes.includes(media.mimeType)) {
+    return fail(c, 'VALIDATION_ERROR', 'Chart file not found or type not allowed');
+  }
+  // Boshqa yozuvga tegishli fayl olinmaydi — almashtirilganda o'chib ketardi.
+  if (media.ownerId && !(media.ownerType === 'structure' && media.ownerId === 'chart')) {
+    return fail(c, 'VALIDATION_ERROR', 'File belongs to another record');
+  }
+
+  await db.mediaFile.update({ where: { key }, data: { ownerType: 'structure', ownerId: 'chart' } });
+  const data = {
+    url: `/api/files/${key}`,
+    mime: media.mimeType,
+    name: media.originalName,
+    updatedAt: new Date().toISOString(),
+  };
+  const value = JSON.stringify(data);
+  await db.siteSetting.upsert({ where: { key: KEY }, update: { value }, create: { key: KEY, value } });
+  if (prevKey && prevKey !== key) await deleteKeys(c.env, db, [prevKey]);
+  return c.json({ data });
 });
 
 structureRouter.put('/:id', requireAuth, zValidator('json', unitSchema.partial()), async (c) => {
