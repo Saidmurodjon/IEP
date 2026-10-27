@@ -299,3 +299,30 @@ export const searchApi = {
       },
     }),
 };
+
+// --- Statistika (dashboard) ---
+export interface MonthCount { month: string; count: number }
+export interface DashboardStats {
+  totals: {
+    newsPublished: number;
+    newsDrafts: number;
+    publications: number;
+    employeesActive: number;
+    documentsActive: number;
+    appealsOpen: number;
+    appealsTotal: number;
+    storageBytes: number;
+    mediaFiles: number;
+  };
+  newsByMonth: MonthCount[];
+  appealsByMonth: MonthCount[];
+  appealsByStatus: { status: string; count: number }[];
+  publicationsByYear: { year: number; count: number }[];
+  employeesByUnit: {
+    unitId: string; nameUz: string; nameEn: string; nameRu: string; count: number;
+  }[];
+}
+
+export const statsApi = {
+  get: () => api.get<{ data: DashboardStats }>('/api/stats'),
+};

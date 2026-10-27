@@ -241,7 +241,39 @@
     "bulk_delete_partial": "{{done}} ta o'chirildi, {{failed}} tasida xatolik yuz berdi.",
     "bulk_draft_done": "{{count}} ta yozuv qoralamaga o'tkazildi.",
     "bulk_draft_partial": "{{done}} tasi qoralamaga o'tkazildi, {{failed}} tasida xatolik yuz berdi.",
-    "users": "Foydalanuvchilar"
+    "users": "Foydalanuvchilar",
+    "dashboardStats": {
+      "monthsShort": ["Yan", "Fev", "Mar", "Apr", "May", "Iyn", "Iyl", "Avg", "Sen", "Okt", "Noy", "Dek"],
+      "welcome": "Xush kelibsiz, {{name}}!",
+      "recentNews": "So'nggi yangiliklar",
+      "viewAll": "Barchasini ko'rish →",
+      "noNews": "Yangiliklar yo'q",
+      "kpiNews": "Nashr etilgan yangiliklar",
+      "kpiDrafts": "{{count}} ta qoralama",
+      "kpiPubs": "Nashrlar",
+      "kpiEmployees": "Faol xodimlar",
+      "kpiDocs": "Faol hujjatlar",
+      "kpiAppeals": "Ochiq murojaatlar",
+      "kpiStorage": "Fayllar hajmi",
+      "chartNews": "Oylar bo'yicha nashr etilgan yangiliklar",
+      "chartAppeals": "Oylar bo'yicha murojaatlar",
+      "chartStatus": "Murojaatlar holati bo'yicha",
+      "chartPubs": "Yillar bo'yicha nashrlar",
+      "chartUnits": "Bo'linmalar bo'yicha xodimlar",
+      "other": "Boshqa",
+      "noData": "Hozircha ma'lumot yo'q",
+      "error": "Statistikani yuklab bo'lmadi",
+      "retry": "Qayta urinish",
+      "total": "jami",
+      "value": "Soni",
+      "category": "Toifa",
+      "status": {
+        "new": "Qabul qilindi",
+        "in_review": "Ko'rib chiqilmoqda",
+        "answered": "Javob berildi",
+        "closed": "Yopildi"
+      }
+    }
   },
   "common": {
     "test_mode_banner": "Sayt test rejimida ishlamoqda",

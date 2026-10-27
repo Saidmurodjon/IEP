@@ -241,7 +241,39 @@
     "bulk_delete_partial": "{{done}} deleted, {{failed}} failed.",
     "bulk_draft_done": "{{count}} records moved to draft.",
     "bulk_draft_partial": "{{done}} moved to draft, {{failed}} failed.",
-    "users": "Users"
+    "users": "Users",
+    "dashboardStats": {
+      "monthsShort": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      "welcome": "Welcome, {{name}}!",
+      "recentNews": "Recent news",
+      "viewAll": "View all →",
+      "noNews": "No news",
+      "kpiNews": "Published news",
+      "kpiDrafts": "{{count}} drafts",
+      "kpiPubs": "Publications",
+      "kpiEmployees": "Active employees",
+      "kpiDocs": "Active documents",
+      "kpiAppeals": "Open appeals",
+      "kpiStorage": "Storage used",
+      "chartNews": "Published news per month",
+      "chartAppeals": "Appeals per month",
+      "chartStatus": "Appeals by status",
+      "chartPubs": "Publications by year",
+      "chartUnits": "Employees by unit",
+      "other": "Other",
+      "noData": "No data yet",
+      "error": "Could not load statistics",
+      "retry": "Retry",
+      "total": "total",
+      "value": "Count",
+      "category": "Category",
+      "status": {
+        "new": "Received",
+        "in_review": "Under review",
+        "answered": "Answered",
+        "closed": "Closed"
+      }
+    }
   },
   "common": {
     "test_mode_banner": "The site is running in test mode",

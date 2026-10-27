@@ -14,9 +14,11 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
-**🆕 18-A — admin rollari (SUPER_ADMIN/ADMIN) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 18-A + 18-B — admin rollari va dashboard grafiklari LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+18-B: `GET /api/stats` + dashboard'da KPI kartochkalar va 5 ta grafik (recharts 2.15.4).
+⚠️ Lokal bazada 15 ta nashr 18-B davomida noma'lum sabab bilan o'chib ketdi — foydalanuvchidan so'raldi.
 Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqarish: migratsiya +
-API + web, foydalanuvchi tasdig'i bilan. Keyingi bosqichlar: B (dashboard grafiklari, recharts),
+API + web, foydalanuvchi tasdig'i bilan. Keyingi bosqichlar:
 C (admin panelda til + qorong'i mavzu), D (kiritish qulayligi, profil sahifasi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
@@ -200,6 +202,24 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · 18-B — dashboard statistikasi va grafiklar
+**Kommit:** `feat(admin): dashboard statistics with charts`
+**Qilindi:** `GET /api/stats` (requireAuth, ikkala rol): jami ko'rsatkichlar, 12 oylik yangilik va
+murojaatlar (`date_trunc` Asia/Tashkent, `$queryRaw` tagged), murojaat holatlari, 8 yillik nashrlar,
+top-8 bo'linma + «Boshqa». Sof yordamchilar `lib/stats.ts` + 9 ta test. Web: 6 ta KPI kartochka,
+5 ta grafik — yagona `BarCard` (vertikal/gorizontal), bitta rang `#2f6db0` (validator o'tdi;
+brand `#43719c` xroma bo'yicha o'tmadi), `role="img"` + sr-only jadval, bo'sh/yuklanish/xato holati.
+Oy nomlari locales'dan (`monthsShort`) — Chrome'da `Intl` uz uchun «M11» chiqarar edi.
+Xotira kartochkasi havolasiz (sozlamalar faqat super admin uchun).
+**Tekshirildi:** tsc api+web, vitest 66/66, wrangler dry-run, vite build (Dashboard chunk 384 kB /
+106 kB gzip, lazy). HTTP: token yo'q → 401, token bilan 200 (0,34 s); totals to'g'ridan-to'g'ri SQL
+bilan solishtirildi — mos. Brauzer: grafiklar, oy nomlari, bo'sh holat, hover tooltip, 1 ta h1.
+**Tekshirilmadi:** xodimlar grafigi haqiqiy ma'lumot bilan (lokal bazada xodim 0); ADMIN roli
+bilan dashboard (18-A da tekshirilgan qism o'zgarmagan); mobil kenglik.
+**Muammo:** lokal bazada `publications` 15 → 0 (18-B davomida). Koderlar nashrlarga tegmagan,
+boshqa sessiya yo'q, install-hook yo'q. Sabab noma'lum; `db:test` ildiz `.env` orqali Neon'ga
+yozgani uchun tiklash qilinmadi — foydalanuvchiga savol berildi.
+
 ### 2026-10-27 · 18-A — admin rollari: SUPER_ADMIN va ADMIN
 **Kommit:** `feat(admin): super admin and admin roles with user management`
 **Qilindi:** `Admin` ga `role`/`isActive`/`lastLoginAt`, migratsiya 8 (mavjud adminlar → SUPER_ADMIN).
@@ -229,19 +249,3 @@ ko'chir". Ochiq `StructurePage` — faqat `StructureChart` + bo'sh holat (`struc
 (foydalanuvchi yuklagan haqiqiy sxema ko'rindi → admin karta ham ishlaydi).
 **Tekshirilmadi:** `/admin/units` brauzerda (login kerak). Ishlatilmay qolgan
 `structure.type_*`, `structure.advisory/staff` kalitlari qoldirildi (boshqa joyda bo'lishi mumkin).
-
-### 2026-10-27 · 17 — tasdiqlangan tuzilma sxemasi (rasm)
-**Nima:** admin rasmiy tuzilma sxemasini yuklaydi, ochiq `/structure` sahifasi tepasida chiqadi.
-API: `kind=chart` (faqat JPEG/PNG/WebP, 10 MB, magic bayt), `PUT /api/structure/chart`
-(requireAuth, zod; fayl `media_files` da bo'lishi, boshqa egaga tegishli bo'lmasligi shart;
-`ownerType=structure/ownerId=chart` — cleanup o'chirmaydi; almashtirilsa eskisi o'chadi).
-Qiymat `SiteSetting.structureChart` (JSON) da, o'qish ochiq `GET /api/settings` orqali.
-Web: `components/StructureChart.tsx`, `components/admin/StructureChartCard.tsx`, uch til.
-**Qaror:** dastlab PDF (iframe) ham qilingan edi; foydalanuvchi "rasm yetarli va qulayroq"
-dedi → PDF olib tashlandi, `/api/files` uchun `frame-ancestors` o'zgarishi va CSP `frame-src`
-QAYTARILDI (X-Frame-Options: DENY saqlandi). Ish tartibi: Opus nazoratchi, 2 Sonnet koder.
-**Tekshirildi:** tsc (api+web), 53/53 vitest, wrangler dry-run, vite build; HTTP bilan:
-login → PNG yuklash → PUT → settings'da chiqdi; almashtirishda eski fayl 404; PDF/zip
-`UNSUPPORTED_TYPE`; auth'siz PUT 401. Brauzerda: rasm, alt, havolalar, bitta h1, sana `27.10.2026`.
-**Tekshirilmadi:** admin kartaning UI'si brauzerda (token klassifikator tomonidan bloklandi —
-foydalanuvchi o'zi ko'radi); production.
