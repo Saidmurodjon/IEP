@@ -14,8 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
-**🧹 Production'dagi test ma'lumotlari o'chirildi (2026-10-27)** — 45 ta egasiz fayl
-`POST /api/uploads/cleanup` ni kutmoqda (pastdagi yozuv).
+**🧹 Production'dagi test ma'lumotlari o'chirildi (2026-10-27)** — yozuvlar va 45 ta fayl
+(fayllar `cleanup` ni foydalanuvchi ishga tushirdi). Admin parolini almashtirish tavsiya etilgan.
 
 **✅ 16 — `https://iep.uz` PRODUCTION'da ishlaydi (2026-10-27).**
 Hosting: webname, hisob `iepuz@web2.webspace.uz` (IP 95.46.96.12), SSH kaliti
@@ -174,6 +174,13 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · 16 — test fayllari tozalandi
+
+**Kim:** foydalanuvchi (`POST /api/uploads/cleanup`, Mac Terminal skripti; auto-mode Claude'ga
+admin hisobiga kirishni blokladi). **Tekshirilmadi (Claude tomonidan):** `deleted` soni —
+foydalanuvchi "tayyor" dedi, javob ko'rilmadi. Admin parol suhbatda ochiq yozilgan →
+almashtirish tavsiya qilindi; `.env` dagi qatorlar o'chirilgani tekshirildi.
 
 ### 2026-10-27 · 16 — production'dan test ma'lumotlari o'chirildi
 
