@@ -14,6 +14,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🆕 Hamkorlar kartochkasi (responsiv) LOKALDA tayyor, production'ga CHIQARILMAGAN.** Lokal bazaga
+namuna: Fanlar akademiyasi. iep.uz uchun: web deploy + admin orqali haqiqiy hamkorlarni kiritish.
+
 **🆕 Laboratoriyalar — to'liq admin boshqaruvi LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 Migratsiya `10_lab_details` (structure_units: content/directions ×3, imageUrl, email, phone, room,
 foundedYear). Admin: `/admin/labs` kartochkalar (to'liqlik ko'rsatkichi), `/admin/labs/:id` ichida
@@ -219,6 +222,21 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-27 — feat(web): hamkorlar kartochkasi barcha qurilmalar uchun
+- `PartnersStrip.tsx`: logotip o'rniga kartochka (oq fon, chegara, soya, hover ko'tarilish), ichida
+  logotip + nom (4 qatorgacha). Kenglik: mobil `w-44`, `sm:w-48`, `lg:w-56`. Logotip `alt=""`, nom matn
+  bilan; havolada `sr-only` «yangi oynada ochiladi», klon kartochkalar `tabIndex=-1`.
+- Hamkorlar 5 tadan kam bo'lsa lenta aylanmaydi — markazda setka (`MARQUEE_MIN`). Lenta chetlari
+  `mask-image` bilan xiralashadi (`index.css`), `prefers-reduced-motion` da mask o'chadi.
+- Namuna (FAQAT lokal baza): «O'zbekiston Respublikasi Fanlar akademiyasi» (uz/en/ru), logotip
+  academy.uz dan olinib `POST /api/uploads` orqali yuklandi, sayt `https://academy.uz`, order 0.
+- Tekshirildi: `tsc --noEmit`, `vite build`; brauzerda 1555px va 500px kenglikda (skrinshot),
+  rasm yuklanishi va nom kesilmasligi DOM orqali.
+- Tekshirilmadi: `<5` hamkor setka holati brauzerda (lokalda 8 ta hamkor bor); production bazasi.
+- Lokal bazada 7 ta test hamkor (`test-partner-02..08`) qolgan — o'chirish foydalanuvchi qarori.
+- Topilgan, tuzatilmagan: mobilda `test-banner-track` gorizontal toshish beradi (scrollWidth 2480).
+- Jurnal 250 qatordan oshgan (HOZIRGI HOLAT o'zi ~210 qator) — arxivlash alohida ish.
 
 ### 2026-10-27 — fix(api): rasmli matnni saqlash 500 bermaydi, eski rasmlar o'chadi
 - Sabab: `syncContentFiles` dagi `mediaFile.updateMany` Prisma'da tranzaksiya ochadi, Neon HTTP

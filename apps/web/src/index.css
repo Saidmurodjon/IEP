@@ -81,6 +81,12 @@
   animation: partner-scroll 40s linear infinite;
 }
 
+/* Lenta chetlari asta xiralashadi — kartochka keskin kesilib qolmaydi. */
+.partner-marquee {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
 .partner-marquee:hover .partner-track,
 .partner-marquee:focus-within .partner-track {
   animation-play-state: paused;
@@ -125,6 +131,10 @@
   }
   .partner-track > [data-partner-clone='true'] {
     display: none;
+  }
+  .partner-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 }
 
