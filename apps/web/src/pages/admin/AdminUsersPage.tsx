@@ -1,11 +1,11 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Pencil, Trash2, X, KeyRound, Ban, CheckCircle2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, KeyRound, Ban, CheckCircle2, UserCog } from 'lucide-react';
 import clsx from 'clsx';
 import { adminsApi, type AdminDto } from '@/lib/api';
 import { formatDate, formatDateTime } from '@/lib/date';
@@ -13,7 +13,7 @@ import { useAuthStore } from '@/store/auth';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import FieldError from '@/components/FieldError';
 import { useToast } from '@/components/Toast';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
+import AdminFormModal from '@/components/admin/AdminFormModal';
 
 type Role = AdminDto['role'];
 const ROLES: Role[] = ['ADMIN', 'SUPER_ADMIN'];
@@ -23,35 +23,6 @@ type Modal =
   | { kind: 'edit'; item: AdminDto }
   | { kind: 'reset'; item: AdminDto }
   | { kind: 'delete'; item: AdminDto };
-
-/** Ochiladigan oyna qobig'i: fokus qamovi, Escape bilan yopish, sarlavha. */
-function ModalShell({
-  titleId, title, onClose, children,
-}: { titleId: string; title: string; onClose: () => void; children: React.ReactNode }) {
-  const { t } = useTranslation();
-  const ref = useRef<HTMLDivElement>(null);
-  useFocusTrap(ref, true, onClose);
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-      <div
-        ref={ref}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-md my-4"
-      >
-        <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
-          <h2 id={titleId} className="font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
-          <button type="button" onClick={onClose} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
-            <X className="h-5 w-5" aria-hidden="true" />
-          </button>
-        </div>
-        {children}
-      </div>
-    </div>
-  );
-}
 
 export default function AdminUsersPage() {
   const { t } = useTranslation();
@@ -244,104 +215,118 @@ export default function AdminUsersPage() {
         )}
 
         {modal?.kind === 'create' && (
-          <ModalShell titleId="users-modal-title" title={t('usersPage.create_title')} onClose={closeModal}>
-            <form onSubmit={createForm.handleSubmit((v) => createMutation.mutate(v))} className="p-5 space-y-4" noValidate>
-              <div>
-                <label htmlFor="user-name" className="label">{t('usersPage.name')} *</label>
-                <input id="user-name" className="input" autoComplete="off"
-                  aria-invalid={!!createForm.formState.errors.name} aria-describedby="user-name-err"
-                  {...createForm.register('name')} />
-                <FieldError id="user-name-err" message={createForm.formState.errors.name?.message} />
-              </div>
-              <div>
-                <label htmlFor="user-email" className="label">{t('usersPage.email')} *</label>
-                <input id="user-email" type="email" className="input" autoComplete="off"
-                  aria-invalid={!!createForm.formState.errors.email} aria-describedby="user-email-err"
-                  {...createForm.register('email')} />
-                <FieldError id="user-email-err" message={createForm.formState.errors.email?.message} />
-              </div>
-              <div>
-                <label htmlFor="user-password" className="label">{t('usersPage.password')} *</label>
-                <input id="user-password" type="password" className="input" autoComplete="new-password"
-                  aria-invalid={!!createForm.formState.errors.password} aria-describedby="user-password-hint user-password-err"
-                  {...createForm.register('password')} />
-                <p id="user-password-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('usersPage.password_hint')}</p>
-                <FieldError id="user-password-err" message={createForm.formState.errors.password?.message} />
-              </div>
-              <div>
-                <label htmlFor="user-role" className="label">{t('usersPage.role')} *</label>
-                <select id="user-role" className="input" {...createForm.register('role')}>
-                  {ROLES.map((r) => <option key={r} value={r}>{t(`usersPage.role_${r}`)}</option>)}
-                </select>
-              </div>
-              <div className="flex gap-3 pt-2">
+          <AdminFormModal
+            title={t('usersPage.create_title')}
+            icon={UserCog}
+            size="sm"
+            onClose={closeModal}
+            onSubmit={createForm.handleSubmit((v) => createMutation.mutate(v))}
+            footer={
+              <>
+                <button type="button" onClick={closeModal} className="btn-secondary sm:mr-auto">{t('admin.cancel')}</button>
                 <button type="submit" disabled={createMutation.isPending} className="btn-primary">{t('admin.save')}</button>
-                <button type="button" onClick={closeModal} className="btn-secondary">{t('admin.cancel')}</button>
-              </div>
-            </form>
-          </ModalShell>
+              </>
+            }
+          >
+            <div>
+              <label htmlFor="user-name" className="label">{t('usersPage.name')} *</label>
+              <input id="user-name" className="input" autoComplete="off"
+                aria-invalid={!!createForm.formState.errors.name} aria-describedby="user-name-err"
+                {...createForm.register('name')} />
+              <FieldError id="user-name-err" message={createForm.formState.errors.name?.message} />
+            </div>
+            <div>
+              <label htmlFor="user-email" className="label">{t('usersPage.email')} *</label>
+              <input id="user-email" type="email" className="input" autoComplete="off"
+                aria-invalid={!!createForm.formState.errors.email} aria-describedby="user-email-err"
+                {...createForm.register('email')} />
+              <FieldError id="user-email-err" message={createForm.formState.errors.email?.message} />
+            </div>
+            <div>
+              <label htmlFor="user-password" className="label">{t('usersPage.password')} *</label>
+              <input id="user-password" type="password" className="input" autoComplete="new-password"
+                aria-invalid={!!createForm.formState.errors.password} aria-describedby="user-password-hint user-password-err"
+                {...createForm.register('password')} />
+              <p id="user-password-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('usersPage.password_hint')}</p>
+              <FieldError id="user-password-err" message={createForm.formState.errors.password?.message} />
+            </div>
+            <div>
+              <label htmlFor="user-role" className="label">{t('usersPage.role')} *</label>
+              <select id="user-role" className="input" {...createForm.register('role')}>
+                {ROLES.map((r) => <option key={r} value={r}>{t(`usersPage.role_${r}`)}</option>)}
+              </select>
+            </div>
+          </AdminFormModal>
         )}
 
         {modal?.kind === 'edit' && (
-          <ModalShell titleId="users-modal-title" title={t('usersPage.edit_title')} onClose={closeModal}>
-            <form
-              onSubmit={editForm.handleSubmit((v) => {
+          <AdminFormModal
+            title={t('usersPage.edit_title')}
+            icon={UserCog}
+            size="sm"
+            onClose={closeModal}
+            onSubmit={editForm.handleSubmit((v) => {
                 // O'z qatorida rol o'zgartirilmaydi (serverda ham SELF_ACTION)
                 const isSelf = modal.item.id === me?.id;
                 updateMutation.mutate({ id: modal.item.id, values: isSelf ? { name: v.name } : v });
               })}
-              className="p-5 space-y-4" noValidate
-            >
-              <div>
-                <label htmlFor="edit-name" className="label">{t('usersPage.name')} *</label>
-                <input id="edit-name" className="input"
-                  aria-invalid={!!editForm.formState.errors.name} aria-describedby="edit-name-err"
-                  {...editForm.register('name')} />
-                <FieldError id="edit-name-err" message={editForm.formState.errors.name?.message} />
-              </div>
-              <div>
-                <label htmlFor="edit-role" className="label">{t('usersPage.role')} *</label>
-                <select id="edit-role" className="input" disabled={modal.item.id === me?.id} {...editForm.register('role')}>
-                  {ROLES.map((r) => <option key={r} value={r}>{t(`usersPage.role_${r}`)}</option>)}
-                </select>
-              </div>
-              <div className="flex gap-3 pt-2">
+            footer={
+              <>
+                <button type="button" onClick={closeModal} className="btn-secondary sm:mr-auto">{t('admin.cancel')}</button>
                 <button type="submit" disabled={updateMutation.isPending} className="btn-primary">{t('admin.save')}</button>
-                <button type="button" onClick={closeModal} className="btn-secondary">{t('admin.cancel')}</button>
-              </div>
-            </form>
-          </ModalShell>
+              </>
+            }
+          >
+            <div>
+              <label htmlFor="edit-name" className="label">{t('usersPage.name')} *</label>
+              <input id="edit-name" className="input"
+                aria-invalid={!!editForm.formState.errors.name} aria-describedby="edit-name-err"
+                {...editForm.register('name')} />
+              <FieldError id="edit-name-err" message={editForm.formState.errors.name?.message} />
+            </div>
+            <div>
+              <label htmlFor="edit-role" className="label">{t('usersPage.role')} *</label>
+              <select id="edit-role" className="input" disabled={modal.item.id === me?.id} {...editForm.register('role')}>
+                {ROLES.map((r) => <option key={r} value={r}>{t(`usersPage.role_${r}`)}</option>)}
+              </select>
+            </div>
+          </AdminFormModal>
         )}
 
         {modal?.kind === 'reset' && (
-          <ModalShell titleId="users-modal-title" title={`${t('usersPage.reset_title')} — ${modal.item.name}`} onClose={closeModal}>
-            <form
-              onSubmit={resetForm.handleSubmit((v) => resetMutation.mutate({ id: modal.item.id, password: v.password }))}
-              className="p-5 space-y-4" noValidate
-            >
-              <div>
-                <label htmlFor="reset-password" className="label">{t('usersPage.new_password')} *</label>
-                <input id="reset-password" type="password" className="input" autoComplete="new-password"
-                  aria-invalid={!!resetForm.formState.errors.password} aria-describedby="reset-password-hint reset-password-err"
-                  {...resetForm.register('password')} />
-                <p id="reset-password-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('usersPage.password_hint')}</p>
-                <FieldError id="reset-password-err" message={resetForm.formState.errors.password?.message} />
-              </div>
-              <div className="flex gap-3 pt-2">
+          <AdminFormModal
+            title={`${t('usersPage.reset_title')} — ${modal.item.name}`}
+            icon={UserCog}
+            size="sm"
+            onClose={closeModal}
+            onSubmit={resetForm.handleSubmit((v) => resetMutation.mutate({ id: modal.item.id, password: v.password }))}
+            footer={
+              <>
+                <button type="button" onClick={closeModal} className="btn-secondary sm:mr-auto">{t('admin.cancel')}</button>
                 <button type="submit" disabled={resetMutation.isPending} className="btn-primary">{t('admin.save')}</button>
-                <button type="button" onClick={closeModal} className="btn-secondary">{t('admin.cancel')}</button>
-              </div>
-            </form>
-          </ModalShell>
+              </>
+            }
+          >
+            <div>
+              <label htmlFor="reset-password" className="label">{t('usersPage.new_password')} *</label>
+              <input id="reset-password" type="password" className="input" autoComplete="new-password"
+                aria-invalid={!!resetForm.formState.errors.password} aria-describedby="reset-password-hint reset-password-err"
+                {...resetForm.register('password')} />
+              <p id="reset-password-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('usersPage.password_hint')}</p>
+              <FieldError id="reset-password-err" message={resetForm.formState.errors.password?.message} />
+            </div>
+          </AdminFormModal>
         )}
 
         {modal?.kind === 'delete' && (
-          <ModalShell titleId="users-modal-title" title={t('usersPage.delete_title')} onClose={closeModal}>
-            <div className="p-5 space-y-4">
-              <p className="text-sm text-gray-800 dark:text-gray-200">
-                {t('usersPage.delete_text', { name: modal.item.name, email: modal.item.email })}
-              </p>
-              <div className="flex gap-3 pt-2">
+          <AdminFormModal
+            title={t('usersPage.delete_title')}
+            icon={UserCog}
+            size="sm"
+            onClose={closeModal}
+            footer={
+              <>
+                <button type="button" onClick={closeModal} className="btn-secondary sm:mr-auto">{t('admin.cancel')}</button>
                 <button
                   type="button"
                   disabled={deleteMutation.isPending}
@@ -350,10 +335,13 @@ export default function AdminUsersPage() {
                 >
                   {t('usersPage.delete')}
                 </button>
-                <button type="button" onClick={closeModal} className="btn-secondary">{t('admin.cancel')}</button>
-              </div>
-            </div>
-          </ModalShell>
+              </>
+            }
+          >
+            <p className="text-sm text-gray-800 dark:text-gray-200">
+              {t('usersPage.delete_text', { name: modal.item.name, email: modal.item.email })}
+            </p>
+          </AdminFormModal>
         )}
       </div>
     </>

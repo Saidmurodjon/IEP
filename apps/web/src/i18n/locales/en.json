@@ -273,7 +273,8 @@
         "answered": "Answered",
         "closed": "Closed"
       }
-    }
+    },
+    "modal_subtitle": "Fields marked with an asterisk (*) are required."
   },
   "common": {
     "test_mode_banner": "The site is running in test mode",
@@ -725,7 +726,7 @@
       "slug": "Link (slug)",
       "slug_placeholder": "news-slug",
       "slug_required": "Enter a slug.",
-      "slug_hint": "Generated automatically from the title. Do not change it after saving — old links will break.",
+      "slug_hint": "Generated automatically from the Uzbek title. It does not change after saving, so old links keep working.",
       "published_at": "Publication date",
       "cover_image": "Cover image",
       "title_required": "Enter a title.",
@@ -737,7 +738,11 @@
       "source_url": "Source link",
       "th_title": "Title",
       "th_date": "Date",
-      "empty": "No news"
+      "empty": "No news",
+      "slug_empty": "Appears here once you type a title",
+      "section_content": "Content (three languages)",
+      "section_publish": "Publishing",
+      "section_source": "Source"
     }
   },
   "adminE": {

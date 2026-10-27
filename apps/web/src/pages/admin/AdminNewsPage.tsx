@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,21 +6,22 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { newsApi } from '@/lib/api';
-import { Plus, Pencil, Trash2, X, Calendar, FileEdit } from 'lucide-react';
+import { Plus, Pencil, Trash2, Calendar, FileEdit, Newspaper, Check, Settings2, Link2, Quote } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import clsx from 'clsx';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import FileUploadField from '@/components/admin/FileUploadField';
+import AdminFormModal, { FormSection } from '@/components/admin/AdminFormModal';
 import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTabs';
 import { useToast } from '@/components/Toast';
 import { slugify, uniqueSlug } from '@/lib/slug';
 import { useUnsavedWarning } from '@/hooks/useUnsavedWarning';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
 const schema = z.object({
-  slug: z.string().min(1, 'adminD.news.slug_required'),
+  // Bo'sh bo'lsa `submit` sarlavhadan hosil qiladi.
+  slug: z.string(),
   titleUz: z.string().min(1), titleEn: z.string().min(1), titleRu: z.string().min(1),
   summaryUz: z.string().min(1), summaryEn: z.string().min(1), summaryRu: z.string().min(1),
   contentUz: z.string().min(1), contentEn: z.string().min(1), contentRu: z.string().min(1),
@@ -56,6 +57,7 @@ export default function AdminNewsPage() {
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   const titleUz = watch('titleUz');
+  const slug = watch('slug');
   const imageUrl = watch('imageUrl');
   const isPublished = watch('isPublished');
   const values = watch();
@@ -66,10 +68,9 @@ export default function AdminNewsPage() {
   // Sarlavha yozilganda havola avtomatik shakllanadi. Saqlangan yozuvda
   // ATAYLAB o'zgarmaydi — eski havolalar buzilmasligi kerak.
   useEffect(() => {
-    if (editItem || !titleUz) return;
-    const base = slugify(titleUz);
-    if (!base) return;
-    setValue('slug', uniqueSlug(base, items.map((item) => item.slug)), { shouldDirty: false });
+    if (editItem) return;
+    const base = titleUz ? slugify(titleUz) : '';
+    setValue('slug', base ? uniqueSlug(base, items.map((item) => item.slug)) : '', { shouldDirty: false });
   }, [titleUz, editItem, setValue, items]);
 
   const refresh = () => {
@@ -123,13 +124,6 @@ export default function AdminNewsPage() {
   };
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
-
-
-  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
-
-  const formRef = useRef<HTMLDivElement>(null);
-
-  useFocusTrap(formRef, showForm, closeForm);
 
   /** O'zbekcha matnni joriy yorliqqa ko'chiradi — keyin tarjima qilinadi. */
   const copyFromUz = () => {
@@ -190,7 +184,7 @@ export default function AdminNewsPage() {
           <button
             onClick={() => {
               // Nashr sanasi sukut bo'yicha bugungi kun.
-              reset({ publishedAt: new Date().toISOString().slice(0, 10), isPublished: true });
+              reset({ slug: '', publishedAt: new Date().toISOString().slice(0, 10), isPublished: true });
               setEditItem(null);
               setShowForm(true);
             }}
@@ -202,186 +196,186 @@ export default function AdminNewsPage() {
 
         {/* Form modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div
-              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl my-4"
-              ref={formRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="admin-form-title"
-              tabIndex={-1}
-            >
-              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
-                  {editItem ? t('admin.edit') : t('admin.add_new')} — {t('adminD.news.modal_suffix')}
-                </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
-                  <X className="h-5 w-5" />
+          <AdminFormModal
+            title={`${editItem ? t('admin.edit') : t('admin.add_new')} — ${t('adminD.news.modal_suffix')}`}
+            subtitle={t('admin.modal_subtitle')}
+            icon={Newspaper}
+            size="xl"
+            tinted
+            onClose={closeForm}
+            onSubmit={handleSubmit((data) => submit(data))}
+            footer={
+              <>
+                <button type="button" onClick={closeForm} className="btn-secondary sm:mr-auto">
+                  {t('admin.cancel')}
                 </button>
-              </div>
-              <form onSubmit={handleSubmit((data) => submit(data))} className="p-5 space-y-4">
-                {/*
-                  Tarjima talab qilmaydigan maydonlar til yorliqlaridan
-                  TASHQARIDA, bir marta ko'rsatiladi (07-topshiriq, 9-bo'lim).
-                */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label htmlFor="news-slug" className="label">
-                      {t('adminD.news.slug')} <span className="text-red-600 dark:text-red-300">*</span>
-                    </label>
-                    <input
-                      id="news-slug"
-                      {...register('slug')}
-                      className={clsx('input', errors.slug && 'border-red-400 focus:ring-red-400')}
-                      placeholder={t('adminD.news.slug_placeholder')}
-                    />
-                    {errors.slug ? (
-                      <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t(errors.slug.message ?? '')}</p>
-                    ) : (
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {t('adminD.news.slug_hint')}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="label">{t('adminD.news.published_at')}</label>
-                    <input type="date" {...register('publishedAt')} className="input" />
-                  </div>
-                </div>
-
-                <FileUploadField
-                  kind="image"
-                  label={t('adminD.news.cover_image')}
-                  value={imageUrl ?? null}
-                  onChange={(url) => setValue('imageUrl', url ?? '', { shouldDirty: true })}
-                  ownerType="news"
-                  ownerId={editItem?.id}
+                {/* Qoralama ochiq sahifada ko'rinmaydi */}
+                {isPublished !== false ? (
+                  <button
+                    type="button"
+                    onClick={handleSubmit((data) => submit(data, false))}
+                    className="btn-secondary"
+                  >
+                    {t('admin.save_draft')}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSubmit((data) => submit(data, true))}
+                    className="btn-secondary"
+                  >
+                    {t('admin.publish')}
+                  </button>
+                )}
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  className="btn-primary gap-2 px-6"
+                >
+                  <Check className="h-4 w-4" aria-hidden="true" />
+                  {t('admin.save')}
+                </button>
+              </>
+            }
+          >
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+              {/* Tarjima qilinadigan maydonlar — til yorliqlari ichida */}
+              <FormSection title={t('adminD.news.section_content')} icon={FileEdit}>
+                <LangTabs
+                  active={activeTab}
+                  onChange={setActiveTab}
+                  filled={filled}
+                  onCopyFromUz={copyFromUz}
                 />
 
-                {/* Tarjima qilinadigan maydonlar — til yorliqlari ichida */}
-                <div>
-                  <LangTabs
-                    active={activeTab}
-                    onChange={setActiveTab}
-                    filled={filled}
-                    onCopyFromUz={copyFromUz}
-                  />
-
-                  {LANG_TABS.map((tab) => (
-                    <div key={tab.key} className={clsx('pt-4', activeTab === tab.key ? '' : 'hidden')}>
-                      <div className="space-y-3">
-                        <div>
-                          <label className="label">
-                            {t(`admin.title_${tab.key.toLowerCase()}`)}
-                            {tab.key === 'Uz' && <span className="text-red-600 dark:text-red-300"> *</span>}
-                          </label>
-                          <input
-                            {...register(`title${tab.key}` as keyof FormData)}
-                            className={clsx(
-                              'input',
-                              errors[`title${tab.key}` as keyof FormData] && 'border-red-400 focus:ring-red-400'
-                            )}
-                          />
-                          {errors[`title${tab.key}` as keyof FormData] && (
-                            <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t('adminD.news.title_required')}</p>
+                {LANG_TABS.map((tab) => {
+                  const lang = tab.key.toLowerCase();
+                  const titleError = errors[`title${tab.key}` as keyof FormData];
+                  return (
+                    <div key={tab.key} className={clsx('space-y-5', activeTab === tab.key ? '' : 'hidden')}>
+                      <div>
+                        <label htmlFor={`news-title-${lang}`} className="label">
+                          {t(`admin.title_${lang}`)}
+                          {tab.key === 'Uz' && <span className="text-red-600 dark:text-red-300"> *</span>}
+                        </label>
+                        <input
+                          id={`news-title-${lang}`}
+                          {...register(`title${tab.key}` as keyof FormData)}
+                          className={clsx(
+                            'input !py-2.5 !text-base font-medium',
+                            titleError && 'border-red-400 focus:ring-red-400'
                           )}
-                        </div>
-                        <div>
-                          <label className="label">{t('adminD.news.summary_lang', { lang: tab.key.toUpperCase() })}</label>
-                          <textarea
-                            {...register(`summary${tab.key}` as keyof FormData)}
-                            rows={2}
-                            className="input resize-none"
-                          />
-                        </div>
-                        <div>
-                          <label className="label">{t(`admin.content_${tab.key.toLowerCase()}`)}</label>
-                          {/* Tahrirlagich lazy yuklanadi — ochiq sahifalar hajmini ko'tarmaydi */}
-                          <RichTextEditor
-                            value={(values[`content${tab.key}` as keyof FormData] as string) ?? ''}
-                            onChange={(html) =>
-                              setValue(`content${tab.key}` as keyof FormData, html, { shouldDirty: true })
-                            }
-                            ownerType="news"
-                            ownerId={editItem?.id}
-                          />
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {t('adminD.news.paste_hint')}
-                          </p>
-                        </div>
+                        />
+                        {titleError && (
+                          <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t('adminD.news.title_required')}</p>
+                        )}
+                      </div>
+                      <div>
+                        <label htmlFor={`news-summary-${lang}`} className="label">
+                          {t('adminD.news.summary_lang', { lang: tab.key.toUpperCase() })}
+                        </label>
+                        <textarea
+                          id={`news-summary-${lang}`}
+                          {...register(`summary${tab.key}` as keyof FormData)}
+                          rows={3}
+                          className="input resize-y"
+                        />
+                      </div>
+                      <div>
+                        <p className="label">{t(`admin.content_${lang}`)}</p>
+                        {/* Tahrirlagich lazy yuklanadi — ochiq sahifalar hajmini ko'tarmaydi */}
+                        <RichTextEditor
+                          value={(values[`content${tab.key}` as keyof FormData] as string) ?? ''}
+                          onChange={(html) =>
+                            setValue(`content${tab.key}` as keyof FormData, html, { shouldDirty: true })
+                          }
+                          ownerType="news"
+                          ownerId={editItem?.id}
+                        />
+                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                          {t('adminD.news.paste_hint')}
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
+              </FormSection>
+
+              <div className="space-y-5">
+                <FormSection title={t('adminD.news.section_publish')} icon={Settings2}>
+                  <div>
+                    <label htmlFor="news-published-at" className="label">{t('adminD.news.published_at')}</label>
+                    <input id="news-published-at" type="date" {...register('publishedAt')} className="input" />
+                  </div>
+
+                  {/*
+                    Havola faqat o'zbekcha sarlavhadan hosil bo'ladi va qo'lda
+                    tahrirlanmaydi — saqlangan yozuvda o'zgarmaydi (eski havolalar
+                    buzilmasin).
+                  */}
+                  <div>
+                    <p className="label">{t('adminD.news.slug')}</p>
+                    <input type="hidden" {...register('slug')} />
+                    <div
+                      aria-live="polite"
+                      className="flex items-start gap-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-3 py-2.5 text-sm"
+                    >
+                      <Link2 className="mt-0.5 h-4 w-4 shrink-0 text-primary-600 dark:text-primary-300" aria-hidden="true" />
+                      {slug ? (
+                        <span className="font-mono text-gray-800 dark:text-gray-200 break-all">/news/{slug}</span>
+                      ) : (
+                        <span className="text-gray-600 dark:text-gray-400">{t('adminD.news.slug_empty')}</span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{t('adminD.news.slug_hint')}</p>
+                  </div>
+
+                  <FileUploadField
+                    kind="image"
+                    label={t('adminD.news.cover_image')}
+                    value={imageUrl ?? null}
+                    onChange={(url) => setValue('imageUrl', url ?? '', { shouldDirty: true })}
+                    ownerType="news"
+                    ownerId={editItem?.id}
+                  />
+                </FormSection>
 
                 {/*
                   373-son qarorning 4-bandi: boshqa manbadan olingan axborot
                   faqat manba ko'rsatilgan holda joylashtiriladi.
                 */}
-                <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-900/30 p-4 space-y-3">
-                  <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
+                <FormSection title={t('adminD.news.section_source')} icon={Quote}>
+                  <p className="rounded-lg bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
                     <Trans
                       i18nKey="adminD.news.source_notice"
                       components={{ b: <span className="font-semibold" /> }}
                     />
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="label">{t('adminD.news.source_name')}</label>
-                      <input
-                        {...register('sourceName')}
-                        className="input"
-                        placeholder={t('adminD.news.source_name_placeholder')}
-                      />
-                    </div>
-                    <div>
-                      <label className="label">{t('adminD.news.source_url')}</label>
-                      <input
-                        {...register('sourceUrl')}
-                        className="input"
-                        placeholder="https://..."
-                      />
-                      {errors.sourceUrl && (
-                        <p className="text-red-500 text-xs mt-1">{errors.sourceUrl.message}</p>
-                      )}
-                    </div>
+                  <div>
+                    <label htmlFor="news-source-name" className="label">{t('adminD.news.source_name')}</label>
+                    <input
+                      id="news-source-name"
+                      {...register('sourceName')}
+                      className="input"
+                      placeholder={t('adminD.news.source_name_placeholder')}
+                    />
                   </div>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-gray-100 dark:border-gray-800">
-                  <button
-                    type="submit"
-                    disabled={createMutation.isPending || updateMutation.isPending}
-                    className="btn-primary mt-4"
-                  >
-                    {t('admin.save')}
-                  </button>
-                  {/* Qoralama ochiq sahifada ko'rinmaydi */}
-                  {isPublished !== false && (
-                    <button
-                      type="button"
-                      onClick={handleSubmit((data) => submit(data, false))}
-                      className="btn-secondary mt-4"
-                    >
-                      {t('admin.save_draft')}
-                    </button>
-                  )}
-                  {isPublished === false && (
-                    <button
-                      type="button"
-                      onClick={handleSubmit((data) => submit(data, true))}
-                      className="btn-primary mt-4"
-                    >
-                      {t('admin.publish')}
-                    </button>
-                  )}
-                  <button type="button" onClick={closeForm} className="btn-secondary mt-4">
-                    {t('admin.cancel')}
-                  </button>
-                </div>
-              </form>
+                  <div>
+                    <label htmlFor="news-source-url" className="label">{t('adminD.news.source_url')}</label>
+                    <input
+                      id="news-source-url"
+                      {...register('sourceUrl')}
+                      className="input"
+                      placeholder="https://..."
+                    />
+                    {errors.sourceUrl && (
+                      <p className="text-red-600 dark:text-red-300 text-xs mt-1">{errors.sourceUrl.message}</p>
+                    )}
+                  </div>
+                </FormSection>
+              </div>
             </div>
-          </div>
+          </AdminFormModal>
         )}
 
         {/* List */}

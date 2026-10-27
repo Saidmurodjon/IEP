@@ -21,7 +21,9 @@ Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqa
 API + web, foydalanuvchi tasdig'i bilan.
 
 **🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
-production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Keyingi: D (kiritish qulayligi).
+production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Barcha admin formalari
+yangi `AdminFormModal` (katta oyna, qotirilgan sarlavha/tugmalar) ga o'tkazildi; yangilik slug'i faqat
+sarlavhadan avtomatik. Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
@@ -204,6 +206,21 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Admin formalar — katta modal, slug sarlavhadan
+
+- Yangi `components/admin/AdminFormModal.tsx` (+ `FormSection`): o'lcham sm/md/lg/xl, gradient chiziq,
+  ikonka, qotirilgan sarlavha va tugmalar paneli (faqat tana aylanadi), backdrop blur, ochilish animatsiyasi
+  (`tailwind.config.js` keyframes, `motion-safe`), fokus qamovi + Escape ichida, orqa fon aylanmaydi.
+- 7 sahifa o'tkazildi: News (xl, ikki ustun: matn | nashr sozlamalari + manba), Publications, Documents,
+  Employees (lg), Partners, Units (md), Users (sm, 4 oyna). Sahifalardagi `formRef/useFocusTrap` olib tashlandi.
+- Yangilik slug'i: qo'lda kiritilmaydi, o'zbekcha sarlavhadan jonli hosil bo'ladi (`/news/...` ko'rinishi,
+  `aria-live`), tahrirda o'zgarmaydi. Schema `slug: z.string()` — bo'sh bo'lsa `submit` hosil qiladi.
+- i18n: `admin.modal_subtitle`, `adminD.news.slug_empty/section_*`, `slug_hint` yangilandi (uz/en/ru).
+- Tekshirildi: `tsc --noEmit` toza, `vite build` o'tdi; brauzerda news (sarlavha yozilganda slug paydo
+  bo'ldi, Escape yopdi) va employees oynasi ko'rildi.
+- Tekshirilmadi: haqiqiy saqlash (POST) sinab ko'rilmadi, qolgan 5 sahifa va telefon kengligi vizual
+  ko'rilmadi. Production'ga chiqarilmagan.
+
 ### 2026-10-27 · Admin topbar — til/mavzu ochiladigan menyu
 **Kommit:** `refactor(admin): topbar language and theme as dropdown menus`
 **Qilindi:** `HeaderMenu` `LoginPage.tsx` dan `components/admin/HeaderMenu.tsx` ga chiqarildi.
@@ -245,21 +262,3 @@ rejimida qoldi va ochiq saytni ham qorong'i qilardi (build'da muammo yo'q).
 **Tekshirilmadi:** mobil kenglikda topbar; har bir sahifa qorong'ida ko'z bilan (faqat dashboard,
 profil, xodimlar); Tiptap qorong'ida; change-password'ga alohida rate limit yo'q (token talab qilinadi).
 **Qoldi:** `AdminUnitsPage` tur ro'yxati xom qiymat; profil `<title>` da «| Admin» yo'q.
-
-### 2026-10-27 · 18-B — dashboard statistikasi va grafiklar
-**Kommit:** `feat(admin): dashboard statistics with charts`
-**Qilindi:** `GET /api/stats` (requireAuth, ikkala rol): jami ko'rsatkichlar, 12 oylik yangilik va
-murojaatlar (`date_trunc` Asia/Tashkent, `$queryRaw` tagged), murojaat holatlari, 8 yillik nashrlar,
-top-8 bo'linma + «Boshqa». Sof yordamchilar `lib/stats.ts` + 9 ta test. Web: 6 ta KPI kartochka,
-5 ta grafik — yagona `BarCard` (vertikal/gorizontal), bitta rang `#2f6db0` (validator o'tdi;
-brand `#43719c` xroma bo'yicha o'tmadi), `role="img"` + sr-only jadval, bo'sh/yuklanish/xato holati.
-Oy nomlari locales'dan (`monthsShort`) — Chrome'da `Intl` uz uchun «M11» chiqarar edi.
-Xotira kartochkasi havolasiz (sozlamalar faqat super admin uchun).
-**Tekshirildi:** tsc api+web, vitest 66/66, wrangler dry-run, vite build (Dashboard chunk 384 kB /
-106 kB gzip, lazy). HTTP: token yo'q → 401, token bilan 200 (0,34 s); totals to'g'ridan-to'g'ri SQL
-bilan solishtirildi — mos. Brauzer: grafiklar, oy nomlari, bo'sh holat, hover tooltip, 1 ta h1.
-**Tekshirilmadi:** xodimlar grafigi haqiqiy ma'lumot bilan (lokal bazada xodim 0); ADMIN roli
-bilan dashboard (18-A da tekshirilgan qism o'zgarmagan); mobil kenglik.
-**Muammo:** lokal bazada `publications` 15 → 0 (18-B davomida). Koderlar nashrlarga tegmagan,
-boshqa sessiya yo'q, install-hook yo'q. Sabab noma'lum; `db:test` ildiz `.env` orqali Neon'ga
-yozgani uchun tiklash qilinmadi — foydalanuvchiga savol berildi.

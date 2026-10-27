@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,11 +6,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { pubsApi, fileUrl } from '@/lib/api';
-import { Plus, Pencil, Trash2, X, BookOpen } from 'lucide-react';
+import { Plus, Pencil, Trash2, BookOpen } from 'lucide-react';
 import clsx from 'clsx';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
+import AdminFormModal from '@/components/admin/AdminFormModal';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
@@ -93,13 +93,6 @@ export default function AdminPublicationsPage() {
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset({ category: 'article', year: new Date().getFullYear() }); };
 
-
-  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
-
-  const formRef = useRef<HTMLDivElement>(null);
-
-  useFocusTrap(formRef, showForm, closeForm);
-
   const openEdit = (item: PubItem) => {
     setEditItem(item);
     Object.entries(item).forEach(([k, v]) => setValue(k as keyof FormData, v as string & number));
@@ -123,91 +116,84 @@ export default function AdminPublicationsPage() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div
-              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl my-4"
-              ref={formRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="admin-form-title"
-              tabIndex={-1}
-            >
-              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">{editItem ? t('admin.edit') : t('admin.add_new')} — {t('adminD.publications.modal_suffix')}</h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"><X className="h-5 w-5" /></button>
-              </div>
-              <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-                {/* Language tabs */}
-                <div className="flex gap-1 border-b mb-4">
-                  {TABS.map((tab) => (
-                    <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
-                      className={clsx('px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-                        activeTab === tab.key ? 'border-primary-600 text-primary-700 dark:text-primary-300' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200')}>
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-                {TABS.map((tab) => (
-                  <div key={tab.key} className={activeTab === tab.key ? '' : 'hidden'}>
-                    <label className="label">{t(`admin.title_${tab.key}`)}</label>
-                    <input {...register(`title${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} className="input" />
-                  </div>
-                ))}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="pub-authors" className="label">{t('adminD.publications.authors')}</label>
-                    <input id="pub-authors" {...register('authors')} className="input" placeholder={t('adminD.publications.authors_placeholder')} />
-                    {errors.authors && <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t(errors.authors.message ?? '')}</p>}
-                  </div>
-                  <div>
-                    <label className="label">{t('adminD.publications.year')}</label>
-                    <input {...register('year')} type="number" className="input" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">{t('adminD.publications.journal')}</label>
-                    <input {...register('journal')} className="input" />
-                  </div>
-                  <div>
-                    <label className="label">{t('adminD.publications.category')}</label>
-                    <select {...register('category')} className="input">
-                      {CATS.map((c) => <option key={c} value={c}>{t(`publications.${c}`)}</option>)}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">DOI</label>
-                    <input {...register('doi')} className="input" placeholder={t('adminD.publications.doi_placeholder')} />
-                  </div>
-                </div>
-
-                {/*
-                  Server `fileUrl` ni TO'LIQ manzil deb talab qiladi
-                  (`z.string().url()`), yuklash javobi esa nisbiy manzil
-                  qaytaradi (`/api/files/<key>`) — shuning uchun saqlashdan
-                  oldin `fileUrl()` orqali to'liqlantiriladi (`lib/api.ts`).
-                */}
-                <FileUploadField
-                  kind="document"
-                  label={t('adminD.publications.file_label')}
-                  value={watch('fileUrl') ? fileUrl(watch('fileUrl')) : null}
-                  onChange={(url) => setValue('fileUrl', url ? fileUrl(url) : '', { shouldDirty: true })}
-                  ownerType="publication"
-                  ownerId={editItem?.id}
-                />
-
-                <div className="flex gap-3 pt-2">
-                  <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="btn-primary">{t('admin.save')}</button>
-                  <button type="button" onClick={closeForm} className="btn-secondary">{t('admin.cancel')}</button>
-                </div>
-              </form>
+          <AdminFormModal
+            title={`${editItem ? t('admin.edit') : t('admin.add_new')} — ${t('adminD.publications.modal_suffix')}`}
+            subtitle={t('admin.modal_subtitle')}
+            icon={BookOpen}
+            size="lg"
+            onClose={closeForm}
+            onSubmit={handleSubmit(onSubmit)}
+            footer={
+              <>
+                <button type="button" onClick={closeForm} className="btn-secondary sm:mr-auto">{t('admin.cancel')}</button>
+                <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="btn-primary">{t('admin.save')}</button>
+              </>
+            }
+          >
+            {/* Language tabs */}
+            <div className="flex gap-1 border-b mb-4">
+              {TABS.map((tab) => (
+                <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
+                  className={clsx('px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                    activeTab === tab.key ? 'border-primary-600 text-primary-700 dark:text-primary-300' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200')}>
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          </div>
+            {TABS.map((tab) => (
+              <div key={tab.key} className={activeTab === tab.key ? '' : 'hidden'}>
+                <label className="label">{t(`admin.title_${tab.key}`)}</label>
+                <input {...register(`title${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} className="input" />
+              </div>
+            ))}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="pub-authors" className="label">{t('adminD.publications.authors')}</label>
+                <input id="pub-authors" {...register('authors')} className="input" placeholder={t('adminD.publications.authors_placeholder')} />
+                {errors.authors && <p className="text-red-600 dark:text-red-300 text-xs mt-1">{t(errors.authors.message ?? '')}</p>}
+              </div>
+              <div>
+                <label className="label">{t('adminD.publications.year')}</label>
+                <input {...register('year')} type="number" className="input" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">{t('adminD.publications.journal')}</label>
+                <input {...register('journal')} className="input" />
+              </div>
+              <div>
+                <label className="label">{t('adminD.publications.category')}</label>
+                <select {...register('category')} className="input">
+                  {CATS.map((c) => <option key={c} value={c}>{t(`publications.${c}`)}</option>)}
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">DOI</label>
+                <input {...register('doi')} className="input" placeholder={t('adminD.publications.doi_placeholder')} />
+              </div>
+            </div>
+
+            {/*
+              Server `fileUrl` ni TO'LIQ manzil deb talab qiladi
+              (`z.string().url()`), yuklash javobi esa nisbiy manzil
+              qaytaradi (`/api/files/<key>`) — shuning uchun saqlashdan
+              oldin `fileUrl()` orqali to'liqlantiriladi (`lib/api.ts`).
+            */}
+            <FileUploadField
+              kind="document"
+              label={t('adminD.publications.file_label')}
+              value={watch('fileUrl') ? fileUrl(watch('fileUrl')) : null}
+              onChange={(url) => setValue('fileUrl', url ? fileUrl(url) : '', { shouldDirty: true })}
+              ownerType="publication"
+              ownerId={editItem?.id}
+            />
+          </AdminFormModal>
         )}
 
         {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (

@@ -273,7 +273,8 @@
         "answered": "Javob berildi",
         "closed": "Yopildi"
       }
-    }
+    },
+    "modal_subtitle": "Yulduzcha (*) bilan belgilangan maydonlar majburiy."
   },
   "common": {
     "test_mode_banner": "Sayt test rejimida ishlamoqda",
@@ -725,7 +726,7 @@
       "slug": "Havola (slug)",
       "slug_placeholder": "yangilik-slugi",
       "slug_required": "Havolani (slug) kiriting.",
-      "slug_hint": "Sarlavhadan avtomatik hosil bo'ladi. Saqlangandan keyin o'zgartirmang — eski havolalar buziladi.",
+      "slug_hint": "O'zbekcha sarlavhadan avtomatik hosil bo'ladi. Saqlangandan keyin o'zgarmaydi — eski havolalar buzilmaydi.",
       "published_at": "Nashr sanasi",
       "cover_image": "Bosh rasm",
       "title_required": "Sarlavhani kiriting.",
@@ -737,7 +738,11 @@
       "source_url": "Manba havolasi",
       "th_title": "Sarlavha",
       "th_date": "Sana",
-      "empty": "Yangiliklar yo'q"
+      "empty": "Yangiliklar yo'q",
+      "slug_empty": "Sarlavha yozilganda shu yerda paydo bo'ladi",
+      "section_content": "Matn (uch tilda)",
+      "section_publish": "Nashr sozlamalari",
+      "section_source": "Manba"
     }
   },
   "adminE": {

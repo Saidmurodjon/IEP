@@ -1,17 +1,17 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Pencil, Trash2, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, Handshake, Eye, EyeOff } from 'lucide-react';
 import clsx from 'clsx';
 import { fileUrl, partnersApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import FileUploadField from '@/components/admin/FileUploadField';
 import { useToast } from '@/components/Toast';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
+import AdminFormModal from '@/components/admin/AdminFormModal';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
@@ -46,13 +46,6 @@ export default function AdminPartnersPage() {
   const logoUrl = watch('logoUrl');
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset(); };
-
-
-  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
-
-  const formRef = useRef<HTMLDivElement>(null);
-
-  useFocusTrap(formRef, showForm, closeForm);
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ['admin-partners'] });
     qc.invalidateQueries({ queryKey: ['partners'] });
@@ -129,77 +122,67 @@ export default function AdminPartnersPage() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div
-              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-xl my-4"
-              ref={formRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="admin-form-title"
-              tabIndex={-1}
-            >
-              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
-                  {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.partners')}
-                </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                  <X className="h-5 w-5" />
+          <AdminFormModal
+            title={`${editItem ? t('admin.edit') : t('admin.add_new')} — ${t('admin.partners')}`}
+            subtitle={t('admin.modal_subtitle')}
+            icon={Handshake}
+            size="md"
+            onClose={closeForm}
+            onSubmit={handleSubmit(onSubmit)}
+            footer={
+              <>
+                <button type="button" onClick={closeForm} className="btn-secondary sm:mr-auto">
+                  {t('admin.cancel')}
                 </button>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  className="btn-primary"
+                >
+                  {t('admin.save')}
+                </button>
+              </>
+            }
+          >
+            {(['Uz', 'En', 'Ru'] as const).map((suffix) => (
+              <div key={suffix}>
+                <label className="label">{t('adminC.partners.name_label', { lang: suffix.toUpperCase() })}</label>
+                <input {...register(`name${suffix}` as keyof FormData)} className="input" />
+                {errors[`name${suffix}` as keyof FormData] && (
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-1">
+                    {t(errors[`name${suffix}` as keyof FormData]?.message as string)}
+                  </p>
+                )}
               </div>
-              <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-                {(['Uz', 'En', 'Ru'] as const).map((suffix) => (
-                  <div key={suffix}>
-                    <label className="label">{t('adminC.partners.name_label', { lang: suffix.toUpperCase() })}</label>
-                    <input {...register(`name${suffix}` as keyof FormData)} className="input" />
-                    {errors[`name${suffix}` as keyof FormData] && (
-                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">
-                        {t(errors[`name${suffix}` as keyof FormData]?.message as string)}
-                      </p>
-                    )}
-                  </div>
-                ))}
-                <div>
-                  <FileUploadField
-                    kind="image"
-                    label={t('adminC.partners.logo')}
-                    value={logoUrl ?? null}
-                    onChange={(url) => setValue('logoUrl', url ?? '', { shouldDirty: true })}
-                    ownerType="partner"
-                    ownerId={editItem?.id}
-                  />
-                  <input type="hidden" {...register('logoUrl')} />
-                  {errors.logoUrl && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.logoUrl.message as string)}</p>}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="label">{t('adminC.partners.website')}</label>
-                    <input {...register('websiteUrl')} className="input" placeholder="https://..." />
-                    {errors.websiteUrl && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.websiteUrl.message as string)}</p>}
-                  </div>
-                  <div>
-                    <label className="label">{t('adminC.common.order_number')}</label>
-                    <input type="number" {...register('order')} className="input" defaultValue={0} />
-                  </div>
-                </div>
-                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-                  {t('adminC.common.show_on_site')}
-                </label>
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="submit"
-                    disabled={createMutation.isPending || updateMutation.isPending}
-                    className="btn-primary"
-                  >
-                    {t('admin.save')}
-                  </button>
-                  <button type="button" onClick={closeForm} className="btn-secondary">
-                    {t('admin.cancel')}
-                  </button>
-                </div>
-              </form>
+            ))}
+            <div>
+              <FileUploadField
+                kind="image"
+                label={t('adminC.partners.logo')}
+                value={logoUrl ?? null}
+                onChange={(url) => setValue('logoUrl', url ?? '', { shouldDirty: true })}
+                ownerType="partner"
+                ownerId={editItem?.id}
+              />
+              <input type="hidden" {...register('logoUrl')} />
+              {errors.logoUrl && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.logoUrl.message as string)}</p>}
             </div>
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="label">{t('adminC.partners.website')}</label>
+                <input {...register('websiteUrl')} className="input" placeholder="https://..." />
+                {errors.websiteUrl && <p className="text-red-500 dark:text-red-400 text-xs mt-1">{t(errors.websiteUrl.message as string)}</p>}
+              </div>
+              <div>
+                <label className="label">{t('adminC.common.order_number')}</label>
+                <input type="number" {...register('order')} className="input" defaultValue={0} />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
+              {t('adminC.common.show_on_site')}
+            </label>
+          </AdminFormModal>
         )}
 
         {isLoading ? (

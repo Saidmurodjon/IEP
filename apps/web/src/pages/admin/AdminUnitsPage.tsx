@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -6,9 +6,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { structureApi } from '@/lib/api';
-import { Plus, Pencil, Trash2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Network } from 'lucide-react';
 import clsx from 'clsx';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
+import AdminFormModal from '@/components/admin/AdminFormModal';
 
 const schema = z.object({
   nameUz: z.string().min(1), nameEn: z.string().min(1), nameRu: z.string().min(1),
@@ -57,13 +57,6 @@ export default function AdminUnitsPage() {
 
   const closeForm = () => { setShowForm(false); setEditItem(null); reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); };
 
-
-  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
-
-  const formRef = useRef<HTMLDivElement>(null);
-
-  useFocusTrap(formRef, showForm, closeForm);
-
   const openEdit = (item: UnitItem) => {
     setEditItem(item);
     (Object.keys(schema.shape) as (keyof FormData)[]).forEach((k) => {
@@ -90,79 +83,72 @@ export default function AdminUnitsPage() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div
-              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-xl my-4"
-              ref={formRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="admin-form-title"
-              tabIndex={-1}
-            >
-              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">{editItem ? t('adminD.units.edit_title') : t('adminD.units.new_title')}</h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"><X className="h-5 w-5" /></button>
-              </div>
-              <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-                <div className="flex gap-1 border-b mb-4">
-                  {TABS.map((tab) => (
-                    <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
-                      className={clsx('px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
-                        activeTab === tab.key ? 'border-primary-600 text-primary-700 dark:text-primary-300' : 'border-transparent text-gray-500 dark:text-gray-400')}>
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-
-                {TABS.map((tab) => (
-                  <div key={tab.key} className={activeTab === tab.key ? 'space-y-3' : 'hidden'}>
-                    <div>
-                      <label className="label">{t('adminD.units.name_lang', { lang: tab.key.toUpperCase() })}</label>
-                      <input {...register(`name${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} className="input" />
-                    </div>
-                    <div>
-                      <label className="label">{t('adminD.units.description_lang', { lang: tab.key.toUpperCase() })}</label>
-                      <textarea {...register(`description${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} rows={2} className="input resize-none" />
-                    </div>
-                  </div>
-                ))}
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">{t('adminD.units.type')}</label>
-                    <select {...register('type')} className="input">
-                      {UNIT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="label">{t('adminD.units.order')}</label>
-                    <input {...register('order')} type="number" className="input" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="label">{t('adminD.units.head')}</label>
-                    <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
-                  </div>
-                  <div>
-                    <label className="label">{t('adminD.units.parent')}</label>
-                    <select {...register('parentId')} className="input">
-                      <option value="">{t('adminD.units.parent_none')}</option>
-                      {flat.filter((u) => u.id !== editItem?.id).map((u) => (
-                        <option key={u.id} value={u.id}>{u.nameUz}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <button type="submit" disabled={createMut.isPending || updateMut.isPending} className="btn-primary">{t('admin.save')}</button>
-                  <button type="button" onClick={closeForm} className="btn-secondary">{t('admin.cancel')}</button>
-                </div>
-              </form>
+          <AdminFormModal
+            title={editItem ? t('adminD.units.edit_title') : t('adminD.units.new_title')}
+            subtitle={t('admin.modal_subtitle')}
+            icon={Network}
+            size="md"
+            onClose={closeForm}
+            onSubmit={handleSubmit(onSubmit)}
+            footer={
+              <>
+                <button type="button" onClick={closeForm} className="btn-secondary sm:mr-auto">{t('admin.cancel')}</button>
+                <button type="submit" disabled={createMut.isPending || updateMut.isPending} className="btn-primary">{t('admin.save')}</button>
+              </>
+            }
+          >
+            <div className="flex gap-1 border-b mb-4">
+              {TABS.map((tab) => (
+                <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
+                  className={clsx('px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors',
+                    activeTab === tab.key ? 'border-primary-600 text-primary-700 dark:text-primary-300' : 'border-transparent text-gray-500 dark:text-gray-400')}>
+                  {tab.label}
+                </button>
+              ))}
             </div>
-          </div>
+
+            {TABS.map((tab) => (
+              <div key={tab.key} className={activeTab === tab.key ? 'space-y-3' : 'hidden'}>
+                <div>
+                  <label className="label">{t('adminD.units.name_lang', { lang: tab.key.toUpperCase() })}</label>
+                  <input {...register(`name${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} className="input" />
+                </div>
+                <div>
+                  <label className="label">{t('adminD.units.description_lang', { lang: tab.key.toUpperCase() })}</label>
+                  <textarea {...register(`description${tab.key.charAt(0).toUpperCase() + tab.key.slice(1)}` as keyof FormData)} rows={2} className="input resize-none" />
+                </div>
+              </div>
+            ))}
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">{t('adminD.units.type')}</label>
+                <select {...register('type')} className="input">
+                  {UNIT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="label">{t('adminD.units.order')}</label>
+                <input {...register('order')} type="number" className="input" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="label">{t('adminD.units.head')}</label>
+                <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
+              </div>
+              <div>
+                <label className="label">{t('adminD.units.parent')}</label>
+                <select {...register('parentId')} className="input">
+                  <option value="">{t('adminD.units.parent_none')}</option>
+                  {flat.filter((u) => u.id !== editItem?.id).map((u) => (
+                    <option key={u.id} value={u.id}>{u.nameUz}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </AdminFormModal>
         )}
 
         {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (

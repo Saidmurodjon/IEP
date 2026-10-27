@@ -1,11 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Plus, Pencil, Trash2, X, Eye, EyeOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, FileText, Eye, EyeOff } from 'lucide-react';
 import clsx from 'clsx';
 import { documentsApi, fileUrl } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -13,7 +13,7 @@ import FileUploadField from '@/components/admin/FileUploadField';
 import LangTabs, { LANG_TABS, type LangSuffix } from '@/components/admin/LangTabs';
 import { useToast } from '@/components/Toast';
 import { formatDate } from '@/lib/date';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
+import AdminFormModal from '@/components/admin/AdminFormModal';
 import { useBulkSelection } from '@/hooks/useBulkSelection';
 import BulkActionsBar from '@/components/admin/BulkActionsBar';
 
@@ -72,13 +72,6 @@ export default function AdminDocumentsPage() {
   const values = watch();
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
-
-
-  // Ochiq oynada fokus qamalib turadi va `Escape` uni yopadi (10B2).
-
-  const formRef = useRef<HTMLDivElement>(null);
-
-  useFocusTrap(formRef, showForm, closeForm);
   const refresh = () => {
     qc.invalidateQueries({ queryKey: ['admin-documents'] });
     qc.invalidateQueries({ queryKey: ['documents'] });
@@ -160,100 +153,88 @@ export default function AdminDocumentsPage() {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div
-              className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-2xl my-4"
-              ref={formRef}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="admin-form-title"
-              tabIndex={-1}
-            >
-              <div className="flex items-center justify-between p-5 border-b dark:border-gray-800">
-                <h2 id="admin-form-title" className="font-semibold text-gray-900 dark:text-gray-100">
-                  {editItem ? t('admin.edit') : t('admin.add_new')} — {t('admin.documents')}
-                </h2>
-                <button onClick={closeForm} aria-label={t('common.close')} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                  <X className="h-5 w-5" />
+          <AdminFormModal
+            title={`${editItem ? t('admin.edit') : t('admin.add_new')} — ${t('admin.documents')}`}
+            subtitle={t('admin.modal_subtitle')}
+            icon={FileText}
+            size="lg"
+            onClose={closeForm}
+            onSubmit={handleSubmit(onSubmit)}
+            footer={
+              <>
+                <button type="button" onClick={closeForm} className="btn-secondary sm:mr-auto">
+                  {t('admin.cancel')}
                 </button>
+                <button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                  className="btn-primary"
+                >
+                  {t('admin.save')}
+                </button>
+              </>
+            }
+          >
+            {/* Tarjima talab qilmaydigan maydonlar — bir marta */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="label">{t('documents.number')}</label>
+                <input {...register('documentNumber')} className="input" placeholder={t('adminC.documents.number_placeholder')} />
               </div>
-
-              <form onSubmit={handleSubmit(onSubmit)} className="p-5 space-y-4">
-                {/* Tarjima talab qilmaydigan maydonlar — bir marta */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div>
-                    <label className="label">{t('documents.number')}</label>
-                    <input {...register('documentNumber')} className="input" placeholder={t('adminC.documents.number_placeholder')} />
-                  </div>
-                  <div>
-                    <label className="label">{t('documents.date')}</label>
-                    <input type="date" {...register('documentDate')} className="input" />
-                  </div>
-                  <div>
-                    <label className="label">{t('adminC.common.order_number')}</label>
-                    <input type="number" {...register('order')} className="input" defaultValue={0} />
-                  </div>
-                </div>
-
-                <FileUploadField
-                  kind="document"
-                  label={t('adminC.documents.file')}
-                  value={toUrl(values.fileKey)}
-                  onChange={(url) => setValue('fileKey', toKey(url), { shouldDirty: true })}
-                  ownerType="document"
-                  ownerId={editItem?.id}
-                />
-                <input type="hidden" {...register('fileKey')} />
-                {errors.fileKey && <p className="text-red-500 dark:text-red-400 text-xs">{t(errors.fileKey.message as string)}</p>}
-
-                <div>
-                  <LangTabs active={activeTab} onChange={setActiveTab} filled={filled} onCopyFromUz={copyFromUz} />
-                  {LANG_TABS.map((tab) => (
-                    <div key={tab.key} className={clsx('pt-4 space-y-3', activeTab === tab.key ? '' : 'hidden')}>
-                      <div>
-                        <label className="label">
-                          {t('adminC.documents.title_label', { lang: tab.key.toUpperCase() })} <span className="text-red-500 dark:text-red-400" aria-hidden="true">*</span>
-                        </label>
-                        <input
-                          {...register(`title${tab.key}` as keyof FormData)}
-                          className={clsx('input', errors[`title${tab.key}` as keyof FormData] && 'border-red-400 dark:border-red-500')}
-                        />
-                        {errors[`title${tab.key}` as keyof FormData] && (
-                          <p className="text-red-500 dark:text-red-400 text-xs mt-1">Hujjat nomini kiriting.</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="label">{t('adminC.documents.description_label', { lang: tab.key.toUpperCase() })}</label>
-                        <textarea
-                          {...register(`description${tab.key}` as keyof FormData)}
-                          rows={3}
-                          className="input resize-none"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                  <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
-                  {t('adminC.common.show_on_site')}
-                </label>
-
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="submit"
-                    disabled={createMutation.isPending || updateMutation.isPending}
-                    className="btn-primary"
-                  >
-                    {t('admin.save')}
-                  </button>
-                  <button type="button" onClick={closeForm} className="btn-secondary">
-                    {t('admin.cancel')}
-                  </button>
-                </div>
-              </form>
+              <div>
+                <label className="label">{t('documents.date')}</label>
+                <input type="date" {...register('documentDate')} className="input" />
+              </div>
+              <div>
+                <label className="label">{t('adminC.common.order_number')}</label>
+                <input type="number" {...register('order')} className="input" defaultValue={0} />
+              </div>
             </div>
-          </div>
+
+            <FileUploadField
+              kind="document"
+              label={t('adminC.documents.file')}
+              value={toUrl(values.fileKey)}
+              onChange={(url) => setValue('fileKey', toKey(url), { shouldDirty: true })}
+              ownerType="document"
+              ownerId={editItem?.id}
+            />
+            <input type="hidden" {...register('fileKey')} />
+            {errors.fileKey && <p className="text-red-500 dark:text-red-400 text-xs">{t(errors.fileKey.message as string)}</p>}
+
+            <div>
+              <LangTabs active={activeTab} onChange={setActiveTab} filled={filled} onCopyFromUz={copyFromUz} />
+              {LANG_TABS.map((tab) => (
+                <div key={tab.key} className={clsx('pt-4 space-y-3', activeTab === tab.key ? '' : 'hidden')}>
+                  <div>
+                    <label className="label">
+                      {t('adminC.documents.title_label', { lang: tab.key.toUpperCase() })} <span className="text-red-500 dark:text-red-400" aria-hidden="true">*</span>
+                    </label>
+                    <input
+                      {...register(`title${tab.key}` as keyof FormData)}
+                      className={clsx('input', errors[`title${tab.key}` as keyof FormData] && 'border-red-400 dark:border-red-500')}
+                    />
+                    {errors[`title${tab.key}` as keyof FormData] && (
+                      <p className="text-red-500 dark:text-red-400 text-xs mt-1">Hujjat nomini kiriting.</p>
+                    )}
+                  </div>
+                  <div>
+                    <label className="label">{t('adminC.documents.description_label', { lang: tab.key.toUpperCase() })}</label>
+                    <textarea
+                      {...register(`description${tab.key}` as keyof FormData)}
+                      rows={3}
+                      className="input resize-none"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+              <input type="checkbox" {...register('isActive')} defaultChecked className="rounded" />
+              {t('adminC.common.show_on_site')}
+            </label>
+          </AdminFormModal>
         )}
 
         {isLoading ? (
