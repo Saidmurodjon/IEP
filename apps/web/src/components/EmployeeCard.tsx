@@ -21,13 +21,15 @@ interface Props {
  * shu nisbat saqlanadi, eski nomutanosib rasmlar `object-cover` bilan
  * markazdan kesib ko'rsatiladi.
  */
-function Avatar({ name, photoUrl, size }: { name: string; photoUrl?: string | null; size: 'sm' | 'lg' }) {
+function Avatar({ name, photoUrl }: { name: string; photoUrl?: string | null }) {
   const { t } = useTranslation();
   // Ikkala o'lcham ham ANIQ beriladi (faqat `aspect-ratio` emas) — `<img>`
   // elementida CSS `aspect-ratio` rasmning o'z (natural) nisbatidan PASTROQ
   // ustuvorlikda, ya'ni faqat balandlik berilsa, brauzer baribir haqiqiy
   // rasm nisbatini ishlatadi va 3x4 kartochkada amalga oshmay qoladi.
-  const box = size === 'lg' ? 'h-32 w-24 text-3xl' : 'h-20 w-[3.75rem] text-xl';
+  // O'lcham fizik birlikda — 3x4 sm (CSS `cm`, ≈113x151 px), ikkala
+  // kartochka turida bir xil.
+  const box = 'h-[4cm] w-[3cm] text-3xl';
   if (photoUrl) {
     return (
       <A11yImage
@@ -98,7 +100,7 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
   if (variant === 'compact') {
     return (
       <div className="card p-5 flex items-start gap-4">
-        <Avatar name={name} photoUrl={employee.photoUrl} size="sm" />
+        <Avatar name={name} photoUrl={employee.photoUrl} />
         <div className="min-w-0 flex-1">
           <h3 className="font-semibold text-gray-900 leading-snug">{name}</h3>
           <p className="text-sm text-gray-600 mt-0.5">{position}</p>
@@ -126,7 +128,7 @@ export default function EmployeeCard({ employee, variant = 'compact', badge }: P
         osilib qolgan) ko'rinardi.
       */}
       <div className="flex items-start gap-5">
-        <Avatar name={name} photoUrl={employee.photoUrl} size="lg" />
+        <Avatar name={name} photoUrl={employee.photoUrl} />
         <div className="min-w-0 flex-1">
           {badge && (
             <span className="inline-block mb-2 px-2.5 py-0.5 rounded-full bg-accent-100 text-accent-800 text-xs font-medium">

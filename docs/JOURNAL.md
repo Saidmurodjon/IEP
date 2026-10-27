@@ -39,7 +39,7 @@ API + web, foydalanuvchi tasdig'i bilan.
 **🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
 production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Admin qo'shish/tahrirlash
 shakllari oyna emas, ro'yxat o'rnida to'liq sahifa (`AdminFormPage`, sticky «Saqlash» paneli); yangilik slug'i faqat
-sarlavhadan avtomatik. Xodim formasi ixcham ikki ustunli. Keyingi: D (kiritish qulayligi).
+sarlavhadan avtomatik. Xodim formasi ixcham ikki ustunli; ochiq saytda xodim surati 3x4 sm. Keyingi: D (kiritish qulayligi).
 
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
@@ -222,6 +222,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Xodim surati ochiq saytda 3x4 sm
+
+`EmployeeCard` dagi `Avatar`: ikki o'lcham (`sm` 60x80, `lg` 96x128 px) o'rniga bitta fizik
+o'lcham `h-[4cm] w-[3cm]` (CSS `cm`, ≈113x151 px) — xodimlar, rahbariyat va lab sahifalarida.
+`LabsPage` dagi kichik dumaloq rahbar belgisi (28 px) o'zgartirilmadi — u surat emas, belgi.
+**Tekshirildi:** `tsc --noEmit` (web) toza; `/uz/employees` da `getBoundingClientRect` —
+rasm ham, bosh harf joyi ham 113.4x151.2 px; skrinshot bilan joylashuv ko'rildi.
+**Tekshirilmadi:** mobil kenglik, production.
+
 ### 2026-10-27 · Xodim formasidan shaxsiy ma'lumot ogohlantirishi olib tashlandi
 
 Foydalanuvchi so'rovi bilan «Aloqa» blokidagi sariq ogohlantirish (06-topshiriqdan) o'chirildi,
@@ -240,12 +249,3 @@ Barcha maydonlarga `id`+`htmlFor`, majburiy maydonlarga `aria-invalid`. 4 ta yan
 forma 1456×839 ekranga to'liq sig'adi (skrinshot); bo'sh forma saqlanganda 6 ta majburiy maydonda
 `aria-invalid` va xabar chiqdi. **Tekshirilmadi:** mobil kenglik, lab ichidan (`lockLab`) ochilgan
 forma, haqiqiy saqlash (mantiq o'zgarmagan).
-
-### 2026-10-27 · fix: xodim formasi — boshqa til tabidagi xato yashirin qolardi
-
-**Muammo:** foydalanuvchi xodim yarata olmadi. API to'g'ri ishlaydi (curl bilan 201). Sabab formada:
-ism/lavozim uchala tilda majburiy, lekin EN/RU tabi `hidden` bo'lgani uchun xato ko'rinmas, «Saqlash» indamay to'xtardi.
-**Qilindi:** `EmployeeForm.tsx` — `handleSubmit(onSubmit, onInvalid)`: xatoli birinchi tabga o'tadi va
-toast `adminC.employees.err_form` chiqaradi; xatoli tablarda qizil nuqta. Kalit uchala json'da.
-**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda faqat UZ to'ldirib saqlash → English tabiga o'tdi, toast chiqdi, EN/RU belgilandi.
-**Tekshirilmadi:** production (iep.uz) — u yerda eski kod, deploy qilinmadi. Boshqa uch tilli formalarda ham shu muammo bo'lishi mumkin (tekshirilmadi).
