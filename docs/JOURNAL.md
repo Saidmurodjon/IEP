@@ -222,6 +222,12 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Xodim formasidan shaxsiy ma'lumot ogohlantirishi olib tashlandi
+
+Foydalanuvchi so'rovi bilan «Aloqa» blokidagi sariq ogohlantirish (06-topshiriqdan) o'chirildi,
+`adminC.employees.warn_*` kalitlari uchala tildan olib tashlandi (boshqa joyda ishlatilmaydi).
+**Tekshirildi:** `tsc --noEmit` (web) toza. Brauzerda qayta ochilmadi (faqat bitta blok o'chdi).
+
 ### 2026-10-27 · Xodim formasi ixchamlashtirildi
 
 **Nima qilindi:** foydalanuvchi so'rovi — forma juda yoyilib ketgan edi. `EmployeeForm` endi

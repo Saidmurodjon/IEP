@@ -224,12 +224,6 @@ export default function EmployeeForm({ employee, presetLabId, lockLab, onClose, 
         </FormSection>
 
         <FormSection title={t('adminC.employees.section_contact')} icon={Phone}>
-          {/* Shaxsiy ma'lumotlar bo'yicha ogohlantirish — 06-topshiriq talabi. */}
-          <p className="rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2 text-xs text-amber-900 leading-relaxed dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
-            <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.employees.warn_before')}{' '}
-            <span className="font-semibold">{t('adminC.employees.warn_bold')}</span>{' '}
-            {t('adminC.employees.warn_after')}
-          </p>
           <div className="grid grid-cols-1 sm:grid-cols-6 gap-x-4 gap-y-3">
             <div className="sm:col-span-2">
               <label htmlFor="emp-phone" className="label">{t('adminC.employees.phone')}</label>
