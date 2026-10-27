@@ -31,10 +31,11 @@ export default function EmployeesPage() {
   const employees: Employee[] = (employeesData?.data?.data ?? []) as Employee[];
   const units = flatten((structureData?.data?.data ?? []) as Unit[]);
 
-  // Rahbariyat alohida birinchi guruh, keyin bo'linmalar tuzilma tartibida,
+  // Rahbariyat alohida birinchi guruh, keyin bo'limlar (type 'section') tuzilma tartibida,
   // oxirida bo'linmaga biriktirilmagan xodimlar.
   const management = employees.filter((employee) => employee.isManagement);
   const byUnit = units
+    .filter((unit) => unit.type === 'section')
     .map((unit) => ({
       id: unit.id,
       name: unitName(unit, lang),

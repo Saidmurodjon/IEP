@@ -626,7 +626,9 @@
       "email": "Work email",
       "office": "Office room",
       "photo": "Employee photo",
-      "unit": "Department / laboratory",
+      "unit": "Section",
+      "lab": "Laboratory",
+      "lab_none": "— none —",
       "unit_none": "— not assigned —",
       "is_management": "Member of the management",
       "is_unit_head": "Head of department / laboratory",
@@ -689,6 +691,7 @@
       "appeals_retention_days": "Retention period for closed appeals (days)"
     },
     "units": {
+      "types": { "section": "Section", "laboratory": "Laboratory" },
       "helmet": "Units | Admin",
       "edit_title": "Edit",
       "new_title": "New unit",

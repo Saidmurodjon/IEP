@@ -14,6 +14,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🆕 Asosiy bo'limlar + xodimning laboratoriyasi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+Bo'linma turi `section` (asosiy bo'lim) va `laboratory` — ikkalasi ham yuqori darajada, lab bo'lim
+ichida emas. Xodim: `unitId` = bo'lim, yangi `labId` = laboratoriya (migratsiya `9_employee_lab`).
+Lokal bazada eski bo'linmalar o'chirildi, 6 lab saqlandi, 2 bo'lim yaratildi (Ma'muriy boshqaruv,
+Ilmiy xodimlar). iep.uz uchun: migratsiya 9 + bo'linmalarni qayta tuzish SQL (yozuvdagi) + deploy,
+foydalanuvchi tasdig'i bilan.
+
 **🆕 18-A + 18-B — admin rollari va dashboard grafiklari LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 18-B: `GET /api/stats` + dashboard'da KPI kartochkalar va 5 ta grafik (recharts 2.15.4).
 ⚠️ Lokal bazada 15 ta nashr 18-B davomida noma'lum sabab bilan o'chib ketdi — foydalanuvchidan so'raldi.
@@ -206,6 +213,29 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Asosiy bo'limlar va xodimning laboratoriyasi
+
+**Nima qilindi:** foydalanuvchi so'rovi — eski bo'linmalar o'rniga asosiy bo'limlar (hozircha 2 ta),
+xodim qo'shganda bo'lim VA laboratoriya alohida tanlanadi; lab bo'lim ichida yotmaydi.
+- `Employee.labId` + `9_employee_lab` (FK SET NULL, indeks; lab'ga biriktirilganlar labId ga ko'chadi).
+- API: `structure` turiga `section`; `employees` `labId` qabul qiladi va `?labId=` filtri.
+- Admin «Bo'linmalar»: faqat Bo'lim/Laboratoriya turi, «yuqori bo'linma» tanlovi olib tashlandi.
+  Admin «Xodimlar»: «Bo'lim» + «Laboratoriya» selectlari. `LabDetailPage` labId bo'yicha,
+  `EmployeesPage` faqat bo'limlar bo'yicha guruhlaydi. Seed/test-content yangi tuzilmaga.
+- **Topilgan va tuzatilgan xato:** bo'linmani o'chirish 500 qaytarardi (Prisma `updateMany`
+  parentId bo'yicha tranzaksiya ochadi, Neon HTTP'da yo'q) → `structure.ts` DELETE xom SQL.
+- Lokal baza (5433): 11 bo'linma o'chirildi, 6 lab parentId=NULL, `section-management` va
+  `section-scientific` qo'shildi, `searchVector` qayta hisoblandi.
+**Tekshirildi:** `migrate deploy` + `migrate diff` (farq yo'q); tsc api/web/db toza; vitest 66/66;
+`wrangler deploy --dry-run` OK. Haqiqiy HTTP (JWT bilan): bo'lim yaratish 201, xodim unitId+labId
+bilan, `?labId=` 1 ta, labId tozalash → null, bo'limni o'chirish 200 va xodim qoladi (unitId null,
+labId saqlanadi), auth'siz POST 401. Brauzer: admin bo'linmalar ro'yxati va xodim formasidagi
+ikki select (DOM bilan).
+**Tekshirilmadi:** ochiq `/employees` va lab sahifasi brauzerda ochilmadi; production.
+**Production uchun SQL:** `UPDATE structure_units SET "parentId"=NULL WHERE type='laboratory';`
+`DELETE FROM structure_units WHERE type<>'laboratory';` + 2 bo'lim INSERT + structure reindex.
+`apps/api/deploy/iep-api/seed.cjs` eski id lar bilan — production seed'dan oldin qayta yig'ilsin.
+
 ### 2026-10-27 · Admin formalar — oyna o'rniga to'liq sahifa
 
 - Foydalanuvchi: «modal nima keragi bor, dashboardda turibdiku». Yangi `components/admin/AdminFormPage.tsx`
@@ -218,26 +248,3 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
   va users (create sahifa, jadval yashirin) ko'rildi.
 - Tekshirilmadi: haqiqiy saqlash, qolgan 4 sahifa vizual, telefon kengligi.
 
-### 2026-10-27 · Admin formalar — katta modal, slug sarlavhadan
-
-- Yangi `components/admin/AdminFormModal.tsx` (+ `FormSection`): o'lcham sm/md/lg/xl, gradient chiziq,
-  ikonka, qotirilgan sarlavha va tugmalar paneli (faqat tana aylanadi), backdrop blur, ochilish animatsiyasi
-  (`tailwind.config.js` keyframes, `motion-safe`), fokus qamovi + Escape ichida, orqa fon aylanmaydi.
-- 7 sahifa o'tkazildi: News (xl, ikki ustun: matn | nashr sozlamalari + manba), Publications, Documents,
-  Employees (lg), Partners, Units (md), Users (sm, 4 oyna). Sahifalardagi `formRef/useFocusTrap` olib tashlandi.
-- Yangilik slug'i: qo'lda kiritilmaydi, o'zbekcha sarlavhadan jonli hosil bo'ladi (`/news/...` ko'rinishi,
-  `aria-live`), tahrirda o'zgarmaydi. Schema `slug: z.string()` — bo'sh bo'lsa `submit` hosil qiladi.
-- i18n: `admin.modal_subtitle`, `adminD.news.slug_empty/section_*`, `slug_hint` yangilandi (uz/en/ru).
-- Tekshirildi: `tsc --noEmit` toza, `vite build` o'tdi; brauzerda news (sarlavha yozilganda slug paydo
-  bo'ldi, Escape yopdi) va employees oynasi ko'rildi.
-- Tekshirilmadi: haqiqiy saqlash (POST) sinab ko'rilmadi, qolgan 5 sahifa va telefon kengligi vizual
-  ko'rilmadi. Production'ga chiqarilmagan.
-
-### 2026-10-27 · Admin topbar — til/mavzu ochiladigan menyu
-**Kommit:** `refactor(admin): topbar language and theme as dropdown menus`
-**Qilindi:** `HeaderMenu` `LoginPage.tsx` dan `components/admin/HeaderMenu.tsx` ga chiqarildi.
-`AdminTopbar` dagi UZ/EN/RU va light/dark/system segment tugmalari o'rniga asosiy sayt
-sarlavhasidagi kabi ikkita menyu: mavzu (joriy Sun/Moon ikonka) va til (Globe + kod).
-**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda dashboard topbari, til menyusi ochiladi,
-joriy til belgilangan.
-**Tekshirilmadi:** qorong'i mavzuda topbar skrinshoti, mobil kenglik.

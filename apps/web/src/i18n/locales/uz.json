@@ -626,7 +626,9 @@
       "email": "Xizmat pochtasi",
       "office": "Xona raqami",
       "photo": "Xodim rasmi",
-      "unit": "Bo'linma / laboratoriya",
+      "unit": "Bo'lim",
+      "lab": "Laboratoriya",
+      "lab_none": "— biriktirilmagan —",
       "unit_none": "— biriktirilmagan —",
       "is_management": "Rahbariyat tarkibida",
       "is_unit_head": "Bo'linma / laboratoriya mudiri",
@@ -689,6 +691,7 @@
       "appeals_retention_days": "Yopilgan murojaatlarni saqlash muddati (kun)"
     },
     "units": {
+      "types": { "section": "Bo'lim", "laboratory": "Laboratoriya" },
       "helmet": "Bo'linmalar | Admin",
       "edit_title": "Tahrirlash",
       "new_title": "Yangi bo'lim",

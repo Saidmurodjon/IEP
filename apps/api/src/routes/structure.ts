@@ -17,8 +17,8 @@ const unitSchema = z.object({
   descriptionRu: z.string().default(''),
   head: z.string().optional().nullable(),
   type: z
-    .enum(['department', 'laboratory', 'division', 'center', 'sector', 'council', 'position', 'service'])
-    .default('department'),
+    .enum(['section', 'department', 'laboratory', 'division', 'center', 'sector', 'council', 'position', 'service'])
+    .default('section'),
   staffCount: z.number().int().nonnegative().optional().nullable(),
   isAdvisory: z.boolean().optional().default(false),
   order: z.number().int().default(0),
@@ -118,9 +118,12 @@ structureRouter.delete('/:id', requireAuth, async (c) => {
   const db = c.get('db');
   const id = c.req.param('id');
   const unit = await db.structureUnit.findUnique({ where: { id } });
+  // Prisma bog'lanish maydonini o'zgartirish/o'chirishda tranzaksiya ochadi, Neon HTTP
+  // rejimida esa tranzaksiya yo'q (500) — shuning uchun xom SQL. Bazadagi FK lar
+  // `ON DELETE SET NULL`: xodimlar o'chmaydi, faqat bog'lanish uziladi.
   if (unit) {
-    await db.structureUnit.updateMany({ where: { parentId: id }, data: { parentId: unit.parentId } });
+    await db.$executeRaw`UPDATE "structure_units" SET "parentId" = ${unit.parentId} WHERE "parentId" = ${id}`;
   }
-  await db.structureUnit.delete({ where: { id } });
+  await db.$executeRaw`DELETE FROM "structure_units" WHERE "id" = ${id}`;
   return c.json({ message: 'Deleted successfully' });
 });

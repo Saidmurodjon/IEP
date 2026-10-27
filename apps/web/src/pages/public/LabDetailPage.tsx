@@ -22,8 +22,8 @@ export default function LabDetailPage() {
     queryFn: () => structureApi.tree(),
   });
   const { data: employeesData } = useQuery({
-    queryKey: ['employees', id],
-    queryFn: () => employeesApi.list(id),
+    queryKey: ['employees', 'lab', id],
+    queryFn: () => employeesApi.list({ labId: id }),
     enabled: !!id,
   });
 

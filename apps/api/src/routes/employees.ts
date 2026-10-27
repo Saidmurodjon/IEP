@@ -27,6 +27,7 @@ const employeeSchema = z.object({
   isManagement: z.boolean().optional(),
   isUnitHead: z.boolean().optional(),
   unitId: z.string().optional(),
+  labId: z.string().optional(),
   order: z.number().int().optional(),
   isActive: z.boolean().optional(),
 });
@@ -43,6 +44,7 @@ function clean<T extends Record<string, unknown>>(data: T): T {
 employeesRouter.get('/', async (c) => {
   const db = c.get('db');
   const unitId = c.req.query('unitId');
+  const labId = c.req.query('labId');
   // Ochiq saytda faqat faol xodimlar. Ishdan ketgan xodim o'chirilmaydi,
   // `isActive = false` bo'ladi va admin panelda ko'rinib turadi.
   const includeInactive = c.req.query('includeInactive') === 'true';
@@ -50,6 +52,7 @@ employeesRouter.get('/', async (c) => {
   const items = await db.employee.findMany({
     where: {
       ...(unitId ? { unitId } : {}),
+      ...(labId ? { labId } : {}),
       ...(includeInactive ? {} : { isActive: true }),
     },
     orderBy: [{ order: 'asc' }, { fullNameUz: 'asc' }],

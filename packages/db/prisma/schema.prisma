@@ -98,7 +98,10 @@ model StructureUnit {
   parentId      String?
   parent        StructureUnit?  @relation("StructureHierarchy", fields: [parentId], references: [id])
   children      StructureUnit[] @relation("StructureHierarchy")
-  employees     Employee[]
+  // Bo'lim (type = "section") xodimlari
+  employees     Employee[]      @relation("EmployeeUnit")
+  // Laboratoriya (type = "laboratory") xodimlari — bo'limdan mustaqil
+  labEmployees  Employee[]      @relation("EmployeeLab")
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -148,8 +151,12 @@ model Employee {
   isManagement     Boolean                  @default(false)
   isUnitHead       Boolean                  @default(false)
   // Bo'linma o'chirilsa xodim o'chmaydi — bog'lanish uziladi.
+  // Asosiy bo'lim (Ma'muriy boshqaruv, Ilmiy xodimlar, ...)
   unitId           String?
-  unit             StructureUnit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  unit             StructureUnit?           @relation("EmployeeUnit", fields: [unitId], references: [id], onDelete: SetNull)
+  // Laboratoriya — bo'limdan alohida tanlanadi, laboratoriyalar bo'lim ichida yotmaydi.
+  labId            String?
+  lab              StructureUnit?           @relation("EmployeeLab", fields: [labId], references: [id], onDelete: SetNull)
   order            Int                      @default(0)
   // Ishdan ketgan xodim O'CHIRILMAYDI, faqat `false` qilinadi.
   isActive         Boolean                  @default(true)
@@ -160,6 +167,7 @@ model Employee {
   searchVector     Unsupported("tsvector")?
 
   @@index([unitId])
+  @@index([labId])
   @@index([searchVector], type: Gin)
   @@map("employees")
 }

@@ -16,14 +16,15 @@ const schema = z.object({
   descriptionEn: z.string().default(''),
   descriptionRu: z.string().default(''),
   head: z.string().optional(),
-  type: z.enum(['department', 'laboratory', 'division', 'center', 'sector']),
+  type: z.enum(['section', 'laboratory', 'department', 'division', 'center', 'sector', 'council', 'position', 'service']),
   order: z.coerce.number().int().default(0),
-  parentId: z.string().optional().nullable(),
 });
 type FormData = z.infer<typeof schema>;
 type UnitItem = FormData & { id: string; children?: UnitItem[] };
 
-const UNIT_TYPES = ['department', 'laboratory', 'division', 'center', 'sector'];
+// Yangi yozuvlar uchun faqat ikki tur; eski turlar faqat tahrirlashda ko'rinadi.
+const UNIT_TYPES = ['section', 'laboratory'];
+const TYPE_ORDER: Record<string, number> = { section: 0, laboratory: 1 };
 const TABS = [{ key: 'uz', label: "O'zbek" }, { key: 'en', label: 'English' }, { key: 'ru', label: 'Русский' }] as const;
 
 function flattenTree(units: UnitItem[]): UnitItem[] {
@@ -44,18 +45,21 @@ export default function AdminUnitsPage() {
 
   const { data, isLoading } = useQuery({ queryKey: ['structure-admin'], queryFn: () => structureApi.tree() });
   const tree: UnitItem[] = data?.data?.data ?? [];
-  const flat = flattenTree(tree);
+  // Bo'limlar birinchi, keyin laboratoriyalar; ichida `order` bo'yicha.
+  const flat = flattenTree(tree).sort(
+    (a, b) => (TYPE_ORDER[a.type] ?? 2) - (TYPE_ORDER[b.type] ?? 2) || a.order - b.order
+  );
 
   const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' },
+    defaultValues: { type: 'section', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' },
   });
 
-  const createMut = useMutation({ mutationFn: (d: FormData) => structureApi.create(d), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); closeForm(); } });
+  const createMut = useMutation({ mutationFn: (d: FormData & { parentId: null }) => structureApi.create(d), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); closeForm(); } });
   const updateMut = useMutation({ mutationFn: ({ id, data }: { id: string; data: Partial<FormData> }) => structureApi.update(id, data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); closeForm(); } });
   const deleteMut = useMutation({ mutationFn: (id: string) => structureApi.delete(id), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); } });
 
-  const closeForm = () => { setShowForm(false); setEditItem(null); reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); };
+  const closeForm = () => { setShowForm(false); setEditItem(null); reset({ type: 'section', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); };
 
   const openEdit = (item: UnitItem) => {
     setEditItem(item);
@@ -66,9 +70,9 @@ export default function AdminUnitsPage() {
   };
 
   const onSubmit = (data: FormData) => {
-    if (!data.parentId) data.parentId = null;
+    // Bo'lim va laboratoriya yuqori darajada: yaratishda parentId null, tahrirda yuborilmaydi.
     if (editItem) updateMut.mutate({ id: editItem.id, data });
-    else createMut.mutate(data);
+    else createMut.mutate({ ...data, parentId: null });
   };
 
   return (
@@ -117,7 +121,9 @@ export default function AdminUnitsPage() {
               <div>
                 <label className="label">{t('adminD.units.type')}</label>
                 <select {...register('type')} className="input">
-                  {UNIT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                  {(editItem && !UNIT_TYPES.includes(editItem.type) ? [...UNIT_TYPES, editItem.type] : UNIT_TYPES).map((ty) => (
+                    <option key={ty} value={ty}>{t(`adminD.units.types.${ty}`, { defaultValue: ty })}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -126,27 +132,16 @@ export default function AdminUnitsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="label">{t('adminD.units.head')}</label>
-                <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
-              </div>
-              <div>
-                <label className="label">{t('adminD.units.parent')}</label>
-                <select {...register('parentId')} className="input">
-                  <option value="">{t('adminD.units.parent_none')}</option>
-                  {flat.filter((u) => u.id !== editItem?.id).map((u) => (
-                    <option key={u.id} value={u.id}>{u.nameUz}</option>
-                  ))}
-                </select>
-              </div>
+            <div>
+              <label className="label">{t('adminD.units.head')}</label>
+              <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
             </div>
           </AdminFormPage>
         ) : (
           <>
             <div className="flex items-center justify-between mb-6">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.units')}</h1>
-              <button onClick={() => { reset({ type: 'department', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); setShowForm(true); }} className="btn-primary gap-2">
+              <button onClick={() => { reset({ type: 'section', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); setShowForm(true); }} className="btn-primary gap-2">
                 <Plus className="h-4 w-4" /> {t('admin.add_new')}
               </button>
             </div>
@@ -167,7 +162,7 @@ export default function AdminUnitsPage() {
                     {flat.map((item) => (
                       <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                         <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</td>
-                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{item.type}</td>
+                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{t(`adminD.units.types.${item.type}`, { defaultValue: item.type })}</td>
                         <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{item.head ?? '—'}</td>
                         <td className="px-4 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">

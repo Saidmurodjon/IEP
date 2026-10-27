@@ -287,9 +287,10 @@ const LAB_UNITS = [
   'lab-electrotech', 'lab-efficiency', 'lab-smart-grid',
 ];
 const LAB_STAFF_COUNTS = [2, 2, 2, 2, 2, 1]; // jami 11
-const MANAGEMENT_UNITS = ['director', 'deputy-science', 'deputy-general', 'scientific-secretary'];
-const ADMIN_UNITS = ['finance-dept', 'legal-counsel', 'hr-chancellery', 'ict-specialist', 'engineering-service'];
-const ADMIN_STAFF_COUNTS = [2, 1, 2, 1, 1]; // jami 7
+const SECTION_MANAGEMENT = 'section-management';
+const SECTION_SCIENTIFIC = 'section-scientific';
+const MANAGEMENT_COUNT = 4;
+const ADMIN_COUNT = 8;
 
 const POSITIONS = [
   'Katta ilmiy xodim', 'Ilmiy xodim', 'Kichik ilmiy xodim',
@@ -298,31 +299,26 @@ const POSITIONS = [
 
 async function seedEmployees(cache: MediaCache): Promise<void> {
   console.log('Xodimlar (29)...');
-  const jobs: { id: string; unitId: string; isManagement: boolean; isUnitHead: boolean }[] = [];
+  const jobs: { id: string; unitId: string; labId: string | null; isManagement: boolean; isUnitHead: boolean }[] = [];
   let n = 1;
+  const nextId = () => `test-emp-${String(n++).padStart(2, '0')}`;
 
-  for (const unitId of MANAGEMENT_UNITS) {
-    jobs.push({ id: `test-emp-${String(n).padStart(2, '0')}`, unitId, isManagement: true, isUnitHead: false });
-    n++;
+  // Rahbariyat va ma'muriy xodimlar — "Ma'muriy boshqaruv" bo'limida.
+  for (let k = 0; k < MANAGEMENT_COUNT; k++) {
+    jobs.push({ id: nextId(), unitId: SECTION_MANAGEMENT, labId: null, isManagement: true, isUnitHead: false });
   }
-  for (const unitId of LAB_UNITS) {
-    jobs.push({ id: `test-emp-${String(n).padStart(2, '0')}`, unitId, isManagement: false, isUnitHead: true });
-    n++;
+  // Har laboratoriya mudiri va xodimlari — "Ilmiy xodimlar" bo'limi + o'z laboratoriyasi.
+  for (const labId of LAB_UNITS) {
+    jobs.push({ id: nextId(), unitId: SECTION_SCIENTIFIC, labId, isManagement: false, isUnitHead: true });
   }
-  LAB_UNITS.forEach((unitId, i) => {
+  LAB_UNITS.forEach((labId, i) => {
     for (let k = 0; k < LAB_STAFF_COUNTS[i]; k++) {
-      jobs.push({ id: `test-emp-${String(n).padStart(2, '0')}`, unitId, isManagement: false, isUnitHead: false });
-      n++;
+      jobs.push({ id: nextId(), unitId: SECTION_SCIENTIFIC, labId, isManagement: false, isUnitHead: false });
     }
   });
-  jobs.push({ id: `test-emp-${String(n).padStart(2, '0')}`, unitId: 'integration-center', isManagement: false, isUnitHead: false });
-  n++;
-  ADMIN_UNITS.forEach((unitId, i) => {
-    for (let k = 0; k < ADMIN_STAFF_COUNTS[i]; k++) {
-      jobs.push({ id: `test-emp-${String(n).padStart(2, '0')}`, unitId, isManagement: false, isUnitHead: false });
-      n++;
-    }
-  });
+  for (let k = 0; k < ADMIN_COUNT; k++) {
+    jobs.push({ id: nextId(), unitId: SECTION_MANAGEMENT, labId: null, isManagement: false, isUnitHead: false });
+  }
 
   for (let i = 0; i < jobs.length; i++) {
     const num = i + 1;
@@ -376,6 +372,7 @@ async function seedEmployees(cache: MediaCache): Promise<void> {
         isManagement: job.isManagement,
         isUnitHead: job.isUnitHead,
         unitId: job.unitId,
+        labId: job.labId,
         order: num,
         isActive: true,
       } })

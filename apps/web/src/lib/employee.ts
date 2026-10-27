@@ -19,6 +19,7 @@ export interface Employee {
   isManagement: boolean;
   isUnitHead: boolean;
   unitId?: string | null;
+  labId?: string | null;
   order: number;
   isActive: boolean;
 }

@@ -199,8 +199,10 @@ export function parseStructureChart(raw: string | null | undefined): StructureCh
 
 // --- Settings ---
 export const employeesApi = {
-  list: (unitId?: string, includeInactive = false) =>
-    api.get('/api/employees', { params: { unitId, includeInactive: includeInactive || undefined } }),
+  list: (params?: { unitId?: string; labId?: string }, includeInactive = false) =>
+    api.get('/api/employees', {
+      params: { unitId: params?.unitId, labId: params?.labId, includeInactive: includeInactive || undefined },
+    }),
   get: (id: string) => api.get(`/api/employees/${id}`),
   create: (data: unknown) => api.post('/api/employees', data),
   update: (id: string, data: unknown) => api.put(`/api/employees/${id}`, data),

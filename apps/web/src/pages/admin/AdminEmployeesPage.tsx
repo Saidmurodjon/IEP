@@ -35,6 +35,7 @@ const schema = z.object({
   scopusId: z.string().optional(),
   officeRoom: z.string().optional(),
   unitId: z.string().optional(),
+  labId: z.string().optional(),
   order: z.coerce.number().int().optional(),
   isManagement: z.boolean().optional(),
   isUnitHead: z.boolean().optional(),
@@ -72,7 +73,10 @@ export default function AdminEmployeesPage() {
   });
 
   const items: Employee[] = data?.data?.data ?? [];
-  const units = flatten((structureData?.data?.data ?? []) as Unit[]);
+  const units = flatten((structureData?.data?.data ?? []) as Unit[]).map(({ unit }) => unit);
+  // Bo'lim va laboratoriya mustaqil tanlanadi.
+  const sections = units.filter((unit) => unit.type === 'section');
+  const labs = units.filter((unit) => unit.type === 'laboratory');
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -269,20 +273,28 @@ export default function AdminEmployeesPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="label">{t('adminC.employees.unit')}</label>
-                <select {...register('unitId')} className="input">
+                <label htmlFor="emp-unit" className="label">{t('adminC.employees.unit')}</label>
+                <select id="emp-unit" {...register('unitId')} className="input">
                   <option value="">{t('adminC.employees.unit_none')}</option>
-                  {units.map(({ unit, depth }) => (
-                    <option key={unit.id} value={unit.id}>
-                      {' '.repeat(depth * 3)}{unit.nameUz}
-                    </option>
+                  {sections.map((unit) => (
+                    <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="label">{t('adminC.common.order_number')}</label>
-                <input type="number" {...register('order')} className="input" defaultValue={0} />
+                <label htmlFor="emp-lab" className="label">{t('adminC.employees.lab')}</label>
+                <select id="emp-lab" {...register('labId')} className="input">
+                  <option value="">{t('adminC.employees.lab_none')}</option>
+                  {labs.map((unit) => (
+                    <option key={unit.id} value={unit.id}>{unit.nameUz}</option>
+                  ))}
+                </select>
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="emp-order" className="label">{t('adminC.common.order_number')}</label>
+              <input id="emp-order" type="number" {...register('order')} className="input" defaultValue={0} />
             </div>
 
             <div className="flex flex-wrap gap-5 pt-1">
@@ -368,7 +380,12 @@ export default function AdminEmployeesPage() {
                         </td>
                         <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{item.positionUz}</td>
                         <td className="px-4 py-3 text-gray-500 dark:text-gray-400">
-                          {units.find(({ unit }) => unit.id === item.unitId)?.unit.nameUz ?? '—'}
+                          {units.find((unit) => unit.id === item.unitId)?.nameUz ?? '—'}
+                          {item.labId && (
+                            <span className="block text-xs text-gray-500 dark:text-gray-400">
+                              {units.find((unit) => unit.id === item.labId)?.nameUz}
+                            </span>
+                          )}
                         </td>
                         <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{item.order}</td>
                         <td className="px-4 py-3">
