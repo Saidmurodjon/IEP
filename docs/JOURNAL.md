@@ -167,7 +167,21 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 | Sessiya | Topshiriq | Tegilayotgan fayllar | Boshlangan |
 |---|---|---|---|
-| — | — | — | — |
+| Opus (nazoratchi) | Sayt o'zgarishlari — topshiriqlar kutilmoqda | `docs/JOURNAL.md` | 2026-10-27 |
+
+**Ish tartibi (2026-10-27 dan, foydalanuvchi qarori):**
+- **Nazoratchi — Opus.** Topshiriqni bo'ladi, fayllarni sessiyalarga taqsimlaydi, natijani
+  tekshiradi (`tsc`, test, build, brauzer), kommit va push qiladi, jurnalni yuritadi.
+- **Koder — Sonnet subagentlar.** Har biriga aniq fayllar ro'yxati beriladi; ikki koder bitta
+  faylga tegmaydi. Koder kommit/push/deploy QILMAYDI, faqat o'zgartiradi va hisobot beradi.
+- **Token tejash:** koderga butun kontekst emas, faqat kerakli fayllar va qabul mezoni beriladi;
+  hisobot 5–10 qator.
+- **Lokal muhit doim ishlab turadi:** API `wrangler dev --port 8787` (3000 ni open-webui
+  egallagan), web `VITE_API_URL=http://localhost:8787 vite` → http://localhost:5173.
+  Baza — lokal (`localhost:4444` neon-proxy → `iep-pg`).
+- **GitHub:** har bir tekshirilgan o'zgarish kommit qilinib `origin/master` ga push qilinadi
+  (foydalanuvchi ruxsat berdi).
+- **Production (iep.uz):** FAQAT foydalanuvchi aniq tasdiqlagandan keyin.
 
 ---
 
@@ -219,62 +233,3 @@ Hosting o'z sarlavhalarini ham qo'shadi (`X-Frame-Options: SAMEORIGIN`, ikkinchi
 **Tekshirilmadi:** admin login (parol yo'q), Force SSL redirect (yoqilmagan), fayl yuklash,
 kontakt xati.
 
-### 2026-10-27 · 16 — iep.uz production'ga joylandi
-
-**Kim:** Claude Code (Opus 5.5). Panel/DNS/parollar — foydalanuvchi.
-**Qilindi:** `api` subdomeni (panel, Chrome orqali); Node.js 22 ilovasi `cloudlinux-selector
-create` bilan (SSH); frontend va API paketi SSH orqali yuklandi; `npm install` + `generate`.
-`build-node.mjs` endi `seed.cjs` ni ham yig'adi; `seed.ts` `SITE_URL` ni o'qiydi. Yangi
-`apps/api/scripts/setup-hosting.sh` — foydalanuvchi Mac Terminal'da ishga tushiradi: parollar
-`read -s`, JWT_SECRET `openssl` bilan, serverga stdin orqali; env → migrate → seed → restart.
-**Topildi:** serverda `localhost` → `::1`, PostgreSQL faqat IPv4 → Prisma P1001; endi
-`127.0.0.1`. CloudLinux `activate` `set -u` bilan yiqiladi. SSH tez-tez `Connection reset`
-(skriptda 10 marta qayta urinish). Passenger ishga tushmaganda xato sahifasi stack trace
-ko'rsatadi (ochiq ish). Auto-mode Arsenal-D NS va SSL o'zgarishini blokladi.
-**Tekshirildi (`--resolve` bilan IP orqali, HTTP):** settings/news/structure/publications/
-employees/search 200; 12 parallel 200; noto'g'ri login → 401 `Invalid credentials`; POST
-auth'siz 401; CORS `https://iep.uz` ha, begona origin yo'q; `site_url=https://iep.uz`;
-NodeApp 15 oqim. Frontend IP orqali 200, `.htaccess` sarlavhalari bor. `tsc` toza,
-50/50 test.
-**Tekshirilmadi:** HTTPS (sertifikat yo'q), brauzerda sahifa+API, admin login (parol
-foydalanuvchida), fayl yuklash, kontakt xati (Resend yo'q).
-
-### 2026-09-23 · 16 — o'lchov, qaror, qo'llanma
-
-**Kim:** Claude Code (Opus 5.5). **O'lchandi (foydalanuvchi Mac'idan, RTT ~5 ms):** API TTFB
-31–50 ms (server 15–25 ms), gzip + HTTP/2. Chrome CDP: LCP 0,29–0,74 s sovuq, 3G sovuq
-1,9–3,3 s (xodimlar sahifasi eng sekin). `ab -n200 -c10`: 0 xato, news p50 62 ms, employees
-p50 96 ms / p99 2,3 s. 4G taqlidi ishonchsiz chiqdi (hisobga olinmadi).
-**Topildi:** `/images/*` da `Cache-Control` yo'q → har tashrifda ~600 KB; hero 334 KB,
-logo 117 KB; JS bundle 505 KB. Tuzatilmadi — `docs/deploy-hosting.md` 10-bo'lim.
-**Qaror (foydalanuvchi):** holat production uchun yetarli; `iep.uz` yuridik shaxs nomidan
-Arsenal-D orqali, yangi hosting kabinetida. **Qilindi:** `docs/deploy-hosting.md` — yangi
-hisobda noldan joylash qo'llanmasi (secret'siz). Push: GitHub Actions Cloudflare deploy'i
-oldin ham secret'siz yiqilgan (3 ta run), push'dan zarar yo'q.
-
-### 2026-09-23 · 16 — sslip.io sinov domeni; rasmlar va 500 tuzatildi
-
-**Kim:** Claude Code (Opus 5.5). Domen/SSL/ilova sozlamasi — foydalanuvchi (panel).
-**Rasmlar** (`7876021`): `<img>` nisbiy `/api/files/...` bilan frontend domeniga ketardi, bazada
-`http://localhost:3000/...` ham bor. `fileUrl()` endi har qanday `/api/files/` manzilini
-`VITE_API_URL` ga o'giradi; `A11yImage`, yangilik HTML, admin logo/preview shundan o'tadi.
-**500** (`7876021`, `1994e94`): CloudLinux LVE oqimlarni ham sanaydi; Prisma tokio yadro
-soniga qarab ~52 oqim/jarayon ochardi → Passenger jarayonlari 4–12 s da o'ldirilardi, DB
-ulanishi 5 s timeout, SSH ham uzilardi. `node.ts`: `TOKIO_WORKER_THREADS=2`,
-`connection_limit=2`, `pool_timeout=20`. Lokal: CONNECTION LIMIT 3 rol bilan eski kod 11/12
-500, yangi 12/12 200; oqimlar 21→11.
-**Tekshirildi (serverda):** 12 parallel `/api/settings` 200; NodeApp 13–15 oqim, >1 daqiqa
-yashaydi; SSH barqaror. Headless Chrome (CDP): 7 sahifa, 0 buzilgan rasm, 0 ta 4xx/5xx.
-**Tekshirilmadi:** admin login (parol yo'q), fayl yuklash va kontakt formasi (production DB'ga
-yozadi — foydalanuvchi bilan), email. Yuklash panel Fayl menejeri orqali bo'ldi (SSH o'shanda
-ishlamasdi; auto-mode production'ga yozishni ham bloklaydi).
-
-### 2026-09-23 · 16 — C: frontend serverda, CORS tuzatildi
-
-**Qilindi (foydalanuvchi):** `dist-webname` `public_html` ga yuklandi (tar | ssh), panel
-namunasi `~/tmp/da-placeholder-index.html`; panelda `FRONTEND_URL` dagi bo'sh joy olib tashlandi.
-**Tekshirildi (`--resolve iep.uz:80:95.46.96.12`):** `/`, `/uz/news`, `/en/about` 200 (SPA
-fallback), `/_headers` 403, `robots.txt` 200; bizning sarlavhalar va CSP Report-Only bor;
-`/assets/*.js` `immutable`, `index.html` `no-cache`; API `Access-Control-Allow-Origin: https://iep.uz`.
-**Tekshirilmadi:** brauzerda render (API `https://api.iep.uz` DNS/SSL'siz ochilmaydi), HTTPS.
-**Topildi:** hosting o'z sarlavhalarini qo'shadi — `X-Frame-Options` ikki xil qiymat bilan keladi.
