@@ -241,15 +241,3 @@ sarlavhasidagi kabi ikkita menyu: mavzu (joriy Sun/Moon ikonka) va til (Globe + 
 **Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda dashboard topbari, til menyusi ochiladi,
 joriy til belgilangan.
 **Tekshirilmadi:** qorong'i mavzuda topbar skrinshoti, mobil kenglik.
-
-### 2026-10-27 · Admin login sahifasi qayta dizayn
-**Kommit:** `feat(admin): redesign login page with navbar and password toggle`
-**Qilindi:** `LoginPage.tsx` — asosiy sayt sarlavhasiga o'xshash navbar (emblema + nom, `/` ga havola),
-mavzu (light/dark/system) va til (Globe, uz/en/ru) ochiladigan menyulari (`HeaderMenu`, Escape va
-tashqariga bosish bilan yopiladi). Parolni ko'rsatish/yashirish tugmasi (`aria-label`, `aria-controls`).
-Ikki ustunli karta (keng ekranda chap brend paneli), yorug' fonda och gradient — avval qorong'i
-mavzuda karta fonga singib ketardi. Xato bloki `aria-live` + ikonka, «Saytga qaytish» havolasi.
-i18n: `adminE.login.{showPassword,hidePassword,backToSite,welcome,welcomeHint,secureNote}` — uchala tilda.
-**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda (localhost:5173) — parol turi password↔text
-almashadi, mavzu va til menyulari ishlaydi (`dark` klassi, `lang=uz`), bitta `h1`, ikki mavzuda skrinshot.
-**Tekshirilmadi:** login so'rovining o'zi (auth mantig'iga tegilmagan), mobil kenglik vizual ko'rinishi.
