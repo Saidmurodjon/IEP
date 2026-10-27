@@ -8,13 +8,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum AdminRole {
+  SUPER_ADMIN
+  ADMIN
+}
+
 model Admin {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String    @id @default(cuid())
+  email       String    @unique
+  name        String
+  password    String
+  role        AdminRole @default(ADMIN)
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@map("admins")
 }
@@ -44,7 +52,7 @@ model News {
 
   /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
   /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
-  searchVector  Unsupported("tsvector")?
+  searchVector Unsupported("tsvector")?
 
   @@index([searchVector], type: Gin)
   @@map("news")
@@ -66,7 +74,7 @@ model Publication {
 
   /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
   /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
-  searchVector  Unsupported("tsvector")?
+  searchVector Unsupported("tsvector")?
 
   @@index([searchVector], type: Gin)
   @@map("publications")
@@ -96,7 +104,7 @@ model StructureUnit {
 
   /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
   /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
-  searchVector  Unsupported("tsvector")?
+  searchVector Unsupported("tsvector")?
 
   @@index([searchVector], type: Gin)
   @@map("structure_units")
@@ -108,51 +116,50 @@ model StructureUnit {
 /// DIQQAT: saytda faqat XIZMAT telefoni va XIZMAT pochtasi e'lon qilinadi.
 /// Shaxsiy mobil raqam yoki shaxsiy pochta bu yerga yozilmaydi.
 model Employee {
-  id                String   @id @default(cuid())
-  fullNameUz        String
-  fullNameEn        String
-  fullNameRu        String
-  positionUz        String
-  positionEn        String
-  positionRu        String
+  id               String                   @id @default(cuid())
+  fullNameUz       String
+  fullNameEn       String
+  fullNameRu       String
+  positionUz       String
+  positionEn       String
+  positionRu       String
   // Ilmiy daraja (f.-m.f.n., PhD va h.k.) — bo'lmasligi mumkin
-  degreeUz          String?
-  degreeEn          String?
-  degreeRu          String?
+  degreeUz         String?
+  degreeEn         String?
+  degreeRu         String?
   // Ilmiy unvon (dotsent, professor) — bo'lmasligi mumkin
-  titleUz           String?
-  titleEn           String?
-  titleRu           String?
-  email             String?
-  phone             String?
-  photoUrl          String?
-  orcid             String?
-  scopusId          String?
-  researchAreaUz    String?
-  researchAreaEn    String?
-  researchAreaRu    String?
-  officeRoom        String?
+  titleUz          String?
+  titleEn          String?
+  titleRu          String?
+  email            String?
+  phone            String?
+  photoUrl         String?
+  orcid            String?
+  scopusId         String?
+  researchAreaUz   String?
+  researchAreaEn   String?
+  researchAreaRu   String?
+  officeRoom       String?
   // Qabul jadvali erkin matn: muassasada u buyruq bilan belgilanadi va
   // shakli o'zgarib turishi mumkin, shuning uchun tuzilmali saqlanmaydi.
-  receptionHoursUz  String?
-  receptionHoursEn  String?
-  receptionHoursRu  String?
-  isManagement      Boolean  @default(false)
-  isUnitHead        Boolean  @default(false)
+  receptionHoursUz String?
+  receptionHoursEn String?
+  receptionHoursRu String?
+  isManagement     Boolean                  @default(false)
+  isUnitHead       Boolean                  @default(false)
   // Bo'linma o'chirilsa xodim o'chmaydi — bog'lanish uziladi.
-  unitId            String?
-  unit              StructureUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull)
-  order             Int      @default(0)
+  unitId           String?
+  unit             StructureUnit?           @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  order            Int                      @default(0)
   // Ishdan ketgan xodim O'CHIRILMAYDI, faqat `false` qilinadi.
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
-  @@index([unitId])
+  isActive         Boolean                  @default(true)
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
   /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
   /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
-  searchVector  Unsupported("tsvector")?
+  searchVector     Unsupported("tsvector")?
 
+  @@index([unitId])
   @@index([searchVector], type: Gin)
   @@map("employees")
 }
@@ -259,7 +266,7 @@ model Document {
 
   /// To'liq matnli qidiruv vektori. Prisma uni O'QIY OLMAYDI (`Unsupported`) —
   /// yangilash `apps/api/src/lib/search-index.ts` dagi xom SQL orqali bo'ladi.
-  searchVector  Unsupported("tsvector")?
+  searchVector Unsupported("tsvector")?
 
   @@index([searchVector], type: Gin)
   @@map("documents")

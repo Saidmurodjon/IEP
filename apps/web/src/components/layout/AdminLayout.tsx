@@ -3,14 +3,23 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Newspaper, BookOpen, Building2,
   Settings, MessageSquare, LogOut, Zap, Menu, X,
-  Users, Handshake, FileText, Bug, Network,
+  Users, Handshake, FileText, Bug, Network, UserCog,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore, isSuperAdmin } from '@/store/auth';
+import { authApi } from '@/lib/api';
 import ErrorBoundary from '@/components/ErrorBoundary';
 
-const navItems = [
+interface NavItem {
+  to: string;
+  icon: typeof LayoutDashboard;
+  key: string;
+  /** Faqat SUPER_ADMIN ko'radi. */
+  superOnly?: boolean;
+}
+
+const navItems: NavItem[] = [
   { to: '/admin/dashboard', icon: LayoutDashboard, key: 'dashboard' },
   { to: '/admin/news', icon: Newspaper, key: 'news' },
   { to: '/admin/publications', icon: BookOpen, key: 'publications' },
@@ -20,15 +29,34 @@ const navItems = [
   { to: '/admin/partners', icon: Handshake, key: 'partners' },
   { to: '/admin/documents', icon: FileText, key: 'documents' },
   { to: '/admin/messages', icon: MessageSquare, key: 'messages' },
-  { to: '/admin/logs', icon: Bug, key: 'logs' },
-  { to: '/admin/settings', icon: Settings, key: 'settings' },
+  { to: '/admin/logs', icon: Bug, key: 'logs', superOnly: true },
+  { to: '/admin/settings', icon: Settings, key: 'settings', superOnly: true },
+  { to: '/admin/users', icon: UserCog, key: 'users', superOnly: true },
 ];
 
 export default function AdminLayout() {
   const { t } = useTranslation();
-  const { admin, logout } = useAuthStore();
+  const { admin, logout, updateAdmin } = useAuthStore();
+  const superAdmin = isSuperAdmin(admin);
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Rol token muddati davomida o'zgargan bo'lishi mumkin — kirganda yangilanadi.
+  useEffect(() => {
+    let cancelled = false;
+    authApi
+      .me()
+      .then((res) => {
+        const me = res.data?.data;
+        if (!cancelled && me) updateAdmin({ id: me.id, email: me.email, name: me.name, role: me.role });
+      })
+      .catch(() => {
+        // 401 ni axios interceptor o'zi hal qiladi; boshqa xatoda eski ma'lumot qoladi.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [updateAdmin]);
 
   const handleLogout = () => {
     logout();
@@ -50,7 +78,7 @@ export default function AdminLayout() {
       </div>
 
       <nav className="flex-1 p-3 space-y-1">
-        {navItems.map(({ to, icon: Icon, key }) => (
+        {navItems.filter((item) => !item.superOnly || superAdmin).map(({ to, icon: Icon, key }) => (
           <NavLink
             key={to}
             to={to}
@@ -74,6 +102,11 @@ export default function AdminLayout() {
         <div className="px-3 py-2 mb-2">
           <div className="text-xs text-primary-400">Kirgan:</div>
           <div className="text-sm text-white truncate">{admin?.email}</div>
+          {admin?.role && (
+            <span className="inline-block mt-1 rounded bg-primary-800 px-2 py-0.5 text-xs text-primary-100">
+              {t(`usersPage.role_${admin.role}`)}
+            </span>
+          )}
         </div>
         <button
           onClick={handleLogout}

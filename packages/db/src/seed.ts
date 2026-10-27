@@ -29,11 +29,12 @@ async function main() {
     where: { email: adminEmail },
     // Parol ADMIN_PASSWORD dan olinadi, shuning uchun qayta seed qilinganda
     // mavjud admin hash'i ham yangi formatga yangilanadi.
-    update: { password: hashedPassword },
+    update: { password: hashedPassword, role: 'SUPER_ADMIN' },
     create: {
       email: adminEmail,
       name: 'Administrator',
       password: hashedPassword,
+      role: 'SUPER_ADMIN',
     },
   });
   console.log(`✓ Admin tayyor: ${adminEmail} (parol ADMIN_PASSWORD dan olindi)`);

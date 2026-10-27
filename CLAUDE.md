@@ -91,6 +91,11 @@ packages/
    **`POST /api/logs/client` nega ochiq:** JavaScript xatosi tizimga kirmagan foydalanuvchida
    ham yuz beradi, shuning uchun uni `requireAuth` bilan yopib bo'lmaydi. Buning evaziga
    cheklovlar qattiq: IP bo'yicha daqiqasiga 10 ta, matn uzunligi cheklangan, `zValidator`.
+4a. **Ikki rol: `SUPER_ADMIN` va `ADMIN`.** Rol va `isActive` har so'rovda `requireAuth` ichida
+   bazadan o'qiladi (tokenga ishonilmaydi). Faqat super admin uchun: `/api/admins/*`, sayt
+   sozlamalarini yozish, `/api/logs` admin endpointlari, `POST /api/uploads/cleanup` —
+   `requireAuth, requireRole('SUPER_ADMIN')`. Yangi boshqaruv endpointi qo'shsangiz, rolini
+   ham hal qiling. Frontend'da: `SuperAdminRoute` (`App.tsx`) va menyuda `superOnly`.
 5. **Kiruvchi ma'lumot doim zod bilan tekshirilsin** (`zValidator`). Validatsiyasiz `c.req.json()` ishlatmang.
 6. **Xato xabarlari ichki tafsilotni oshkor qilmasin.** Login uchun doim `Invalid credentials` — "email topilmadi" demang.
 7. ✅ **HTML kontent sanitizatsiyasi bajarildi.** Server saqlashdan oldin tozalaydi

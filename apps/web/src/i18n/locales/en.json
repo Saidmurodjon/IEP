@@ -240,7 +240,8 @@
     "bulk_delete_done": "{{count}} records deleted.",
     "bulk_delete_partial": "{{done}} deleted, {{failed}} failed.",
     "bulk_draft_done": "{{count}} records moved to draft.",
-    "bulk_draft_partial": "{{done}} moved to draft, {{failed}} failed."
+    "bulk_draft_partial": "{{done}} moved to draft, {{failed}} failed.",
+    "users": "Users"
   },
   "common": {
     "test_mode_banner": "The site is running in test mode",
@@ -339,7 +340,11 @@
     "NOT_FOUND": "Record not found. It may have been deleted.",
     "UNAUTHORIZED": "Your session has expired. Please sign in again.",
     "SERVER_ERROR": "Server error. If it happens again, contact the technical staff.",
-    "RATE_LIMITED": "Too many requests. Please try again shortly."
+    "RATE_LIMITED": "Too many requests. Please try again shortly.",
+    "FORBIDDEN": "You do not have permission for this action.",
+    "CONFLICT": "This email is already in use.",
+    "LAST_SUPER_ADMIN": "The last active Super admin cannot be changed or deleted.",
+    "SELF_ACTION": "You cannot change your own role or status, or delete yourself."
   },
   "toast": {
     "news_saved": "News item saved.",
@@ -480,5 +485,46 @@
     "saved": "Structure document saved.",
     "removed": "Structure document removed.",
     "file_label": "Choose the structure document file"
+  },
+  "usersPage": {
+    "title": "Users",
+    "subtitle": "Accounts with access to the admin panel",
+    "add": "Add user",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "last_login": "Last login",
+    "created": "Created",
+    "actions": "Actions",
+    "never": "Never",
+    "empty": "No users found.",
+    "you": "You",
+    "active": "Active",
+    "blocked": "Blocked",
+    "role_SUPER_ADMIN": "Super admin",
+    "role_ADMIN": "Administrator",
+    "password": "Password",
+    "password_hint": "At least 10 characters",
+    "new_password": "New password",
+    "create_title": "New user",
+    "edit_title": "Edit user",
+    "reset_title": "Reset password",
+    "delete_title": "Delete user",
+    "delete_text": "{{name}} ({{email}}) will be deleted. This cannot be undone.",
+    "block": "Block",
+    "unblock": "Unblock",
+    "edit": "Edit",
+    "reset": "Reset password",
+    "delete": "Delete",
+    "v_name": "Enter a name (up to 100 characters)",
+    "v_email": "Email address is invalid",
+    "v_password": "Password must be 10 to 200 characters",
+    "created_ok": "User added.",
+    "updated_ok": "Changes saved.",
+    "blocked_ok": "User blocked.",
+    "unblocked_ok": "User unblocked.",
+    "reset_ok": "Password updated.",
+    "deleted_ok": "User deleted."
   }
 }

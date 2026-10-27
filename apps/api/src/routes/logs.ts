@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 import { fail } from '../lib/errors';
 import { clientIp, createStore, overLimit } from '../lib/rate-limit';
 import { cleanupOldLogs, recordError } from '../lib/error-log';
@@ -59,7 +59,7 @@ logsRouter.post('/client', zValidator('json', clientLogSchema), async (c) => {
   return c.json({ data: { accepted: true } }, 202);
 });
 
-logsRouter.get('/', requireAuth, async (c) => {
+logsRouter.get('/', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
   const page = Math.max(1, parseInt(c.req.query('page') ?? '1', 10) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(c.req.query('limit') ?? '25', 10) || 25));
@@ -113,7 +113,7 @@ logsRouter.get('/', requireAuth, async (c) => {
   });
 });
 
-logsRouter.get('/:id', requireAuth, async (c) => {
+logsRouter.get('/:id', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
   const item = await db.errorLog.findUnique({ where: { id: c.req.param('id') } });
   if (!item) return fail(c, 'NOT_FOUND', 'Log entry not found');
@@ -123,6 +123,7 @@ logsRouter.get('/:id', requireAuth, async (c) => {
 logsRouter.patch(
   '/:id',
   requireAuth,
+  requireRole('SUPER_ADMIN'),
   zValidator('json', z.object({ isResolved: z.boolean().optional(), note: z.string().max(2000).optional() })),
   async (c) => {
     const db = c.get('db');
@@ -135,13 +136,13 @@ logsRouter.patch(
   }
 );
 
-logsRouter.delete('/:id', requireAuth, async (c) => {
+logsRouter.delete('/:id', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
   await db.errorLog.delete({ where: { id: c.req.param('id') } });
   return c.json({ message: 'Deleted successfully' });
 });
 
-logsRouter.post('/cleanup', requireAuth, async (c) => {
+logsRouter.post('/cleanup', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
   const deleted = await cleanupOldLogs(db);
   return c.json({ data: { deleted } });

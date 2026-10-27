@@ -21,6 +21,10 @@ export const ERROR_CODES = [
   'UNAUTHORIZED',
   'RATE_LIMITED',
   'SERVER_ERROR',
+  'FORBIDDEN',
+  'CONFLICT',
+  'LAST_SUPER_ADMIN',
+  'SELF_ACTION',
 ] as const;
 
 export type ErrorCode = (typeof ERROR_CODES)[number];
@@ -38,6 +42,10 @@ const STATUS: Record<ErrorCode, ContentfulStatusCode> = {
   UNAUTHORIZED: 401,
   RATE_LIMITED: 429,
   SERVER_ERROR: 500,
+  FORBIDDEN: 403,
+  CONFLICT: 409,
+  LAST_SUPER_ADMIN: 409,
+  SELF_ACTION: 409,
 };
 
 /**

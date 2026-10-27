@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 import type { AppContext } from '../index';
 
 export const settingsRouter = new Hono<AppContext>();
@@ -30,7 +30,7 @@ settingsRouter.get('/', async (c) => {
   });
 });
 
-settingsRouter.put('/:key', requireAuth, zValidator('json', z.object({ value: z.string() })), async (c) => {
+settingsRouter.put('/:key', requireAuth, requireRole('SUPER_ADMIN'), zValidator('json', z.object({ value: z.string() })), async (c) => {
   const db = c.get('db');
   const key = c.req.param('key');
   const { value } = c.req.valid('json');
@@ -38,7 +38,7 @@ settingsRouter.put('/:key', requireAuth, zValidator('json', z.object({ value: z.
   return c.json({ data: setting });
 });
 
-settingsRouter.post('/bulk', requireAuth, zValidator('json', z.record(z.string())), async (c) => {
+settingsRouter.post('/bulk', requireAuth, requireRole('SUPER_ADMIN'), zValidator('json', z.record(z.string())), async (c) => {
   const db = c.get('db');
   const data = c.req.valid('json');
   await Promise.all(

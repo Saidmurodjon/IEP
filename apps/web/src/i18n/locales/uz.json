@@ -240,7 +240,8 @@
     "bulk_delete_done": "{{count}} ta yozuv o'chirildi.",
     "bulk_delete_partial": "{{done}} ta o'chirildi, {{failed}} tasida xatolik yuz berdi.",
     "bulk_draft_done": "{{count}} ta yozuv qoralamaga o'tkazildi.",
-    "bulk_draft_partial": "{{done}} tasi qoralamaga o'tkazildi, {{failed}} tasida xatolik yuz berdi."
+    "bulk_draft_partial": "{{done}} tasi qoralamaga o'tkazildi, {{failed}} tasida xatolik yuz berdi.",
+    "users": "Foydalanuvchilar"
   },
   "common": {
     "test_mode_banner": "Sayt test rejimida ishlamoqda",
@@ -339,7 +340,11 @@
     "NOT_FOUND": "Yozuv topilmadi. Ehtimol u o'chirilgan.",
     "UNAUTHORIZED": "Sessiya muddati tugadi. Qaytadan kiring.",
     "SERVER_ERROR": "Serverda xatolik. Agar takrorlansa, texnik xodimga murojaat qiling.",
-    "RATE_LIMITED": "Juda ko'p so'rov yuborildi. Birozdan keyin qaytadan urinib ko'ring."
+    "RATE_LIMITED": "Juda ko'p so'rov yuborildi. Birozdan keyin qaytadan urinib ko'ring.",
+    "FORBIDDEN": "Bu amal uchun huquqingiz yetarli emas.",
+    "CONFLICT": "Bu email allaqachon band.",
+    "LAST_SUPER_ADMIN": "Oxirgi faol Super adminni o'zgartirish yoki o'chirish mumkin emas.",
+    "SELF_ACTION": "O'zingizning rolingiz yoki holatingizni o'zgartirib, o'zingizni o'chirib bo'lmaydi."
   },
   "toast": {
     "news_saved": "Yangilik saqlandi.",
@@ -480,5 +485,46 @@
     "saved": "Tuzilma hujjati saqlandi.",
     "removed": "Tuzilma hujjati olib tashlandi.",
     "file_label": "Tuzilma hujjati faylini tanlang"
+  },
+  "usersPage": {
+    "title": "Foydalanuvchilar",
+    "subtitle": "Admin panelga kirish huquqi bo'lgan hisoblar",
+    "add": "Foydalanuvchi qo'shish",
+    "name": "Ism",
+    "email": "Email",
+    "role": "Rol",
+    "status": "Holat",
+    "last_login": "Oxirgi kirish",
+    "created": "Yaratilgan",
+    "actions": "Amallar",
+    "never": "Kirmagan",
+    "empty": "Foydalanuvchilar topilmadi.",
+    "you": "Siz",
+    "active": "Faol",
+    "blocked": "Bloklangan",
+    "role_SUPER_ADMIN": "Super admin",
+    "role_ADMIN": "Administrator",
+    "password": "Parol",
+    "password_hint": "Kamida 10 belgi",
+    "new_password": "Yangi parol",
+    "create_title": "Yangi foydalanuvchi",
+    "edit_title": "Foydalanuvchini tahrirlash",
+    "reset_title": "Parolni tiklash",
+    "delete_title": "Foydalanuvchini o'chirish",
+    "delete_text": "{{name}} ({{email}}) o'chiriladi. Bu amalni qaytarib bo'lmaydi.",
+    "block": "Bloklash",
+    "unblock": "Blokdan chiqarish",
+    "edit": "Tahrirlash",
+    "reset": "Parolni tiklash",
+    "delete": "O'chirish",
+    "v_name": "Ismni kiriting (100 belgigacha)",
+    "v_email": "Email manzili noto'g'ri",
+    "v_password": "Parol 10 dan 200 gacha belgi bo'lishi kerak",
+    "created_ok": "Foydalanuvchi qo'shildi.",
+    "updated_ok": "O'zgarishlar saqlandi.",
+    "blocked_ok": "Foydalanuvchi bloklandi.",
+    "unblocked_ok": "Foydalanuvchi blokdan chiqarildi.",
+    "reset_ok": "Parol yangilandi.",
+    "deleted_ok": "Foydalanuvchi o'chirildi."
   }
 }

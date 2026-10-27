@@ -110,6 +110,28 @@ export const authApi = {
   me: () => api.get('/api/auth/me'),
 };
 
+// --- Adminlar (faqat SUPER_ADMIN) ---
+export interface AdminDto {
+  id: string;
+  email: string;
+  name: string;
+  role: 'SUPER_ADMIN' | 'ADMIN';
+  isActive: boolean;
+  lastLoginAt: string | null;
+  createdAt: string;
+}
+
+export const adminsApi = {
+  list: () => api.get<{ data: AdminDto[] }>('/api/admins'),
+  create: (data: { email: string; name: string; password: string; role: AdminDto['role'] }) =>
+    api.post('/api/admins', data),
+  update: (id: string, data: { name?: string; role?: AdminDto['role']; isActive?: boolean }) =>
+    api.patch(`/api/admins/${id}`, data),
+  resetPassword: (id: string, password: string) =>
+    api.post(`/api/admins/${id}/reset-password`, { password }),
+  remove: (id: string) => api.delete(`/api/admins/${id}`),
+};
+
 // --- News ---
 export const newsApi = {
   /** `drafts` — faqat admin panel uchun: qoralamalar ham qaytadi. */

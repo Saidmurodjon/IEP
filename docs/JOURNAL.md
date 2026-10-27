@@ -14,6 +14,11 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🆕 18-A — admin rollari (SUPER_ADMIN/ADMIN) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqarish: migratsiya +
+API + web, foydalanuvchi tasdig'i bilan. Keyingi bosqichlar: B (dashboard grafiklari, recharts),
+C (admin panelda til + qorong'i mavzu), D (kiritish qulayligi, profil sahifasi).
+
 **🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
 yangi «Bo'linmalar» (`/admin/units`) — bo'linma/laboratoriya tahriri (laboratoriyalar,
@@ -195,6 +200,25 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · 18-A — admin rollari: SUPER_ADMIN va ADMIN
+**Kommit:** `feat(admin): super admin and admin roles with user management`
+**Qilindi:** `Admin` ga `role`/`isActive`/`lastLoginAt`, migratsiya 8 (mavjud adminlar → SUPER_ADMIN).
+`requireAuth` rol va faollikni HAR so'rovda bazadan o'qiydi (bloklangan admin tokeni darhol 401).
+`requireRole()`; `/api/admins` CRUD + parol tiklash. Super admin uchun: admins, sozlamalarni yozish,
+logs, uploads/cleanup. Xato kodlari FORBIDDEN, CONFLICT, LAST_SUPER_ADMIN, SELF_ACTION.
+Web: `/admin/users` sahifasi, `SuperAdminRoute`, menyuda `superOnly`, `/me` dan rol yangilanadi,
+dashboard'da xatolar kartochkasi faqat super admin'ga. 3 tilda matnlar.
+**Tekshirildi:** tsc (api+web), vitest 57/57, wrangler dry-run, vite build. Lokal bazada HTTP:
+yaratish 201, takror email 409, qisqa parol 400, ADMIN → admins/logs/settings/cleanup 403,
+kontent 200, o'zini pasaytirish/bloklash/o'chirish 409 SELF_ACTION, bloklangan token 401,
+bloklangan login 401, parol tiklash (eski parol 401), javobda parol yo'q. Brauzer: super admin
+menyusi va jadval; ADMIN localStorage'da soxta SUPER_ADMIN bilan ham `/me` dan ADMIN oldi va
+dashboard'ga yo'naltirildi. Test hisoblar o'chirildi.
+**Tekshirilmadi:** LAST_SUPER_ADMIN holati HTTP orqali (bazada 2 super admin bor; mantiq
+`admin-guard.test.ts` da sinovdan o'tgan); modallarning Escape/fokus tuzog'i qo'lda sinalmadi.
+**Qarorlar:** rol tokenga yozilmaydi — bazadan o'qiladi (har so'rovga +1 so'rov, evaziga darhol
+bekor qilish). Production'ga migratsiya foydalanuvchi tasdig'idan keyin.
+
 ### 2026-10-27 · 17b — tuzilma sahifasi faqat rasm, bo'linmalar alohida admin bo'limida
 **Nima:** foydalanuvchi "tagidagi avvalgi qismlarni olib tashla" dedi. Bo'linmalar ma'lumoti
 Labs/LabDetail/About/Employees da ishlatilgani uchun so'raldi → "admin'da alohida bo'limga
@@ -221,48 +245,3 @@ login → PNG yuklash → PUT → settings'da chiqdi; almashtirishda eski fayl 4
 `UNSUPPORTED_TYPE`; auth'siz PUT 401. Brauzerda: rasm, alt, havolalar, bitta h1, sana `27.10.2026`.
 **Tekshirilmadi:** admin kartaning UI'si brauzerda (token klassifikator tomonidan bloklandi —
 foydalanuvchi o'zi ko'radi); production.
-
-### 2026-10-27 · 16 — test ma'lumoti manbai: seed emas, dump
-
-**Topildi:** `seed.ts` va yig'ilgan `deploy/iep-api/seed.cjs`/`server.cjs` da test satri yo'q
-(grep 0). Production'dagi hajm (29 xodim, 45 media) lokal bazaning to'liq dumpi bilan bir xil
-(2026-09 arxivi) → test yozuvlari `iep-full.sql` dump/tiklash yo'li bilan tushgan; HOZIRGI
-HOLAT dagi "NOLDAN" yozuvi bu jihatdan noaniq bo'lgan. Seed kodi o'zgartirilmadi.
-**Qilindi:** `docs/deploy-hosting.md` 7-bo'lim — tiklashdan oldin dumpni `grep -cE` bilan
-tekshirish, natija 0 bo'lishi shart. **Tekshirildi:** buyruq lokal `iep-pg` dumpida 114 ta
-moslik topdi (lokal bazada test ma'lumoti hali bor — u ataylab qoldirilgan).
-
-### 2026-10-27 · 16 — test fayllari tozalandi
-
-**Kim:** foydalanuvchi (`POST /api/uploads/cleanup`, Mac Terminal skripti; auto-mode Claude'ga
-admin hisobiga kirishni blokladi). **Tekshirilmadi (Claude tomonidan):** `deleted` soni —
-foydalanuvchi "tayyor" dedi, javob ko'rilmadi. Admin parol suhbatda ochiq yozilgan →
-almashtirish tavsiya qilindi; `.env` dagi qatorlar o'chirilgani tekshirildi.
-
-### 2026-10-27 · 16 — production'dan test ma'lumotlari o'chirildi
-
-**Kim:** Claude Code (Opus 5.5). SQL'ni foydalanuvchi ishga tushirdi (auto-mode production
-`psql` ni, hatto o'qishni ham blokladi).
-**Topildi:** production seed paketi bilan 14-topshiriq test yozuvlari ham tushgan ekan.
-**Qilindi:** bitta tranzaksiyada `test-` prefiksli yozuvlar o'chirildi (`test-content-clean.ts`
-bilan bir xil shartlar): xodim 29, hamkor 8, yangilik 12, nashr 15, hujjat 10, murojaat
-(`M-2026-900%`) 6, xato jurnali 3. `media_files` dagi 45 ta test fayli o'chirilMADI —
-egasiz qilindi (`createdAt=2000-01-01`), CLAUDE.md 18-qoida.
-**Tekshirildi:** ochiq API — news 2 (seed'dagi haqiqiy), publications/employees/partners/
-documents 0; `https://iep.uz` 200.
-**Qolgan:** 45 ta fayl diskda (`~/iep-media`) — admin tokeni bilan `POST /api/uploads/cleanup`
-chaqirilsin. Ochiq savol: production paketiga test ma'lumoti qanday tushgani (`seed.cjs`
-yoki dump) — keyingi deploy'da takrorlanmasin.
-
-### 2026-10-27 · 16 — DNS tarqaldi, SSL chiqdi, HTTPS tekshirildi
-
-**Kim:** Claude Code (Opus 5.5). SSL — foydalanuvchi (panel → PROVISION NOW, wildcard).
-**Tekshirildi (`--resolve` bilan, HTTPS):** sertifikat `CN=*.iep.uz` (LE) uchala nomda;
-`iep.uz`, `www`, `/en/news`, API news/structure/search 200; 12 parallel 200; noto'g'ri login
-401; CORS `https://iep.uz`; HSTS/nosniff/DENY/CSP-RO bor. Headless Chrome (host-resolver
-bilan): `/uz/structure` API'dan tuzilmani chizdi. 1.1.1.1/8.8.8.8 da domen yechiladi.
-**Topildi:** mahalliy tarmoq DNS'i (192.168.133.95) eski NXDOMAIN'ni keshlagan (≤4 soat).
-Hosting o'z sarlavhalarini ham qo'shadi (`X-Frame-Options: SAMEORIGIN`, ikkinchi HSTS).
-**Tekshirilmadi:** admin login (parol yo'q), Force SSL redirect (yoqilmagan), fayl yuklash,
-kontakt xati.
-

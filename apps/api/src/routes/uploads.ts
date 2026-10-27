@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 import { fail } from '../lib/errors';
 import { getStorage, buildKey, StorageUnavailableError, type MediaBucket } from '../lib/storage';
 import {
@@ -144,7 +144,7 @@ uploadsRouter.post('/', requireAuth, async (c) => {
  * O'chirish FAQAT `media_files` jadvalida qayd etilgan kalitlar bo'yicha —
  * ombor bo'ylab ommaviy o'chirish qilinmaydi (07-topshiriq, 7-bo'lim).
  */
-uploadsRouter.post('/cleanup', requireAuth, async (c) => {
+uploadsRouter.post('/cleanup', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   let bucket: MediaBucket;
   try {
     bucket = getStorage(c.env);

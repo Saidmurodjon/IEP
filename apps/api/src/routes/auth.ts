@@ -125,17 +125,20 @@ authRouter.post('/login', zValidator('json', loginSchema), async (c) => {
   const storedHash = admin?.password ?? DUMMY_PASSWORD_HASH;
   const passwordMatches = await verifyPassword(password, storedHash);
 
-  if (!admin || !passwordMatches) {
+  // Bloklangan admin parol to'g'ri bo'lsa ham kira olmaydi; javob bir xil.
+  if (!admin || !passwordMatches || !admin.isActive) {
     registerFailedAttempt(key, now);
     // Xabar ikkala holatda ham bir xil — ichki tafsilot oshkor qilinmaydi.
     return c.json({ error: 'Invalid credentials' }, 401);
   }
 
   loginAttempts.delete(key);
+  await db.admin.update({ where: { id: admin.id }, data: { lastLoginAt: new Date() } });
   const token = await signToken({ adminId: admin.id, email: admin.email }, secret);
 
   return c.json({
-    data: { token, admin: { id: admin.id, email: admin.email, name: admin.name } },
+    data: { token, admin: { id: admin.id, email: admin.email, name: admin.name, role: admin.role },
+    },
   });
 });
 
@@ -144,7 +147,7 @@ authRouter.get('/me', requireAuth, async (c) => {
   const adminId = c.get('adminId');
   const admin = await db.admin.findUnique({
     where: { id: adminId },
-    select: { id: true, email: true, name: true, createdAt: true },
+    select: { id: true, email: true, name: true, role: true, createdAt: true },
   });
   if (!admin) return c.json({ error: 'Not found' }, 404);
   return c.json({ data: admin });

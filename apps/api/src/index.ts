@@ -15,11 +15,12 @@ import { uploadsRouter } from './routes/uploads';
 import { filesRouter } from './routes/files';
 import { documentsRouter } from './routes/documents';
 import { logsRouter } from './routes/logs';
+import { adminsRouter } from './routes/admins';
 import { searchRouter } from './routes/search';
 import { recordError } from './lib/error-log';
 import { redactStack } from './lib/redact';
 import { ConfigError, getFrontendUrl } from './lib/env';
-import type { PrismaClient } from '@prisma/client';
+import type { AdminRole, PrismaClient } from '@prisma/client';
 import type { MediaBucket } from './lib/storage';
 
 export interface Env {
@@ -46,7 +47,7 @@ export interface Env {
 }
 
 export type AppContext = {
-  Variables: { db: PrismaClient; adminId: string; email: string };
+  Variables: { db: PrismaClient; adminId: string; email: string; role: AdminRole };
   Bindings: Env;
 };
 
@@ -113,6 +114,7 @@ app.route('/api/documents', documentsRouter);
 app.route('/api/uploads', uploadsRouter);
 app.route('/api/files', filesRouter);
 app.route('/api/logs', logsRouter);
+app.route('/api/admins', adminsRouter);
 app.route('/api/search', searchRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));

@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate, Outlet, useLocation, useParams } from 'react-router-dom';
 import { Suspense, lazy, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore, isSuperAdmin } from '@/store/auth';
 import PublicLayout from '@/components/layout/PublicLayout';
 import AdminLayout from '@/components/layout/AdminLayout';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -37,11 +37,20 @@ const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage')
 const AdminPartnersPage = lazy(() => import('@/pages/admin/AdminPartnersPage'));
 const AdminDocumentsPage = lazy(() => import('@/pages/admin/AdminDocumentsPage'));
 const AdminLogsPage = lazy(() => import('@/pages/admin/AdminLogsPage'));
+const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'));
 const AdminNotFoundPage = lazy(() => import('@/pages/admin/AdminNotFoundPage'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
   return isAuthenticated ? <>{children}</> : <Navigate to="/admin/login" replace />;
+}
+
+/** Faqat SUPER_ADMIN uchun; boshqalar boshqaruv paneliga qaytariladi. */
+function SuperAdminRoute({ children }: { children: React.ReactNode }) {
+  const { admin } = useAuthStore();
+  // Eski saqlangan ma'lumotda rol yo'q — `/me` javobini kutamiz, darhol yo'naltirmaymiz.
+  if (admin && !admin.role) return null;
+  return isSuperAdmin(admin) ? <>{children}</> : <Navigate to="/admin/dashboard" replace />;
 }
 
 /**
@@ -120,11 +129,12 @@ export default function App() {
           <Route path="publications" element={<AdminPublicationsPage />} />
           <Route path="structure" element={<AdminStructurePage />} />
           <Route path="units" element={<AdminUnitsPage />} />
-          <Route path="settings" element={<AdminSettingsPage />} />
+          <Route path="settings" element={<SuperAdminRoute><AdminSettingsPage /></SuperAdminRoute>} />
           <Route path="employees" element={<AdminEmployeesPage />} />
           <Route path="partners" element={<AdminPartnersPage />} />
           <Route path="documents" element={<AdminDocumentsPage />} />
-          <Route path="logs" element={<AdminLogsPage />} />
+          <Route path="logs" element={<SuperAdminRoute><AdminLogsPage /></SuperAdminRoute>} />
+          <Route path="users" element={<SuperAdminRoute><AdminUsersPage /></SuperAdminRoute>} />
           <Route path="messages" element={<AdminMessagesPage />} />
           {/* Admin ichidagi noma'lum manzil — ochiq saytnikidan alohida sahifa */}
           <Route path="*" element={<AdminNotFoundPage />} />

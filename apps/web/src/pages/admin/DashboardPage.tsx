@@ -5,7 +5,7 @@ import { logsApi } from '@/lib/api';
 import { newsApi, pubsApi, contactApi } from '@/lib/api';
 import { Newspaper, BookOpen, MessageSquare, TrendingUp, Bug } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuthStore } from '@/store/auth';
+import { useAuthStore, isSuperAdmin } from '@/store/auth';
 import { formatDate } from '@/lib/date';
 
 export default function DashboardPage() {
@@ -19,6 +19,8 @@ export default function DashboardPage() {
   const { data: logsData } = useQuery({
     queryKey: ['admin-logs-badge'],
     queryFn: () => logsApi.list({ limit: 1, resolved: 'false' }),
+    // ADMIN uchun 403 qaytadi — so'rov faqat SUPER_ADMIN'ga yuboriladi.
+    enabled: isSuperAdmin(admin),
   });
 
   const totalNews = newsData?.data?.total ?? 0;
@@ -28,6 +30,8 @@ export default function DashboardPage() {
   // Javobsiz murojaatlar — API ro'yxat bilan birga qaytaradi.
   const unansweredMsgs: number = msgsData?.data?.unanswered ?? 0;
   const unresolvedErrors: number = logsData?.data?.unresolvedLastDay ?? 0;
+
+  const superAdmin = isSuperAdmin(admin);
 
   const stats = [
     { label: t('admin.total_news'), value: totalNews, icon: Newspaper, to: '/admin/news', color: 'text-blue-600 bg-blue-50' },
@@ -41,7 +45,8 @@ export default function DashboardPage() {
       color: unansweredMsgs > 0 ? 'text-purple-600 bg-purple-50' : 'text-gray-400 bg-gray-50',
       highlight: unansweredMsgs > 0,
     },
-    {
+    // Xatolar kartochkasi faqat SUPER_ADMIN uchun
+    ...(superAdmin ? [{
       label: t('admin.unresolved_errors'),
       value: unresolvedErrors,
       icon: Bug,
@@ -49,7 +54,7 @@ export default function DashboardPage() {
       // Nol bo'lmasa ko'zga tashlanadigan rangda.
       color: unresolvedErrors > 0 ? 'text-red-600 bg-red-50' : 'text-gray-400 bg-gray-50',
       highlight: unresolvedErrors > 0,
-    },
+    }] : []),
   ];
 
   return (
@@ -62,7 +67,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className={`grid grid-cols-2 gap-4 mb-8 ${superAdmin ? 'lg:grid-cols-5' : 'lg:grid-cols-4'}`}>
           {stats.map(({ label, value, icon: Icon, to, color, highlight }) => (
             <Link
               key={to + label}
