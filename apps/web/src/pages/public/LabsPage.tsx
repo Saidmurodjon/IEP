@@ -11,11 +11,6 @@ import { employeesApi, structureApi } from '@/lib/api';
 import { initials, localized, type Employee } from '@/lib/employee';
 import { flattenLabs, unitName, type Unit } from '@/lib/structure';
 
-/** Yo'nalishlar matni: har qatorda bittasi. */
-function parseDirections(text: string): string[] {
-  return text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-}
-
 export default function LabsPage() {
   const { t, i18n } = useTranslation();
   const lang = i18n.language.substring(0, 2) as Lang;
@@ -79,7 +74,6 @@ export default function LabsPage() {
             const name = unitName(lab, lang);
             const record = lab as unknown as Record<string, unknown>;
             const summary = localized(record, 'description', lang);
-            const directions = parseDirections(localized(record, 'directions', lang));
             const staff = byLab.get(lab.id) ?? [];
             const head = staff.find((e) => e.isUnitHead);
             const headName = head ? localized(head as unknown as Record<string, unknown>, 'fullName', lang) : '';
@@ -131,24 +125,6 @@ export default function LabsPage() {
                   <div className="flex flex-1 flex-col p-6 pt-5">
                     <h2 className="text-lg font-bold leading-snug text-gray-900 mb-2 transition-colors group-hover:text-primary-700">{name}</h2>
                     {summary && <p className="text-sm text-gray-600 mb-4 line-clamp-3">{summary}</p>}
-
-                    {directions.length > 0 && (
-                      <ul className="mb-4 flex flex-wrap gap-2 list-none p-0">
-                        {directions.slice(0, 3).map((direction) => (
-                          <li
-                            key={direction}
-                            className="max-w-full truncate rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-800"
-                          >
-                            {direction}
-                          </li>
-                        ))}
-                        {directions.length > 3 && (
-                          <li className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-                            +{directions.length - 3}
-                          </li>
-                        )}
-                      </ul>
-                    )}
 
                     <div className="mt-auto flex items-center justify-between gap-3 border-t border-gray-100 pt-4 text-sm text-gray-700">
                       <span className="flex items-center gap-1.5">

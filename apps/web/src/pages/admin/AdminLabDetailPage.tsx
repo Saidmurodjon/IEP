@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import {
-  ArrowLeft, ExternalLink, FlaskConical, Users, ListChecks, CalendarDays, Crown, Pencil, UserMinus,
+  ArrowLeft, ExternalLink, FlaskConical, Users, CalendarDays, Crown, Pencil, UserMinus,
   UserPlus, Link2, AlertCircle, Check, Info, Image as ImageIcon, Phone, BookOpen, Loader2,
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -20,7 +20,7 @@ import FileUploadField from '@/components/admin/FileUploadField';
 import EmployeeForm from '@/components/admin/EmployeeForm';
 import { useToast } from '@/components/Toast';
 import { useUnsavedWarning } from '@/hooks/useUnsavedWarning';
-import { labCompleteness, countLines } from './AdminLabsPage';
+import { labCompleteness } from './AdminLabsPage';
 
 type Suffix = 'Uz' | 'En' | 'Ru';
 const LANGS: ReadonlyArray<{ key: Suffix; label: string }> = [
@@ -35,7 +35,6 @@ const schema = z.object({
   nameRu: z.string().trim().min(1, 'adminLab.err_name'),
   descriptionUz: z.string(), descriptionEn: z.string(), descriptionRu: z.string(),
   contentUz: z.string(), contentEn: z.string(), contentRu: z.string(),
-  directionsUz: z.string(), directionsEn: z.string(), directionsRu: z.string(),
   imageUrl: z.string(),
   room: z.string(),
   phone: z.string(),
@@ -52,7 +51,6 @@ const EMPTY: FormData = {
   nameUz: '', nameEn: '', nameRu: '',
   descriptionUz: '', descriptionEn: '', descriptionRu: '',
   contentUz: '', contentEn: '', contentRu: '',
-  directionsUz: '', directionsEn: '', directionsRu: '',
   imageUrl: '', room: '', phone: '', email: '', foundedYear: '', order: '0',
 };
 
@@ -61,7 +59,6 @@ function toForm(lab: Unit): FormData {
     nameUz: lab.nameUz ?? '', nameEn: lab.nameEn ?? '', nameRu: lab.nameRu ?? '',
     descriptionUz: lab.descriptionUz ?? '', descriptionEn: lab.descriptionEn ?? '', descriptionRu: lab.descriptionRu ?? '',
     contentUz: lab.contentUz ?? '', contentEn: lab.contentEn ?? '', contentRu: lab.contentRu ?? '',
-    directionsUz: lab.directionsUz ?? '', directionsEn: lab.directionsEn ?? '', directionsRu: lab.directionsRu ?? '',
     imageUrl: lab.imageUrl ?? '', room: lab.room ?? '', phone: lab.phone ?? '', email: lab.email ?? '',
     foundedYear: lab.foundedYear ? String(lab.foundedYear) : '',
     order: String(lab.order ?? 0),
@@ -121,7 +118,6 @@ export default function AdminLabDetailPage() {
     nameUz: v.nameUz.trim(), nameEn: v.nameEn.trim(), nameRu: v.nameRu.trim(),
     descriptionUz: v.descriptionUz, descriptionEn: v.descriptionEn, descriptionRu: v.descriptionRu,
     contentUz: v.contentUz, contentEn: v.contentEn, contentRu: v.contentRu,
-    directionsUz: v.directionsUz, directionsEn: v.directionsEn, directionsRu: v.directionsRu,
     imageUrl: v.imageUrl, room: v.room.trim(), phone: v.phone.trim(), email: v.email.trim(),
     foundedYear: v.foundedYear.trim() ? Number(v.foundedYear) : null,
     order: v.order.trim() ? Number(v.order) : 0,
@@ -220,8 +216,6 @@ export default function AdminLabDetailPage() {
   const nameFilled = (l: Suffix) => Boolean((values[`name${l}` as keyof FormData] as string)?.trim());
   const langHasError = (l: Suffix) =>
     Boolean(errors[`name${l}` as keyof FormData]);
-  const dirList = (values[`directions${lang}` as keyof FormData] as string)
-    .split('\n').map((s) => s.trim()).filter(Boolean);
   const errText = (key: keyof FormData) => {
     const m = errors[key]?.message;
     return m ? t(m) : null;
@@ -275,10 +269,9 @@ export default function AdminLabDetailPage() {
             </div>
           </div>
           {!isNew && lab && comp && (
-            <dl className="grid grid-cols-2 divide-x divide-y divide-gray-100 dark:divide-gray-800 sm:grid-cols-4 sm:divide-y-0">
+            <dl className="grid grid-cols-1 divide-y divide-gray-100 dark:divide-gray-800 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
               {[
                 { icon: Users, label: t('adminLab.stat_staff'), value: String(staff.length) },
-                { icon: ListChecks, label: t('adminLab.stat_directions'), value: String(countLines(lab.directionsUz)) },
                 { icon: CalendarDays, label: t('adminLab.stat_year'), value: lab.foundedYear ? String(lab.foundedYear) : '—' },
                 { icon: Check, label: t('adminLab.completeness'), value: `${comp.done}/${comp.total}` },
               ].map(({ icon: Icon, label, value }) => (
@@ -360,7 +353,6 @@ export default function AdminLabDetailPage() {
                   onClick={() => {
                     setValue(`name${lang}` as keyof FormData, values.nameUz, { shouldDirty: true });
                     setValue(`description${lang}` as keyof FormData, values.descriptionUz, { shouldDirty: true });
-                    setValue(`directions${lang}` as keyof FormData, values.directionsUz, { shouldDirty: true });
                     setValue(`content${lang}` as keyof FormData, values.contentUz, { shouldDirty: true });
                   }}
                   className="ml-auto text-xs font-medium text-primary-700 hover:underline dark:text-primary-300"
@@ -410,34 +402,6 @@ export default function AdminLabDetailPage() {
                 ownerType="structure"
                 ownerId={isNew ? undefined : id}
               />
-            </FormSection>
-
-            <FormSection title={t('adminLab.sec_directions')} description={t('adminLab.sec_directions_desc')} icon={ListChecks}>
-              {LANGS.map((l) => (
-                <div key={l.key} className={lang === l.key ? '' : 'hidden'}>
-                  <label htmlFor={`lab-dir-${l.key}`} className="label">{t('adminLab.directions_label', { lang: l.key.toUpperCase() })}</label>
-                  <textarea
-                    id={`lab-dir-${l.key}`}
-                    {...register(`directions${l.key}` as 'directionsUz')}
-                    rows={5}
-                    aria-describedby="lab-dir-hint"
-                    className="input"
-                  />
-                </div>
-              ))}
-              <p id="lab-dir-hint" className="text-xs text-gray-600 dark:text-gray-400">{t('adminLab.directions_hint')}</p>
-              <div aria-live="polite">
-                <p className="mb-2 text-xs font-medium text-gray-700 dark:text-gray-300">{t('adminLab.preview')} ({dirList.length})</p>
-                {dirList.length === 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{t('adminLab.no_directions')}</p>
-                ) : (
-                  <ul className="flex flex-wrap gap-2">
-                    {dirList.map((d, i) => (
-                      <li key={`${i}-${d}`} className="rounded-full bg-primary-50 px-3 py-1 text-sm text-primary-900 dark:bg-primary-900/30 dark:text-primary-100">{d}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
             </FormSection>
 
             <FormSection title={t('adminLab.sec_about')} description={t('adminLab.sec_about_desc')} icon={BookOpen}>

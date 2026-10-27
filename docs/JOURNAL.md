@@ -222,6 +222,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Laboratoriya «Ilmiy yo'nalishlar» olib tashlandi
+
+Foydalanuvchi qarori: yo'nalishlar to'liq matn ichida yoziladi, alohida maydon kerak emas.
+Olib tashlandi: `/laboratories` kartochkasidagi teglar, lab sahifasidagi bo'lim va statistika,
+admin formadagi bo'lim/«O'zbekchadan nusxa»dagi qator, admin ro'yxatdagi hisoblagich va to'liqlik
+bandi (6 → 5), `countLines`, tegishli i18n kalitlari (uchala til).
+**Ataylab qoldirildi:** DB ustunlari `directions*` va API sxemasi — o'chirish migratsiya va
+ma'lumot yo'qotishni talab qiladi; `PUT` `partial()` bo'lgani uchun eski qiymat ustiga yozilmaydi.
+**Tekshirildi:** `tsc --noEmit` (web) toza; JSON fayllar to'g'ri; brauzerda ro'yxat (6 kartochka,
+teglar yo'q) va `lab-renewable` sahifasi (h2: haqida/xodimlar/bog'lanish).
+**Tekshirilmadi:** admin sahifalari brauzerda (login talab qiladi), production.
+
 ### 2026-10-27 · Laboratoriya kartochkalari — yangi dizayn
 
 `LabsPage` kartochkasi: baland bo'sh 16:9 blok o'rniga `h-40` sarlavha — nuqtali naqsh,
@@ -241,13 +253,3 @@ Ikki ustun: xodimlar sahifasida `md` → `lg`, lab sahifasida `md` → `xl` (tor
 **Tekshirildi:** `tsc --noEmit` (web) toza; iframe orqali 320/335/360/375/390/420/589/768/982/1280 px —
 hech birida gorizontal siljish yo'q, skrinshotlar ko'rildi (xodimlar, rahbariyat).
 **Tekshirilmadi:** lab sahifasidagi kartochka (lokal bazada lab xodimi yo'q), haqiqiy telefon, production.
-
-
-### 2026-10-27 · Xodim surati ochiq saytda 3x4 sm
-
-`EmployeeCard` dagi `Avatar`: ikki o'lcham (`sm` 60x80, `lg` 96x128 px) o'rniga bitta fizik
-o'lcham `h-[4cm] w-[3cm]` (CSS `cm`, ≈113x151 px) — xodimlar, rahbariyat va lab sahifalarida.
-`LabsPage` dagi kichik dumaloq rahbar belgisi (28 px) o'zgartirilmadi — u surat emas, belgi.
-**Tekshirildi:** `tsc --noEmit` (web) toza; `/uz/employees` da `getBoundingClientRect` —
-rasm ham, bosh harf joyi ham 113.4x151.2 px; skrinshot bilan joylashuv ko'rildi.
-**Tekshirilmadi:** mobil kenglik, production.

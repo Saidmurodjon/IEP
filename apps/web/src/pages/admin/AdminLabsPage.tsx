@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { FlaskConical, Plus, Trash2, Users, ListChecks, Crown, ChevronRight } from 'lucide-react';
+import { FlaskConical, Plus, Trash2, Users, Crown, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
 import { employeesApi, structureApi, fileUrl } from '@/lib/api';
 import type { Employee } from '@/lib/employee';
@@ -17,7 +17,6 @@ export function labCompleteness(lab: Unit): { done: number; total: number; missi
     ['translations', Boolean(lab.nameEn?.trim() && lab.nameRu?.trim())],
     ['summary', Boolean(lab.descriptionUz?.trim())],
     ['content', Boolean(lab.contentUz?.trim())],
-    ['directions', Boolean(lab.directionsUz?.trim())],
     ['image', Boolean(lab.imageUrl)],
     ['contacts', Boolean(lab.email || lab.phone || lab.room)],
   ];
@@ -26,10 +25,6 @@ export function labCompleteness(lab: Unit): { done: number; total: number; missi
     total: checks.length,
     missing: checks.filter(([, ok]) => !ok).map(([k]) => k),
   };
-}
-
-export function countLines(text?: string | null): number {
-  return (text ?? '').split('\n').filter((l) => l.trim()).length;
 }
 
 export default function AdminLabsPage() {
@@ -107,7 +102,6 @@ export default function AdminLabsPage() {
               const head = staff.find((e) => e.isUnitHead);
               const { done, total, missing } = labCompleteness(lab);
               const pct = Math.round((done / total) * 100);
-              const dirs = countLines(lab.directionsUz);
               return (
                 <li key={lab.id} className="group relative">
                   <Link
@@ -130,9 +124,6 @@ export default function AdminLabsPage() {
                         {lab.descriptionUz || t('adminLab.no_summary')}
                       </p>
                       <div className="flex flex-wrap gap-2 text-xs">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 px-2.5 py-1 font-medium text-primary-800 dark:bg-primary-900/30 dark:text-primary-200">
-                          <ListChecks className="h-3.5 w-3.5" aria-hidden="true" /> {t('adminLab.directions_count', { count: dirs })}
-                        </span>
                         <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-200">
                           <Users className="h-3.5 w-3.5" aria-hidden="true" /> {t('adminLab.staff_count', { count: staff.length })}
                         </span>

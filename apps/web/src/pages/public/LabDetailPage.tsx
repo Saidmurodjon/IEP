@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import {
-  ArrowLeft, Beaker, CalendarDays, DoorOpen, Layers, Mail, Phone, User, Users,
+  ArrowLeft, Beaker, CalendarDays, DoorOpen, Mail, Phone, User, Users,
 } from 'lucide-react';
 import type { Lang } from '@energetika/shared';
 import SeoHead from '@/components/SeoHead';
@@ -59,8 +59,6 @@ export default function LabDetailPage() {
   const record = lab as unknown as Record<string, unknown>;
   const name = unitName(lab, lang);
   const summary = localized(record, 'description', lang);
-  const directions = localized(record, 'directions', lang)
-    .split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
   const content = sanitizeHtml(localized(record, 'content', lang));
   const hasContent = content.replace(/<[^>]*>/g, '').trim().length > 0 || /<img\s/i.test(content);
   const headName = head ? localized(head as unknown as Record<string, unknown>, 'fullName', lang) : '';
@@ -71,7 +69,6 @@ export default function LabDetailPage() {
     { icon: Users, label: `${employees.length} ${t('labs.staff')}` },
   ];
   if (lab.foundedYear) stats.push({ icon: CalendarDays, label: `${t('lab.founded')}: ${lab.foundedYear}` });
-  if (directions.length > 0) stats.push({ icon: Layers, label: `${directions.length} ${t('lab.directions_unit')}` });
 
   return (
     <>
@@ -114,29 +111,6 @@ export default function LabDetailPage() {
       <div className="container py-10">
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_20rem]">
           <div className="space-y-12 min-w-0">
-            {directions.length > 0 && (
-              <section aria-labelledby="lab-directions">
-                <h2 id="lab-directions" className="text-2xl font-bold text-gray-900 mb-5">
-                  {t('lab.directions')}
-                </h2>
-                <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2 list-none p-0">
-                  {directions.map((direction, index) => (
-                    <li
-                      key={direction}
-                      className="flex gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition-shadow hover:shadow-md motion-reduce:transition-none"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary-100 text-lg font-bold text-primary-800"
-                      >
-                        {index + 1}
-                      </span>
-                      <span className="font-medium text-gray-900 leading-snug self-center">{direction}</span>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            )}
 
             {hasContent && (
               <section aria-labelledby="lab-about">
