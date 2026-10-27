@@ -14,6 +14,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
+**🧹 Production'dagi test ma'lumotlari o'chirildi (2026-10-27)** — 45 ta egasiz fayl
+`POST /api/uploads/cleanup` ni kutmoqda (pastdagi yozuv).
+
 **✅ 16 — `https://iep.uz` PRODUCTION'da ishlaydi (2026-10-27).**
 Hosting: webname, hisob `iepuz@web2.webspace.uz` (IP 95.46.96.12), SSH kaliti
 `~/.ssh/iep_prod`. Domen Arsenal-D'da, NS `dns1–4.webspace.uz` (tarqaldi). SSL: Let's Encrypt
@@ -171,6 +174,21 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · 16 — production'dan test ma'lumotlari o'chirildi
+
+**Kim:** Claude Code (Opus 5.5). SQL'ni foydalanuvchi ishga tushirdi (auto-mode production
+`psql` ni, hatto o'qishni ham blokladi).
+**Topildi:** production seed paketi bilan 14-topshiriq test yozuvlari ham tushgan ekan.
+**Qilindi:** bitta tranzaksiyada `test-` prefiksli yozuvlar o'chirildi (`test-content-clean.ts`
+bilan bir xil shartlar): xodim 29, hamkor 8, yangilik 12, nashr 15, hujjat 10, murojaat
+(`M-2026-900%`) 6, xato jurnali 3. `media_files` dagi 45 ta test fayli o'chirilMADI —
+egasiz qilindi (`createdAt=2000-01-01`), CLAUDE.md 18-qoida.
+**Tekshirildi:** ochiq API — news 2 (seed'dagi haqiqiy), publications/employees/partners/
+documents 0; `https://iep.uz` 200.
+**Qolgan:** 45 ta fayl diskda (`~/iep-media`) — admin tokeni bilan `POST /api/uploads/cleanup`
+chaqirilsin. Ochiq savol: production paketiga test ma'lumoti qanday tushgani (`seed.cjs`
+yoki dump) — keyingi deploy'da takrorlanmasin.
 
 ### 2026-10-27 · 16 — DNS tarqaldi, SSL chiqdi, HTTPS tekshirildi
 
