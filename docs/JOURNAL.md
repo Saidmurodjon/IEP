@@ -14,15 +14,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
-**🟡 16 — `iep.uz` PRODUCTION'ga joylandi (2026-10-27), DNS tarqalishi va SSL kutilmoqda.**
-Hosting: webname, yangi hisob `iepuz@web2.webspace.uz` (IP 95.46.96.12), SSH kaliti
-`~/.ssh/iep_prod`. Domen Arsenal-D'da, NS → `dns1–4.webspace.uz` (whois'da yangilandi,
-`.uz` zonasiga hali tushmagan). Baza `iepuz_mainv1` — NOLDAN: 7 migratsiya + seed (admin,
-rasmiy tuzilma, `site_url=https://iep.uz`), eski ma'lumot ko'chirilMADI (foydalanuvchi qarori,
-eski hisob 28.09 da yopilgan). API (IP orqali) 200, CORS faqat `https://iep.uz`.
-**Qolgan:** DNS tarqalgach panelda Let's Encrypt (`iep.uz`, `www`, `api`) + Force SSL —
-foydalanuvchi (auto-mode DNS/sertifikat o'zgarishini bloklaydi); keyin brauzerda tekshiruv,
-admin login, `RESEND_API_KEY`/`MAIL_FROM`. Qo'llanma: `docs/deploy-hosting.md`.
+**✅ 16 — `https://iep.uz` PRODUCTION'da ishlaydi (2026-10-27).**
+Hosting: webname, hisob `iepuz@web2.webspace.uz` (IP 95.46.96.12), SSH kaliti
+`~/.ssh/iep_prod`. Domen Arsenal-D'da, NS `dns1–4.webspace.uz` (tarqaldi). SSL: Let's Encrypt
+`*.iep.uz` + `iep.uz` (panel avtomatik, 25.01.2027 gacha, avto-yangilanadi). Baza
+`iepuz_mainv1` — NOLDAN: 7 migratsiya + seed; eski ma'lumot ko'chirilMADI (foydalanuvchi qarori).
+**Qolgan:** Force SSL (http hali 200, redirect yo'q); admin login'ni foydalanuvchi tekshirsin;
+`RESEND_API_KEY`/`MAIL_FROM`; baza zaxirasi (cron). Qo'llanma: `docs/deploy-hosting.md`.
 
 **Branch:** `master` · **Push qilinganmi:** ✅ ha — hammasi `origin/master` ga yuborilgan
 (`e177810..3a013da`), shu jumladan 13-navbar Bosqich C/D, test-rejim banneri va qidiruv/
@@ -173,6 +171,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · 16 — DNS tarqaldi, SSL chiqdi, HTTPS tekshirildi
+
+**Kim:** Claude Code (Opus 5.5). SSL — foydalanuvchi (panel → PROVISION NOW, wildcard).
+**Tekshirildi (`--resolve` bilan, HTTPS):** sertifikat `CN=*.iep.uz` (LE) uchala nomda;
+`iep.uz`, `www`, `/en/news`, API news/structure/search 200; 12 parallel 200; noto'g'ri login
+401; CORS `https://iep.uz`; HSTS/nosniff/DENY/CSP-RO bor. Headless Chrome (host-resolver
+bilan): `/uz/structure` API'dan tuzilmani chizdi. 1.1.1.1/8.8.8.8 da domen yechiladi.
+**Topildi:** mahalliy tarmoq DNS'i (192.168.133.95) eski NXDOMAIN'ni keshlagan (≤4 soat).
+Hosting o'z sarlavhalarini ham qo'shadi (`X-Frame-Options: SAMEORIGIN`, ikkinchi HSTS).
+**Tekshirilmadi:** admin login (parol yo'q), Force SSL redirect (yoqilmagan), fayl yuklash,
+kontakt xati.
 
 ### 2026-10-27 · 16 — iep.uz production'ga joylandi
 
