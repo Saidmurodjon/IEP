@@ -220,6 +220,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-27 — fix(api): rasmli matnni saqlash 500 bermaydi, eski rasmlar o'chadi
+- Sabab: `syncContentFiles` dagi `mediaFile.updateMany` Prisma'da tranzaksiya ochadi, Neon HTTP
+  rejimida — "Transactions are not supported in HTTP mode" (error_logs: PUT /api/structure/:id, 3 marta).
+  Yozuv yangilanardi, lekin javob 500 va eskirgan rasmlar o'chirilmasdi.
+- `lib/media.ts`: yangi `assignOwner()` — xom SQL `UPDATE ... WHERE key IN (...)`; `syncContentFiles`
+  va `documents.ts` (create/put) shundan foydalanadi. Production (Node + oddiy pg) bu xatoga duch kelmasdi.
+- Tekshirildi (HTTP, lokal): PUT lab → 200; test rasm yuklab matnga qo'shildi → 200, fayl 200;
+  matndan olib saqlandi → 200, fayl 404 va `media_files` dan o'chdi; ishlatilayotgan rasm qoldi.
+  Lokal bazadagi 2 ta eskirgan lab rasmi shu jarayonda o'chdi. `tsc`, 66 test, build toza.
+- Tekshirilmadi: hujjatlar (`documents.ts`) yo'li HTTP bilan; skrinshotdagi singan rasm qayta
+  hosil qilinmadi (hozir lab sahifasi va tahrirlagichda rasm yuklanadi). Jurnal 250 qatordan oshgan — arxivlash kerak.
+
 ### 2026-10-27 — fix: lab sahifasida rasmlar o'rtada
 - `LabDetailPage.tsx`: «Laboratoriya haqida» ichidagi `img` — `block mx-auto my-4 max-w-full h-auto rounded-xl`
   (faqat shu sahifada; yangiliklarning `prose-content` i tegilmadi).

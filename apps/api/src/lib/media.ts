@@ -1,4 +1,4 @@
-import type { PrismaClient } from '@prisma/client';
+import { Prisma, type PrismaClient } from '@prisma/client';
 import { hasStorage, getStorage } from './storage';
 import type { Env } from '../index';
 
@@ -19,6 +19,23 @@ export function extractFileKeys(...htmlParts: Array<string | null | undefined>):
     for (const match of part.matchAll(pattern)) keys.add(match[1]);
   }
   return [...keys];
+}
+
+/**
+ * Fayllarni yozuvga biriktiradi.
+ *
+ * `mediaFile.updateMany` Prisma'da tranzaksiya ochadi, Neon HTTP rejimida esa
+ * tranzaksiya yo'q ("Transactions are not supported in HTTP mode", 500) —
+ * shuning uchun xom SQL.
+ */
+export async function assignOwner(
+  db: PrismaClient,
+  keys: string[],
+  ownerType: string,
+  ownerId: string
+): Promise<void> {
+  if (keys.length === 0) return;
+  await db.$executeRaw`UPDATE "media_files" SET "ownerType" = ${ownerType}, "ownerId" = ${ownerId} WHERE "key" IN (${Prisma.join(keys)})`;
 }
 
 /** Berilgan kalitlarni ombordan va jadvaldan o'chiradi. */
@@ -57,12 +74,7 @@ export async function syncContentFiles(
   const used = extractFileKeys(...htmlParts);
 
   // Matnda uchragan fayllar shu yozuvga biriktiriladi.
-  if (used.length > 0) {
-    await db.mediaFile.updateMany({
-      where: { key: { in: used } },
-      data: { ownerType, ownerId },
-    });
-  }
+  await assignOwner(db, used, ownerType, ownerId);
 
   // Ilgari shu yozuvga tegishli bo'lgan, lekin endi matnda yo'q fayllar.
   const stale = await db.mediaFile.findMany({

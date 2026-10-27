@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
 import { reindex } from '../lib/search-index';
 import { fail } from '../lib/errors';
-import { deleteKeys } from '../lib/media';
+import { deleteKeys, assignOwner } from '../lib/media';
 import type { AppContext } from '../index';
 
 export const documentsRouter = new Hono<AppContext>();
@@ -38,10 +38,7 @@ documentsRouter.post('/', requireAuth, zValidator('json', documentSchema), async
     data: { ...data, documentDate: data.documentDate ? new Date(data.documentDate) : null },
   });
   // Fayl shu hujjatga biriktiriladi — aks holda 24 soatdan keyin egasiz deb tozalanardi.
-  await db.mediaFile.updateMany({
-    where: { key: data.fileKey },
-    data: { ownerType: 'document', ownerId: item.id },
-  });
+  await assignOwner(db, [data.fileKey], 'document', item.id);
   await reindex(c, 'documents', item.id);
   return c.json({ data: item }, 201);
 });
@@ -64,10 +61,7 @@ documentsRouter.put('/:id', requireAuth, zValidator('json', documentSchema.parti
   // Fayl almashtirilgan bo'lsa, eskisi ombordan o'chiriladi.
   if (data.fileKey && data.fileKey !== before.fileKey) {
     await deleteKeys(c.env, db, [before.fileKey]);
-    await db.mediaFile.updateMany({
-      where: { key: data.fileKey },
-      data: { ownerType: 'document', ownerId: id },
-    });
+    await assignOwner(db, [data.fileKey], 'document', id);
   }
   await reindex(c, 'documents', item.id);
   return c.json({ data: item });
