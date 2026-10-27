@@ -175,6 +175,16 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · 16 — test ma'lumoti manbai: seed emas, dump
+
+**Topildi:** `seed.ts` va yig'ilgan `deploy/iep-api/seed.cjs`/`server.cjs` da test satri yo'q
+(grep 0). Production'dagi hajm (29 xodim, 45 media) lokal bazaning to'liq dumpi bilan bir xil
+(2026-09 arxivi) → test yozuvlari `iep-full.sql` dump/tiklash yo'li bilan tushgan; HOZIRGI
+HOLAT dagi "NOLDAN" yozuvi bu jihatdan noaniq bo'lgan. Seed kodi o'zgartirilmadi.
+**Qilindi:** `docs/deploy-hosting.md` 7-bo'lim — tiklashdan oldin dumpni `grep -cE` bilan
+tekshirish, natija 0 bo'lishi shart. **Tekshirildi:** buyruq lokal `iep-pg` dumpida 114 ta
+moslik topdi (lokal bazada test ma'lumoti hali bor — u ataylab qoldirilgan).
+
 ### 2026-10-27 · 16 — test fayllari tozalandi
 
 **Kim:** foydalanuvchi (`POST /api/uploads/cleanup`, Mac Terminal skripti; auto-mode Claude'ga

@@ -127,6 +127,11 @@ SSH bo'lmasa — panel **Fayl menejeri**: `server.cjs` → `iep-api/`, frontend 
 - **Joriy hostingdan** (eng yangi ma'lumot shu yerda): serverda
   `pg_dump "$DATABASE_URL" --schema=public --no-owner --no-privileges > iep-full.sql`,
   keyin `sed -i -E '/^CREATE SCHEMA public;|^COMMENT ON SCHEMA public/d' iep-full.sql`.
+- **Dumpda test ma'lumoti bo'lmasin.** 2026-10-27 da iep.uz bazasiga shu yo'l bilan
+  14-topshiriq test yozuvlari tushgan (seed paketi toza — `seed.ts` test yozmaydi).
+  Tiklashdan oldin tekshiring, natija `0` bo'lishi shart:
+  `grep -cE "test-(emp|pub|doc|partner)-[0-9]|M-2026-900" iep-full.sql`.
+  `0` bo'lmasa — avval manba bazada `test-` yozuvlarini o'chiring, keyin qayta dump qiling.
 - **Yangi hostingda:** `psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f iep-full.sql`.
   To'liq dump (sxema + ma'lumot + `_prisma_migrations`) superuser talab qilmaydi.
   Keyingi sxema o'zgarishlari: `npm run migrate` (`~/iep-api` da).
