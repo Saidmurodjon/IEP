@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -82,6 +83,25 @@ export default function AdminEmployeesPage() {
     resolver: zodResolver(schema),
   });
   const photoUrl = watch('photoUrl');
+
+  // «Bo'linmalar» sahifasidagi laboratoriyadan «Yangi xodim» — shakl shu lab bilan ochiladi.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const presetLab = searchParams.get('labId');
+  const [pendingLab, setPendingLab] = useState<string | null>(null);
+  useEffect(() => {
+    if (!presetLab) return;
+    reset();
+    setEditItem(null);
+    setShowForm(true);
+    setPendingLab(presetLab);
+    setSearchParams({}, { replace: true });
+  }, [presetLab, reset, setSearchParams]);
+  // Select qiymati faqat variantlar (laboratoriyalar) yuklangandan keyin o'rnatiladi.
+  useEffect(() => {
+    if (!pendingLab || !labs.some((lab) => lab.id === pendingLab)) return;
+    setValue('labId', pendingLab);
+    setPendingLab(null);
+  }, [pendingLab, labs, setValue]);
 
   const closeForm = () => { setShowForm(false); setEditItem(null); setActiveTab('Uz'); reset(); };
 

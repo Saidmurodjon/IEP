@@ -17,6 +17,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 **🆕 Asosiy bo'limlar + xodimning laboratoriyasi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 Bo'linma turi `section` (asosiy bo'lim) va `laboratory` — ikkalasi ham yuqori darajada, lab bo'lim
 ichida emas. Xodim: `unitId` = bo'lim, yangi `labId` = laboratoriya (migratsiya `9_employee_lab`).
+Admin «Bo'linmalar»: «Tur» maydoni yo'q — «Bo'limlar» va «Laboratoriyalar» ikki alohida qism, har birining
+o'z «Qo'shish» tugmasi; lab qatorida xodimlar paneli (biriktirish/chiqarish, «Yangi xodim» → lab tanlangan forma).
 Lokal bazada eski bo'linmalar o'chirildi, 6 lab saqlandi, 2 bo'lim yaratildi (Ma'muriy boshqaruv,
 Ilmiy xodimlar). iep.uz uchun: migratsiya 9 + bo'linmalarni qayta tuzish SQL (yozuvdagi) + deploy,
 foydalanuvchi tasdig'i bilan.
@@ -212,6 +214,23 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ## YOZUVLAR
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
+
+### 2026-10-27 · Bo'linmalar sahifasi: bo'lim va laboratoriya alohida, lab xodimlari paneli
+
+**Nima qilindi:** foydalanuvchi: «tur nima keragi bor», «lab bo'lim emas, alohida qism», lab xodimlari
+yangi xodim qo'shib yoki mavjudini biriktirib shakllansin.
+- `AdminUnitsPage`: «Tur» select olib tashlandi; ikki qism («Bo'limlar», «Laboratoriyalar»), tur qaysi
+  tugmadan ochilganiga qarab yuboriladi, tahrirda tur yuborilmaydi. Lab `parentId=null` (avvalgi qaror saqlandi).
+- `LabStaffPanel`: lab xodimlari ro'yxati, «Laboratoriyadan chiqarish» (`labId: ''` → null), mavjud
+  xodimni biriktirish, «Yangi xodim» → `/admin/employees?labId=…`.
+- `AdminEmployeesPage`: `?labId=` bilan yangi xodim formasi ochiladi; lab qiymati variantlar yuklangandan
+  keyin o'rnatiladi (avval reset qilinsa select bo'sh qolardi — brauzerda topildi).
+- i18n `adminD.units` uchala tilda yangilandi (type/parent/th_* kalitlari olib tashlandi, ru ko'plik shakllari).
+API o'zgarmadi.
+**Tekshirildi:** `tsc` web toza. Brauzer (lokal, DOM orqali): ikki qism ko'rinadi, «Yangi laboratoriya»
+formasida tur select yo'q; lab → «Yangi xodim» → forma lab tanlangan holda, saqlandi, panelda «1 xodim»;
+chiqarish → bo'sh; qayta biriktirish → qaytdi. Sinov xodimi keyin API orqali o'chirildi.
+**Tekshirilmadi:** yangi lab/bo'limni shakl orqali saqlash (API yo'li o'zgarmagan); production.
 
 ### 2026-10-27 · Asosiy bo'limlar va xodimning laboratoriyasi
 

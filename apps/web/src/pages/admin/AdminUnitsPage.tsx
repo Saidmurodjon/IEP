@@ -1,14 +1,17 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { structureApi } from '@/lib/api';
-import { Plus, Pencil, Trash2, Network } from 'lucide-react';
+import { employeesApi, structureApi } from '@/lib/api';
+import type { Employee } from '@/lib/employee';
+import { Plus, Pencil, Trash2, Network, FlaskConical, Users, X, UserPlus } from 'lucide-react';
 import clsx from 'clsx';
 import AdminFormPage from '@/components/admin/AdminFormPage';
+import { useToast } from '@/components/Toast';
 
 const schema = z.object({
   nameUz: z.string().min(1), nameEn: z.string().min(1), nameRu: z.string().min(1),
@@ -16,15 +19,14 @@ const schema = z.object({
   descriptionEn: z.string().default(''),
   descriptionRu: z.string().default(''),
   head: z.string().optional(),
-  type: z.enum(['section', 'laboratory', 'department', 'division', 'center', 'sector', 'council', 'position', 'service']),
   order: z.coerce.number().int().default(0),
 });
 type FormData = z.infer<typeof schema>;
-type UnitItem = FormData & { id: string; children?: UnitItem[] };
+type UnitItem = FormData & { id: string; type: string; children?: UnitItem[] };
+/** Bo'lim va laboratoriya — alohida qismlar, har biri o'z ro'yxatidan qo'shiladi. */
+type Kind = 'section' | 'laboratory';
 
-// Yangi yozuvlar uchun faqat ikki tur; eski turlar faqat tahrirlashda ko'rinadi.
-const UNIT_TYPES = ['section', 'laboratory'];
-const TYPE_ORDER: Record<string, number> = { section: 0, laboratory: 1 };
+const EMPTY: FormData = { nameUz: '', nameEn: '', nameRu: '', descriptionUz: '', descriptionEn: '', descriptionRu: '', head: '', order: 0 };
 const TABS = [{ key: 'uz', label: "O'zbek" }, { key: 'en', label: 'English' }, { key: 'ru', label: 'Русский' }] as const;
 
 function flattenTree(units: UnitItem[]): UnitItem[] {
@@ -39,51 +41,108 @@ function flattenTree(units: UnitItem[]): UnitItem[] {
 export default function AdminUnitsPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const [showForm, setShowForm] = useState(false);
+  // `null` — ro'yxat; aks holda qaysi qism uchun shakl ochiq.
+  const [formKind, setFormKind] = useState<Kind | null>(null);
   const [editItem, setEditItem] = useState<UnitItem | null>(null);
   const [activeTab, setActiveTab] = useState<'uz' | 'en' | 'ru'>('uz');
+  const [openLab, setOpenLab] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({ queryKey: ['structure-admin'], queryFn: () => structureApi.tree() });
-  const tree: UnitItem[] = data?.data?.data ?? [];
-  // Bo'limlar birinchi, keyin laboratoriyalar; ichida `order` bo'yicha.
-  const flat = flattenTree(tree).sort(
-    (a, b) => (TYPE_ORDER[a.type] ?? 2) - (TYPE_ORDER[b.type] ?? 2) || a.order - b.order
-  );
+  const { data: employeesData } = useQuery({
+    queryKey: ['admin-employees'],
+    queryFn: () => employeesApi.list(undefined, true),
+  });
+  const employees: Employee[] = employeesData?.data?.data ?? [];
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<FormData>({
+  const flat = flattenTree(data?.data?.data ?? []).sort((a, b) => a.order - b.order);
+  // Eski turlar (department, center, ...) bo'limlar qatorida ko'rsatiladi.
+  const sections = flat.filter((u) => u.type !== 'laboratory');
+  const labs = flat.filter((u) => u.type === 'laboratory');
+
+  const { register, handleSubmit, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { type: 'section', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' },
+    defaultValues: EMPTY,
   });
 
-  const createMut = useMutation({ mutationFn: (d: FormData & { parentId: null }) => structureApi.create(d), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); closeForm(); } });
-  const updateMut = useMutation({ mutationFn: ({ id, data }: { id: string; data: Partial<FormData> }) => structureApi.update(id, data), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); closeForm(); } });
-  const deleteMut = useMutation({ mutationFn: (id: string) => structureApi.delete(id), onSuccess: () => { qc.invalidateQueries({ queryKey: ['structure-admin'] }); qc.invalidateQueries({ queryKey: ['structure'] }); } });
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ['structure-admin'] });
+    qc.invalidateQueries({ queryKey: ['structure'] });
+  };
+  const createMut = useMutation({ mutationFn: (d: FormData & { type: Kind; parentId: null }) => structureApi.create(d), onSuccess: () => { invalidate(); closeForm(); } });
+  const updateMut = useMutation({ mutationFn: ({ id, data }: { id: string; data: FormData }) => structureApi.update(id, data), onSuccess: () => { invalidate(); closeForm(); } });
+  const deleteMut = useMutation({ mutationFn: (id: string) => structureApi.delete(id), onSuccess: invalidate });
 
-  const closeForm = () => { setShowForm(false); setEditItem(null); reset({ type: 'section', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); };
+  const closeForm = () => { setFormKind(null); setEditItem(null); setActiveTab('uz'); reset(EMPTY); };
+
+  const openNew = (kind: Kind) => { reset(EMPTY); setEditItem(null); setFormKind(kind); };
 
   const openEdit = (item: UnitItem) => {
     setEditItem(item);
-    (Object.keys(schema.shape) as (keyof FormData)[]).forEach((k) => {
-      setValue(k, (item as Record<string, unknown>)[k] as string & number);
+    reset({
+      nameUz: item.nameUz, nameEn: item.nameEn, nameRu: item.nameRu,
+      descriptionUz: item.descriptionUz ?? '', descriptionEn: item.descriptionEn ?? '', descriptionRu: item.descriptionRu ?? '',
+      head: item.head ?? '', order: item.order,
     });
-    setShowForm(true);
+    setFormKind(item.type === 'laboratory' ? 'laboratory' : 'section');
   };
 
-  const onSubmit = (data: FormData) => {
-    // Bo'lim va laboratoriya yuqori darajada: yaratishda parentId null, tahrirda yuborilmaydi.
-    if (editItem) updateMut.mutate({ id: editItem.id, data });
-    else createMut.mutate({ ...data, parentId: null });
+  const onSubmit = (values: FormData) => {
+    // Tur shakldan emas, qaysi qismdan ochilganidan olinadi; tahrirda tur o'zgarmaydi.
+    if (editItem) updateMut.mutate({ id: editItem.id, data: values });
+    else if (formKind) createMut.mutate({ ...values, type: formKind, parentId: null });
   };
+
+  const isLabForm = formKind === 'laboratory';
+
+  const renderRows = (items: UnitItem[], kind: Kind) => (
+    <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+      {items.map((item) => {
+        const staff = employees.filter((e) => (kind === 'laboratory' ? e.labId : e.unitId) === item.id);
+        const expanded = kind === 'laboratory' && openLab === item.id;
+        return (
+          <li key={item.id}>
+            <div className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-800">
+              <div className="min-w-0 flex-1">
+                <p className="font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {item.head || '—'} · {t('adminD.units.staff_count', { count: staff.length })}
+                </p>
+              </div>
+              {kind === 'laboratory' && (
+                <button
+                  type="button"
+                  onClick={() => setOpenLab(expanded ? null : item.id)}
+                  aria-expanded={expanded}
+                  aria-controls={`lab-staff-${item.id}`}
+                  className="btn-secondary gap-1.5 !px-3 !py-1.5 text-xs"
+                >
+                  <Users className="h-4 w-4" aria-hidden="true" /> {t('adminD.units.lab_staff')}
+                </button>
+              )}
+              <button onClick={() => openEdit(item)} aria-label={t('admin.edit')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
+              <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(item.id); }} aria-label={t('admin.delete')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
+            </div>
+            {expanded && <LabStaffPanel lab={item} employees={employees} />}
+          </li>
+        );
+      })}
+      {items.length === 0 && (
+        <li className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+          {t(kind === 'laboratory' ? 'adminD.units.empty_labs' : 'adminD.units.empty')}
+        </li>
+      )}
+    </ul>
+  );
 
   return (
     <>
       <Helmet><title>{t('adminD.units.helmet')}</title></Helmet>
       <div className="p-6">
-        {showForm ? (
+        {formKind ? (
           <AdminFormPage
-            title={editItem ? t('adminD.units.edit_title') : t('adminD.units.new_title')}
+            title={editItem ? t('adminD.units.edit_title') : t(isLabForm ? 'adminD.units.new_lab_title' : 'adminD.units.new_title')}
             subtitle={t('admin.modal_subtitle')}
-            icon={Network}
+            icon={isLabForm ? FlaskConical : Network}
             size="md"
             onClose={closeForm}
             onSubmit={handleSubmit(onSubmit)}
@@ -119,67 +178,126 @@ export default function AdminUnitsPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="label">{t('adminD.units.type')}</label>
-                <select {...register('type')} className="input">
-                  {(editItem && !UNIT_TYPES.includes(editItem.type) ? [...UNIT_TYPES, editItem.type] : UNIT_TYPES).map((ty) => (
-                    <option key={ty} value={ty}>{t(`adminD.units.types.${ty}`, { defaultValue: ty })}</option>
-                  ))}
-                </select>
+                <label className="label">{t('adminD.units.head')}</label>
+                <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
               </div>
               <div>
                 <label className="label">{t('adminD.units.order')}</label>
                 <input {...register('order')} type="number" className="input" />
               </div>
             </div>
-
-            <div>
-              <label className="label">{t('adminD.units.head')}</label>
-              <input {...register('head')} className="input" placeholder={t('adminD.units.head_placeholder')} />
-            </div>
           </AdminFormPage>
         ) : (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.units')}</h1>
-              <button onClick={() => { reset({ type: 'section', order: 0, descriptionUz: '', descriptionEn: '', descriptionRu: '' }); setShowForm(true); }} className="btn-primary gap-2">
-                <Plus className="h-4 w-4" /> {t('admin.add_new')}
-              </button>
-            </div>
-
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{t('admin.units')}</h1>
 
             {isLoading ? <div className="text-center py-8 text-gray-500 dark:text-gray-400">{t('common.loading')}</div> : (
-              <div className="card overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.units.th_name')}</th>
-                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden sm:table-cell">{t('adminD.units.th_type')}</th>
-                      <th className="text-left px-4 py-3 text-gray-600 dark:text-gray-300 font-medium hidden md:table-cell">{t('adminD.units.th_head')}</th>
-                      <th className="text-right px-4 py-3 text-gray-600 dark:text-gray-300 font-medium">{t('adminD.common.th_actions')}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
-                    {flat.map((item) => (
-                      <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{item.nameUz}</td>
-                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden sm:table-cell">{t(`adminD.units.types.${item.type}`, { defaultValue: item.type })}</td>
-                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 hidden md:table-cell">{item.head ?? '—'}</td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <button onClick={() => openEdit(item)} aria-label={t('admin.edit')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary-700 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-gray-800 rounded transition-colors"><Pencil className="h-4 w-4" /></button>
-                            <button onClick={() => { if (confirm(t('admin.confirm_delete'))) deleteMut.mutate(item.id); }} aria-label={t('admin.delete')} className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-gray-800 rounded transition-colors"><Trash2 className="h-4 w-4" /></button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                    {flat.length === 0 && <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">{t('adminD.units.empty')}</td></tr>}
-                  </tbody>
-                </table>
+              <div className="space-y-8">
+                <section aria-labelledby="units-sections">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 id="units-sections" className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      <Network className="h-5 w-5" aria-hidden="true" /> {t('adminD.units.sections_title')}
+                    </h2>
+                    <button onClick={() => openNew('section')} className="btn-primary gap-2">
+                      <Plus className="h-4 w-4" /> {t('adminD.units.add_section')}
+                    </button>
+                  </div>
+                  <div className="card overflow-hidden">{renderRows(sections, 'section')}</div>
+                </section>
+
+                <section aria-labelledby="units-labs">
+                  <div className="flex items-center justify-between mb-3">
+                    <h2 id="units-labs" className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                      <FlaskConical className="h-5 w-5" aria-hidden="true" /> {t('adminD.units.labs_title')}
+                    </h2>
+                    <button onClick={() => openNew('laboratory')} className="btn-primary gap-2">
+                      <Plus className="h-4 w-4" /> {t('adminD.units.add_lab')}
+                    </button>
+                  </div>
+                  <div className="card overflow-hidden">{renderRows(labs, 'laboratory')}</div>
+                </section>
               </div>
             )}
           </>
         )}
       </div>
     </>
+  );
+}
+
+/**
+ * Laboratoriya xodimlari: mavjud xodimni biriktirish, laboratoriyadan chiqarish
+ * yoki shu laboratoriya uchun yangi xodim qo'shish. Xodim o'chirilmaydi —
+ * faqat `labId` o'zgaradi.
+ */
+function LabStaffPanel({ lab, employees }: { lab: UnitItem; employees: Employee[] }) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const toast = useToast();
+  const [pick, setPick] = useState('');
+
+  const staff = employees.filter((e) => e.labId === lab.id);
+  const others = employees.filter((e) => e.labId !== lab.id);
+
+  const assignMut = useMutation({
+    mutationFn: ({ id, labId }: { id: string; labId: string }) => employeesApi.update(id, { labId }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-employees'] });
+      qc.invalidateQueries({ queryKey: ['employees'] });
+      toast.success(t('toast.employee_saved'));
+      setPick('');
+    },
+    onError: (error) => toast.showError(error),
+  });
+
+  const selectId = `lab-attach-${lab.id}`;
+
+  return (
+    <div id={`lab-staff-${lab.id}`} className="bg-gray-50 dark:bg-gray-900/40 border-t border-gray-100 dark:border-gray-800 px-4 py-4 space-y-4">
+      <ul className="space-y-2" aria-live="polite">
+        {staff.map((e) => (
+          <li key={e.id} className={clsx('flex items-center gap-3 text-sm', !e.isActive && 'opacity-50')}>
+            <span className="flex-1 min-w-0">
+              <span className="font-medium text-gray-900 dark:text-gray-100">{e.fullNameUz}</span>
+              <span className="text-gray-500 dark:text-gray-400"> — {e.positionUz}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => assignMut.mutate({ id: e.id, labId: '' })}
+              disabled={assignMut.isPending}
+              aria-label={`${t('adminD.units.detach')}: ${e.fullNameUz}`}
+              title={t('adminD.units.detach')}
+              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 rounded"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </li>
+        ))}
+        {staff.length === 0 && <li className="text-sm text-gray-500 dark:text-gray-400">{t('adminD.units.no_lab_staff')}</li>}
+      </ul>
+
+      <div className="flex flex-wrap items-end gap-2">
+        <div className="flex-1 min-w-[14rem]">
+          <label htmlFor={selectId} className="label">{t('adminD.units.attach_label')}</label>
+          <select id={selectId} value={pick} onChange={(ev) => setPick(ev.target.value)} className="input">
+            <option value="">{t('adminD.units.attach_none')}</option>
+            {others.map((e) => (
+              <option key={e.id} value={e.id}>{e.fullNameUz} — {e.positionUz}</option>
+            ))}
+          </select>
+        </div>
+        <button
+          type="button"
+          onClick={() => pick && assignMut.mutate({ id: pick, labId: lab.id })}
+          disabled={!pick || assignMut.isPending}
+          className="btn-primary"
+        >
+          {t('adminD.units.attach_btn')}
+        </button>
+        <Link to={`/admin/employees?labId=${lab.id}`} className="btn-secondary gap-1.5">
+          <UserPlus className="h-4 w-4" aria-hidden="true" /> {t('adminD.units.new_employee')}
+        </Link>
+      </div>
+    </div>
   );
 }
