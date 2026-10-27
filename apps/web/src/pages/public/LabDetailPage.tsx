@@ -122,7 +122,7 @@ export default function LabDetailPage() {
               <section aria-labelledby="lab-about">
                 <h2 id="lab-about" className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">{t('lab.about')}</h2>
                 <div
-                  className="prose-content text-gray-800 text-justify hyphens-auto [&_p:last-child]:mb-0"
+                  className="prose-content text-gray-800 text-justify hyphens-auto [&_p:last-child]:mb-0 [&_img]:mx-auto [&_img]:my-4 [&_img]:block [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-xl"
                   // Server saqlashdan oldin tozalagan; bu ikkinchi qatlam (CLAUDE.md 4.1-7).
                   dangerouslySetInnerHTML={{ __html: content }}
                 />

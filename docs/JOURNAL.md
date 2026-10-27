@@ -220,6 +220,11 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-27 — fix: lab sahifasida rasmlar o'rtada
+- `LabDetailPage.tsx`: «Laboratoriya haqida» ichidagi `img` — `block mx-auto my-4 max-w-full h-auto rounded-xl`
+  (faqat shu sahifada; yangiliklarning `prose-content` i tegilmadi).
+- Tekshirildi: `tsc`; brauzerda DOM o'lchovi — 120px rasmda chap/o'ng bo'shliq teng (89/89).
+
 ### 2026-10-27 — fix: lab sahifasida matn mobil'da ham ikki tomonga tekislanadi
 - Foydalanuvchi so'rovi bilan `sm:text-justify` → `text-justify` (hero tavsifi va «Laboratoriya haqida»).
 - Tekshirildi: `tsc --noEmit` (web). Avvalgi skrinshotda (606px) justify so'zlar orasida katta bo'shliq
