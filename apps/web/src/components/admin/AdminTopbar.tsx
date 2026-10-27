@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, LogOut, Menu, Monitor, Moon, Sun, User } from 'lucide-react';
-import clsx from 'clsx';
+import { ChevronDown, Globe, LogOut, Menu, Monitor, Moon, Sun, User } from 'lucide-react';
 import { useAuthStore } from '@/store/auth';
-import { useAdminPrefs, type AdminLang, type AdminTheme } from '@/store/adminPrefs';
+import { useAdminPrefs, useResolvedAdminTheme, type AdminLang, type AdminTheme } from '@/store/adminPrefs';
+import HeaderMenu from '@/components/admin/HeaderMenu';
 
 const LANGS: AdminLang[] = ['uz', 'en', 'ru'];
 const THEMES: { value: AdminTheme; icon: typeof Sun }[] = [
@@ -29,6 +29,7 @@ export default function AdminTopbar({ onOpenSidebar, onLogout }: Props) {
   const { t } = useTranslation();
   const admin = useAuthStore((s) => s.admin);
   const { theme, setTheme, lang, setLang } = useAdminPrefs();
+  const ThemeIcon = useResolvedAdminTheme() === 'dark' ? Moon : Sun;
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -52,15 +53,6 @@ export default function AdminTopbar({ onOpenSidebar, onLogout }: Props) {
     };
   }, [open]);
 
-  const segment = (active: boolean) =>
-    clsx(
-      'inline-flex items-center justify-center rounded-md px-2 py-1.5 text-xs font-semibold transition-colors',
-      'focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500',
-      active
-        ? 'bg-primary-700 text-white dark:bg-primary-600'
-        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
-    );
-
   const itemClass =
     'flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800 focus:outline-none focus-visible:bg-gray-100 dark:focus-visible:bg-gray-800';
 
@@ -76,37 +68,26 @@ export default function AdminTopbar({ onOpenSidebar, onLogout }: Props) {
       </button>
       <div className="hidden md:block" />
 
-      <div className="flex items-center gap-2 sm:gap-3">
-        <div role="group" aria-label={t('adminShell.language')} className="flex gap-0.5 rounded-lg border border-gray-200 p-0.5 dark:border-gray-700">
-          {LANGS.map((code) => (
-            <button
-              key={code}
-              type="button"
-              aria-pressed={lang === code}
-              aria-label={t(`adminShell.lang_${code}`)}
-              onClick={() => setLang(code)}
-              className={segment(lang === code)}
-            >
-              {code.toUpperCase()}
-            </button>
-          ))}
-        </div>
-
-        <div role="group" aria-label={t('adminShell.theme')} className="flex gap-0.5 rounded-lg border border-gray-200 p-0.5 dark:border-gray-700">
-          {THEMES.map(({ value, icon: Icon }) => (
-            <button
-              key={value}
-              type="button"
-              aria-pressed={theme === value}
-              aria-label={t(`adminShell.theme_${value}`)}
-              title={t(`adminShell.theme_${value}`)}
-              onClick={() => setTheme(value)}
-              className={segment(theme === value)}
-            >
-              <Icon className="h-4 w-4" aria-hidden="true" />
-            </button>
-          ))}
-        </div>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <HeaderMenu
+          label={t('adminShell.theme')}
+          trigger={<ThemeIcon className="h-5 w-5" aria-hidden="true" />}
+          value={theme}
+          onSelect={setTheme}
+          options={THEMES.map(({ value, icon }) => ({ value, icon, label: t(`adminShell.theme_${value}`) }))}
+        />
+        <HeaderMenu
+          label={t('adminShell.language')}
+          trigger={
+            <>
+              <Globe className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden uppercase sm:block">{lang}</span>
+            </>
+          }
+          value={lang}
+          onSelect={setLang}
+          options={LANGS.map((code) => ({ value: code, lang: code, label: t(`adminShell.lang_${code}`) }))}
+        />
 
         <div className="relative" ref={wrapRef}>
           <button

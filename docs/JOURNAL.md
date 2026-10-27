@@ -204,6 +204,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 > Eng yangisi tepada. Har bir yozuv qisqa bo'lsin — nima qilindi, nima tekshirildi, nima qolib ketdi.
 
+### 2026-10-27 · Admin topbar — til/mavzu ochiladigan menyu
+**Kommit:** `refactor(admin): topbar language and theme as dropdown menus`
+**Qilindi:** `HeaderMenu` `LoginPage.tsx` dan `components/admin/HeaderMenu.tsx` ga chiqarildi.
+`AdminTopbar` dagi UZ/EN/RU va light/dark/system segment tugmalari o'rniga asosiy sayt
+sarlavhasidagi kabi ikkita menyu: mavzu (joriy Sun/Moon ikonka) va til (Globe + kod).
+**Tekshirildi:** `tsc --noEmit` (web) toza; brauzerda dashboard topbari, til menyusi ochiladi,
+joriy til belgilangan.
+**Tekshirilmadi:** qorong'i mavzuda topbar skrinshoti, mobil kenglik.
+
 ### 2026-10-27 · Admin login sahifasi qayta dizayn
 **Kommit:** `feat(admin): redesign login page with navbar and password toggle`
 **Qilindi:** `LoginPage.tsx` — asosiy sayt sarlavhasiga o'xshash navbar (emblema + nom, `/` ga havola),
