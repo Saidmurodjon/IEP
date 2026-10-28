@@ -234,6 +234,10 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — bosh sahifa: raqam kartochkalari yana yonma-yon
+- Foydalanuvchi so'rovi: mobilda ikonka raqam yonida (chapda) tursin — ustma-ust variant qaytarildi.
+- Tekshirildi: `tsc` toza; 360/412 px skrinshot — gorizontal skroll yo'q, 360 da uzun yorliq 2 qatorga o'tadi.
+
 ### 2026-10-28 — bosh sahifa: mobil joylashuv tartibga keltirildi
 - Muammo (foydalanuvchi skrinshoti): mobilda raqamlar bloki tarqoq (katta bo'shliq, `gap-8`),
   bo'limlar orasida ortiqcha `py-16`, hero matni katta.

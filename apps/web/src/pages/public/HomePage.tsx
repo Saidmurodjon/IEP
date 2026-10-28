@@ -92,12 +92,12 @@ export default function HomePage() {
       {/* Stats — yumshoq fon, oltin ikonkalar */}
       <section className="bg-primary-50 border-b border-primary-100">
         <div className="container py-6 sm:py-10">
-          {/* Mobil: ixcham kartochkalar; planshetda ikonka chapda, katta ekranda — markazda */}
+          {/* Mobil: ixcham kartochkalar (ikonka chapda); katta ekranda — markazda */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {stats.map(({ value, label, icon: Icon }) => (
               <div
                 key={label}
-                className="flex flex-col items-start gap-2 rounded-xl bg-white border border-primary-100 p-4 sm:flex-row sm:items-center sm:gap-3 lg:flex-col lg:items-center lg:text-center lg:gap-2 lg:p-5"
+                className="flex items-center gap-3 rounded-xl bg-white border border-primary-100 p-3 sm:p-4 lg:flex-col lg:text-center lg:gap-2 lg:p-5"
               >
                 <span className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-50 lg:h-12 lg:w-12">
                   <Icon className="h-5 w-5 text-accent-700 lg:h-6 lg:w-6" strokeWidth={1.75} aria-hidden="true" />
