@@ -241,6 +241,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — demo rahbariyat: direktor + ilmiy ishlar bo'yicha o'rinbosar (faqat lokal baza)
+- Foydalanuvchi so'rovi: «Rahbariyat» sahifasiga lorem ma'lumotli, rasmli 2 rahbar. Kod o'zgarmadi.
+- Lokal API (8787) orqali admin bilan: 2 portret `POST /api/uploads?kind=image` (Unsplash litsenziyasi,
+  600×800, `ownerType=employee` + `ownerId`), keyin `POST /api/employees` — `isManagement`, bo'lim
+  `section-management`, order −2/−1 (mavjud xodimdan oldin), uch tilda lavozim/daraja/unvon/yo'nalish/qabul vaqti.
+- Birinchi yuklashda `ownerId` berilmagan 2 fayl yetim qoldi — `POST /api/uploads/cleanup` keyin o'chiradi.
+- Tekshirildi: `GET /api/employees` tartibi, `/api/files/...` 200 image/jpeg. Tekshirilmadi: sahifaning brauzerdagi ko'rinishi.
+- Production'ga QO'SHILMAGAN — haqiqiy rahbarlar ma'lumoti va rasmini institut beradi.
+
 ### 2026-10-28 — admin «Hamkorlar»: ogohlantirish bloki olib tashlandi
 
 - Foydalanuvchi so'rovi: «Diqqat. Hamkor tashkilot logotipi … savdo belgisi …» sariq bloki
