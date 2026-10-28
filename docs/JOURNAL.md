@@ -16,7 +16,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — LOKALDA tayyor,
 production'ga CHIQARILMAGAN.** Raqamlar (lab/xodim/ilmiy xodim/nashr) bazadan avtomatik, bosh sahifa
-ham `GET /api/about` dan. ⚠️ Lokal bazada NAMUNA matn — haqiqiy matnni institut beradi.
+ham `GET /api/about` dan. ⚠️ Lokal bazada lorem ipsum matn + 3 ta public-domain rasm — haqiqiy matnni institut beradi.
 iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
 
 **🆕 Admin navbar: qidiruv maydoni + davr filtri ikonkasi (dashboard grafiklariga ham) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
@@ -231,6 +231,14 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — lokal baza: «Institut haqida» lorem + rasmlar (kod o'zgarmadi)
+- Foydalanuvchi so'rovi: dizaynni ko'rish uchun lorem matn va haqiqiy rasmlar.
+- `POST /api/uploads` orqali 3 rasm (ownerType=about): `about-wind.jpg`, `hero-solar.jpg`
+  (loyihadagi, PD) va Commons «Solar panels on a roof» (PD, Pujanak). `PUT /api/about` —
+  uchala tilda lorem (h2, ro'yxat, iqtibos, 3 rasm), sarlavhalar tilga mos.
+- Tekshirildi: API javobida 3 `<img>` sanitizatsiyadan o'tdi; brauzerda rasmlar yuklandi.
+- Faqat lokal baza; production'ga hech narsa yozilmadi.
 
 ### 2026-10-28 — fix(web): «Institut haqida» yuklanishda eski matn chaqnashi + yangi dizayn
 - Muammo: refresh'da bir lahza i18n'dagi statik matn (`about.mission_text` va h.k.,
