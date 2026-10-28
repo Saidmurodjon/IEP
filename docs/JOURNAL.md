@@ -241,6 +241,12 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — fix(web): rahbariyat kartochkasi — rasm ostida bo'sh joy qolmaydi
+- Foydalanuvchi: kulrang chap ustunda rasm tagi bo'sh. `LeaderCard` qayta tuzildi: yuqori qatorda 3x4 sm
+  surat + lavozim/ism/daraja/xona/pochta/telefon (balandligi suratga teng), ilmiy yo'nalish va qabul kunlari
+  pastda to'liq kenglikda. Kulrang ustun olib tashlandi, surat kartochka ichida ramkada.
+- Tekshirildi: `tsc` toza; brauzerda desktop — o'ng ustun surat bilan bir bo'yda. Tekshirilmadi: mobil, en/ru.
+
 ### 2026-10-28 — fix(web): rahbariyat surati 3x4 sm, kartochka chetiga yopishgan; ortiqcha «:» olib tashlandi
 - `LeaderCard`: surat hamma kartochkada aniq `3cm × 4cm`, chap chetga yopishgan; chap ustun (kulrang fon,
   o'ng chegarasi bilan) kartochka bo'yi bo'ylab davom etadi — surat alohida "osilib" qolmaydi.
