@@ -241,6 +241,16 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — data: demo dissertatsiya himoyasi e'loni (faqat lokal baza)
+- Foydalanuvchi so'radi: himoya/seminar e'loni yangiliklarda qanday ko'rinishini sinash uchun bitta demo.
+- Admin API orqali (`POST /api/uploads` + `POST /api/news`) lokal bazaga (localhost:4444) yaratildi:
+  slug `demo-dissertatsiya-himoyasi-elon`, uz/en/ru, talabgorning 600×800 (3:4) siluet rasmi.
+- Tekshirildi: `GET /api/news/demo-dissertatsiya-himoyasi-elon` → 200. Brauzerda ko'rilmadi.
+- Ma'lum: hozirgi layout 3:4 rasmni ro'yxatda `h-48 object-cover` bilan kesadi, detal sahifada
+  `w-full` qilib cho'zadi — `category` maydoni + portret ko'rinish taklif qilingan, tasdiq kutilmoqda.
+- Yo'l-yo'lakay: bo'sh JSON tanasi bilan `POST /api/news` 400 o'rniga 500 qaytardi — tuzatilmadi.
+- Jurnal 560+ qator — arxivga ko'chirish kerak (qilinmadi).
+
 ### 2026-10-28 — fix(web): footer ixchamlashtirildi
 - Foydalanuvchi: footer pastga cho'zilib ketgan (12 ta havola bitta ustunda). Desktop'da 12 ustunli grid
   (logo 4 / sahifalar 5 / aloqa 3), sahifalar havolalari doim 2 ustunda, oraliqlar kichraytirildi.
