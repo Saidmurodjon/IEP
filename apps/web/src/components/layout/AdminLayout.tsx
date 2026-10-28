@@ -2,7 +2,7 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Newspaper, BookOpen, Building2,
-  Settings, MessageSquare, Zap,
+  MessageSquare, Zap,
   Users, Handshake, FileText, Bug, Network, UserCog, FlaskConical, Info,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -34,7 +34,6 @@ const navItems: NavItem[] = [
   { to: '/admin/documents', icon: FileText, key: 'documents' },
   { to: '/admin/messages', icon: MessageSquare, key: 'messages' },
   { to: '/admin/logs', icon: Bug, key: 'logs', superOnly: true },
-  { to: '/admin/settings', icon: Settings, key: 'settings', superOnly: true },
   { to: '/admin/users', icon: UserCog, key: 'users', superOnly: true },
 ];
 

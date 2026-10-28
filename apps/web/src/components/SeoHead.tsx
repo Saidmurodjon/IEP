@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { DEFAULT_LANG, SUPPORTED_LANGS, splitLangPrefix } from '@/lib/routes';
 import { useCurrentLang } from '@/hooks/useLocalizedPath';
-import { useSettings } from '@/hooks/useSettings';
+import { SITE_URL } from '@/config/site';
 
 interface Props {
   /** Sahifaga xos sarlavha. Bo'sh bo'lsa faqat institut nomi ko'rsatiladi. */
@@ -18,18 +18,14 @@ interface Props {
  * Har bir ochiq sahifaning `<head>` qismi: `html lang`, `canonical` va
  * uchala til uchun `hreflang` (+ `x-default` → o'zbekcha).
  *
- * Asosiy manzil sozlamalardan (`site_url`) olinadi — kodga yozilmaydi.
- * Sozlama bo'sh bo'lsa, brauzerdagi joriy origin ishlatiladi.
+ * Asosiy manzil statik — `config/site.ts`.
  */
 export default function SeoHead({ title, description, noindex }: Props) {
   const { t } = useTranslation();
   const lang = useCurrentLang();
   const { pathname } = useLocation();
-  const { value } = useSettings();
 
-  const configured = value('site_url');
-  const fallback = typeof window === 'undefined' ? '' : window.location.origin;
-  const base = (configured || fallback).replace(/\/+$/, '');
+  const base = SITE_URL.replace(/\/+$/, '');
 
   const { rest } = splitLangPrefix(pathname);
   const suffix = rest === '/' ? '' : rest;

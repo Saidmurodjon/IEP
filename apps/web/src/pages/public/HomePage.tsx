@@ -2,13 +2,12 @@ import LocalizedLink from '@/components/LocalizedLink';
 import { useTranslation } from 'react-i18next';
 import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
-import { INSTITUTE_STAFF } from '@/lib/structure';
 import PartnersStrip from '@/components/PartnersStrip';
 import {
   ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, GraduationCap, Users, Zap,
 } from 'lucide-react';
 import { aboutApi, newsApi, pubsApi } from '@/lib/api';
-import type { AboutResponse } from '@/lib/about';
+import { pick, type AboutResponse } from '@/lib/about';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 import A11yImage from '@/components/A11yImage';
@@ -27,7 +26,7 @@ export default function HomePage() {
     queryFn: () => pubsApi.list(1, 4),
   });
 
-  // «Institut haqida» bilan bir xil raqamlar — admin kiritgan, bo'lmasa rasmiy shtat.
+  // Raqamlar va qisqa tavsif «Institut haqida» bilan bitta manbadan (`GET /api/about`).
   const { data: aboutData } = useQuery({ queryKey: ['about'], queryFn: () => aboutApi.get() });
   const about = aboutData?.data as AboutResponse | undefined;
 
@@ -42,14 +41,15 @@ export default function HomePage() {
     item[`summary${lang.charAt(0).toUpperCase() + lang.slice(1)}`] ??
     item.summaryUz ?? item.summaryEn ?? '';
 
-  // Lab va nashr soni bazadan (jonli); xodimlar — admin yoki rasmiy shtat (2025-02-27).
-  const totalPubs = pubsData?.data?.total ?? 0;
+  // Hammasi bazadan hisoblanadi — qo'lda kiritilmaydi. Yuklanguncha «—».
+  const stat = (n: number | undefined) => (n === undefined ? '—' : String(n));
   const stats = [
-    { value: String(about?.live.labs || INSTITUTE_STAFF.labs), label: t('home.stats_labs'), icon: Beaker },
-    { value: String(about?.data.stats.scientists ?? INSTITUTE_STAFF.scientists), label: t('home.stats_scientists'), icon: GraduationCap },
-    { value: String(about?.data.stats.staff ?? INSTITUTE_STAFF.total), label: t('home.stats_staff'), icon: Users },
-    { value: String(totalPubs), label: t('home.stats_publications'), icon: BookOpen },
+    { value: stat(about?.stats.labs), label: t('home.stats_labs'), icon: Beaker },
+    { value: stat(about?.stats.scientists), label: t('home.stats_scientists'), icon: GraduationCap },
+    { value: stat(about?.stats.employees), label: t('home.stats_staff'), icon: Users },
+    { value: stat(about?.stats.publications), label: t('home.stats_publications'), icon: BookOpen },
   ];
+  const aboutSummary = pick(about?.data.summary, lang);
 
   return (
     <>
@@ -115,8 +115,14 @@ export default function HomePage() {
               <h2 className="text-2xl sm:text-3xl font-bold text-primary-900 mb-5 leading-tight">
                 {t('home.about_title')}
               </h2>
-              <p className="text-gray-600 leading-relaxed mb-4">{t('home.about_p1')}</p>
-              <p className="text-gray-600 leading-relaxed mb-6">{t('home.about_p2')}</p>
+              {aboutSummary ? (
+                <p className="text-gray-600 leading-relaxed mb-6">{aboutSummary}</p>
+              ) : (
+                <>
+                  <p className="text-gray-600 leading-relaxed mb-4">{t('home.about_p1')}</p>
+                  <p className="text-gray-600 leading-relaxed mb-6">{t('home.about_p2')}</p>
+                </>
+              )}
               <LocalizedLink to="/about" className="btn-primary px-6 py-3">
                 {t('home.about_more')}
                 <ArrowRight className="h-4 w-4 ml-2" />

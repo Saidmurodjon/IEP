@@ -146,34 +146,9 @@ async function main() {
   }
   console.log(`✓ Structure units created (${units.length} ta, hujjatga muvofiq)`);
 
-  // Seed site settings
-  const settings = [
-    { key: 'site_name_uz', value: 'Energetika muammolari instituti' },
-    { key: 'site_name_en', value: 'Institute of Energy Problems' },
-    { key: 'site_name_ru', value: 'Институт проблем энергетики' },
-    // canonical / hreflang havolalari uchun asosiy manzil. Production'da
-    // SITE_URL bilan beriladi (masalan `https://iep.uz`), keyin admin paneldan
-    // o'zgartiriladi — kodga yozilmaydi.
-    { key: 'site_url', value: process.env.SITE_URL ?? 'https://energetika-institute.pages.dev' },
-    // Manzil, telefon va ish vaqti endi STATIK — `apps/web/src/config/contact.ts`.
-    // `email` shu yerda qoladi: sayt aloqa emaili emas, murojaat bildirishnomalari
-    // uchun ZAXIRA manzil (`appeals_email` bo'sh bo'lganda ishlatiladi).
-    { key: 'email', value: 'energy@academy.uz' },
-    // Murojaat bildirishnomalari uchun pochta. Bo'sh bo'lsa umumiy `email`
-    // ishlatiladi. Institut alohida manzil bersa shu yerga kiritiladi.
-    { key: 'appeals_email', value: '' },
-    // TODO: aniq muddat institut YURISKONSULTIDAN aniqlashtirilishi kerak.
-    { key: 'appeals_retention_days', value: '365' },
-  ];
-
-  for (const setting of settings) {
-    await prisma.siteSetting.upsert({
-      where: { key: setting.key },
-      update: { value: setting.value },
-      create: setting,
-    });
-  }
-  console.log('✓ Site settings seeded');
+  // Sayt sozlamalari endi kodda: pochta va murojaat muddati —
+  // `apps/api/src/lib/site-config.ts`, aloqa — `apps/web/src/config/contact.ts`,
+  // sayt manzili — `apps/web/src/config/site.ts` / `FRONTEND_URL`.
 
   // Qidiruv vektorlari. Prisma orqali yozilgan yozuvlarda `searchVector` bo'sh
   // qoladi — indekslamasak, seed qilingan ma'lumot qidiruvda topilmaydi.

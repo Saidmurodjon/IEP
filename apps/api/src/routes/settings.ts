@@ -7,9 +7,9 @@ import type { AppContext } from '../index';
 export const settingsRouter = new Hono<AppContext>();
 
 /**
- * Ochiq `GET /api/settings` da QAYTARILMAYDIGAN kalitlar: xodimlar pochtasi
- * va ichki sozlamalar tashrifchiga kerak emas. `about_page` — o'z
- * endpointi (`/api/about`) bor, har sahifada yuklanmasin.
+ * Ochiq `GET /api/settings` da QAYTARILMAYDIGAN kalitlar. Pochta va murojaat
+ * sozlamalari endi kodda (`lib/site-config.ts`), lekin eski bazalarda qatorlari
+ * qolgan — tashqariga chiqmasin. `about_page` — o'z endpointi (`/api/about`) bor.
  */
 const PRIVATE_KEYS = new Set(['email', 'appeals_email', 'appeals_retention_days', 'about_page']);
 
@@ -35,13 +35,6 @@ settingsRouter.get('/', async (c) => {
     data: Object.fromEntries(settings.filter((s) => !PRIVATE_KEYS.has(s.key)).map((s) => [s.key, s.value])),
     lastUpdatedAt,
   });
-});
-
-/** Admin sozlamalar sahifasi uchun — maxfiy kalitlar ham (`about_page` dan tashqari). */
-settingsRouter.get('/private', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
-  const db = c.get('db');
-  const settings = await db.siteSetting.findMany({ where: { key: { not: 'about_page' } } });
-  return c.json({ data: Object.fromEntries(settings.map((s) => [s.key, s.value])) });
 });
 
 // `about_page` faqat `/api/about` orqali yoziladi — u yerda to'liq sxema tekshiruvi bor.

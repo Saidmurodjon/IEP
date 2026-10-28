@@ -263,8 +263,6 @@ export const logsApi = {
 
 export const settingsApi = {
   all: () => api.get('/api/settings'),
-  /** Maxfiy kalitlar bilan — faqat super admin. */
-  private: () => api.get('/api/settings/private'),
   bulkUpdate: (data: Record<string, string>) => api.post('/api/settings/bulk', data),
 };
 

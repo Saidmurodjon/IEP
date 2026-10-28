@@ -50,7 +50,7 @@ apps/
                         Employees, News, Publications, Documents, Contact, AppealStatus,
                         Search, NotFound)
     src/pages/admin/    Admin panel (Login, Dashboard, News, Publications, Structure, Employees,
-                        Partners, Documents, Settings, Messages)
+                        Partners, Documents, About, Messages)
     src/lib/api.ts      Barcha API chaqiruvlari SHU YERDA
     src/lib/a11y.ts     Ko'rinish sozlamalari (shrift, kontrast, rasmlar, oraliq)
     src/config/         navigation.ts (menyu daraxti), contact.ts (statik aloqa ma'lumotlari —
@@ -85,8 +85,11 @@ packages/
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
    `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`,
    `GET /api/contact/status`, `GET /api/search`, `POST /api/logs/client`, `GET /api/about`.
-   **`GET /api/settings` maxfiy kalitlarni qaytarmaydi** (`PRIVATE_KEYS`: pochta, murojaat
-   sozlamalari, `about_page`) — admin ularni `GET /api/settings/private` (super admin) dan oladi.
+   **Admin «Sozlamalar» sahifasi yo'q** — sayt qiymatlari statik: murojaat pochtasi va saqlash
+   muddati `apps/api/src/lib/site-config.ts`, sayt manzili `apps/web/src/config/site.ts`
+   (API xatlarida — `FRONTEND_URL`). `GET /api/settings` eski maxfiy qatorlarni
+   (`PRIVATE_KEYS`) qaytarmaydi. Sayt raqamlari (lab, xodim, ilmiy xodim, nashr) qo'lda
+   kiritilmaydi — `GET /api/about` bazadan hisoblaydi.
    **`GET /api/search` nega ochiq:** qidiruv 373-son qarorning 11-bandi bo'yicha har qanday
    tashrifchi uchun majburiy. Cheklov: IP bo'yicha daqiqasiga 30 ta, `q` kamida 2 belgi,
    `zValidator`, faqat nashr etilgan/faol yozuvlar chiqadi.

@@ -4,6 +4,8 @@ import { z } from 'zod';
 import type { PrismaClient } from '@prisma/client';
 import { requireAuth } from '../middleware/auth';
 import { fail } from '../lib/errors';
+import { getFrontendUrl } from '../lib/env';
+import { APPEALS_EMAIL, APPEALS_RETENTION_DAYS } from '../lib/site-config';
 import { clientIp, createStore, overLimit } from '../lib/rate-limit';
 import { logEvent } from '../lib/error-log';
 import { sendMail } from '../lib/mail';
@@ -62,18 +64,8 @@ async function nextTicketNumber(db: PrismaClient): Promise<string> {
 }
 
 /** Holatni tekshirish sahifasining to'liq manzili. */
-async function statusUrl(db: PrismaClient): Promise<string> {
-  const setting = await db.siteSetting.findUnique({ where: { key: 'site_url' } });
-  const base = (setting?.value ?? '').replace(/\/+$/, '');
-  return `${base}/uz/appeal-status`;
-}
-
-/** Bildirishnoma yuboriladigan manzil — sozlamalardan, kodga yozilmaydi. */
-async function staffEmail(db: PrismaClient): Promise<string | null> {
-  const specific = await db.siteSetting.findUnique({ where: { key: 'appeals_email' } });
-  if (specific?.value?.trim()) return specific.value.trim();
-  const general = await db.siteSetting.findUnique({ where: { key: 'email' } });
-  return general?.value?.trim() || null;
+function statusUrl(env: Env): string {
+  return `${getFrontendUrl(env).replace(/\/+$/, '')}/uz/appeal-status`;
 }
 
 /**
@@ -175,9 +167,8 @@ contactRouter.post('/', zValidator('json', messageSchema), async (c) => {
   });
 
   // Xatlar murojaat SAQLANGANIDAN keyin yuboriladi va javobni kutmaydi.
-  const url = await statusUrl(db);
+  const url = statusUrl(c.env);
   const receivedAt = formatDateUz(created.createdAt);
-  const staff = await staffEmail(db);
 
   const send = (async () => {
     const sent = await deliver(
@@ -188,18 +179,16 @@ contactRouter.post('/', zValidator('json', messageSchema), async (c) => {
     if (sent) {
       await db.contactMessage.update({ where: { id: created.id }, data: { notifiedAt: new Date() } });
     }
-    if (staff) {
-      const base = url.replace('/uz/appeal-status', '');
-      await deliver(
-        c.env, db, c, staff,
-        staffNotification({
-          ticketNumber, statusUrl: url, receivedAt,
-          subject: created.subject,
-          adminUrl: `${base}/admin/messages`,
-        }),
-        ticketNumber
-      );
-    }
+    const base = url.replace('/uz/appeal-status', '');
+    await deliver(
+      c.env, db, c, APPEALS_EMAIL,
+      staffNotification({
+        ticketNumber, statusUrl: url, receivedAt,
+        subject: created.subject,
+        adminUrl: `${base}/admin/messages`,
+      }),
+      ticketNumber
+    );
   })();
 
   try {
@@ -298,7 +287,7 @@ contactRouter.patch(
 
     // `answered` holatiga o'tkazilganda fuqaroga xabar yuboriladi.
     if (statusChanged && data.status === 'answered') {
-      const url = await statusUrl(db);
+      const url = statusUrl(c.env);
       const send = deliver(
         c.env, db, c, item.email,
         citizenAnswered({
@@ -330,17 +319,13 @@ contactRouter.delete('/:id', requireAuth, async (c) => {
  *
  * Murojaatlar shaxsiy ma'lumot saqlaydi va cheksiz turishi kerak emas.
  * Aniq muddat institut hujjat aylanishi qoidalariga bog'liq, shuning uchun
- * `appeals_retention_days` sozlamasiga chiqarilgan (sukut bo'yicha 365).
+ * `APPEALS_RETENTION_DAYS` (`lib/site-config.ts`) ga chiqarilgan.
  * Muddatni institut YURISKONSULTIDAN aniqlashtirish kerak, keyin bu
  * endpoint cron bilan ishga tushiriladi.
  */
 contactRouter.post('/cleanup', requireAuth, async (c) => {
   const db = c.get('db');
-  const setting = await db.siteSetting.findUnique({ where: { key: 'appeals_retention_days' } });
-  const days = Number(setting?.value ?? '365');
-  if (!Number.isFinite(days) || days < 30) {
-    return fail(c, 'VALIDATION_ERROR', 'appeals_retention_days must be at least 30');
-  }
+  const days = APPEALS_RETENTION_DAYS;
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
   const result = await db.contactMessage.deleteMany({
     where: { status: 'closed', statusChangedAt: { lt: cutoff } },

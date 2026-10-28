@@ -38,9 +38,3 @@ export function unitName(unit: Unit, lang: Lang): string {
   return (unit[key] as string) || unit.nameUz;
 }
 
-/**
- * FA Prezidiumining 2025-yil 27-fevraldagi 12-son qarori (10-ilova) bo'yicha shtat.
- * Bosh sahifa va "Institut haqida" sahifasi bir xil raqamni ko'rsatishi uchun
- * shu yerda bitta joyda saqlanadi.
- */
-export const INSTITUTE_STAFF = { labs: 6, scientists: 18, total: 29 } as const;

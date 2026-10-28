@@ -9,9 +9,8 @@ import type { Lang } from '@energetika/shared';
  * to'g'ridan-to'g'ri bundle'ga qo'shiladi.
  *
  * Manzil o'zgarsa (yangi bino, telefon, pochta) — shu faylni tahrirlang va
- * qayta deploy qiling. `SiteSetting` jadvalidagi `email` qatori BU YERGA
- * bog'liq EMAS: u alohida, murojaat bildirishnomalari uchun ishlatiladi
- * (`apps/api/src/routes/contact.ts`, `appeals_email` bo'sh bo'lganda zaxira).
+ * qayta deploy qiling. Murojaat bildirishnomalari pochtasi API'da alohida:
+ * `apps/api/src/lib/site-config.ts`.
  */
 export const CONTACT_INFO = {
   address: {

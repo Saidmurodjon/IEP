@@ -14,10 +14,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
-**🆕 «Institut haqida» dinamik + sozlamalar tozalandi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
-`GET/PUT /api/about` (`site_settings.about_page` JSON, zod), admin `/admin/about`, ochiq sahifa yangi
-dizaynda. `GET /api/settings` endi maxfiy kalitlarni bermaydi (`/private` — super admin).
-⚠️ Lokal bazada NAMUNA matnlar turibdi — haqiqiy matnni institut berishi kerak.
+**🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — LOKALDA tayyor,
+production'ga CHIQARILMAGAN.** Raqamlar (lab/xodim/ilmiy xodim/nashr) bazadan avtomatik, bosh sahifa
+ham `GET /api/about` dan. ⚠️ Lokal bazada NAMUNA matn — haqiqiy matnni institut beradi.
 iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
 
 **🆕 Admin navbar: qidiruv maydoni + davr filtri ikonkasi (dashboard grafiklariga ham) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
@@ -232,6 +231,24 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — refactor: sozlamalar statik, «Institut haqida» rich text, raqamlar avtomatik
+- Foydalanuvchi: sozlamalar kerak emas (statik yetadi), about «bachkana» — asosiysini qoldirib
+  rich text qilish, bosh sahifa ham shundan olsin, raqamlar qo'lda kiritilmasin.
+- Sozlamalar: `AdminSettingsPage`, marshrut, menyu, `/api/settings/private`, i18n o'chirildi.
+  Pochta/muddat → `api/lib/site-config.ts`; xatlardagi havola → `FRONTEND_URL`; canonical →
+  `web/config/site.ts` (`https://iep.uz`). Seed endi `site_settings` yozmaydi.
+- About: `{summary, content}` (content HTML, `sanitizeHtml` + `syncContentFiles('about','page')`).
+  Oldingi sanalar/qadriyatlar/animatsiyalar olib tashlandi; ochiq sahifa: sarlavha+tavsif,
+  raqamlar qatori, matn, yon tomonda laboratoriyalar. `INSTITUTE_STAFF` o'chirildi.
+- Ilmiy xodim = faol xodim + `degreeUz` to'ldirilgan (qaror: alohida maydon qo'shilmadi).
+- Tahrirlagich boshlang'ich qiymatni faqat yaratilishida oladi → forma to'ldirilgach chiziladi.
+- **Tekshirildi:** tsc (web/api/db), 68 vitest, dry-run; curl: PUT 200 (`<script>` va tashqi
+  `img` kesildi), tokensiz 401, `/settings/private` 404, murojaat 201 (xodim xati statik pochtaga,
+  lokal MAIL_NOT_CONFIGURED); brauzer: about (1 h1, siljish yo'q), bosh sahifa tavsif+raqamlar,
+  admin'da rich text'ga yozib saqlash → API'da ko'rindi.
+- **Tekshirilmadi:** rich text'ga rasm yuklash (lokal R2 yo'q), mobil ko'rinish, en/ru ko'zda.
+- Lokal bazada test murojaati `M-2026-9007` qoldi (o'chirish so'ralmagan).
 
 ### 2026-10-28 — feat: «Institut haqida» admin orqali boshqariladi, sozlamalar tozalandi
 - Sozlamalar: `site_name_*` hech qayerda ishlatilmasdi (nom i18n'dan) — olib tashlandi; `email` va

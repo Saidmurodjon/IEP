@@ -1,22 +1,10 @@
-import { Atom, Zap, Leaf, ShieldCheck, Users, Award, Globe, Lightbulb, type LucideIcon } from 'lucide-react';
-import type { AboutContent, AboutValueIcon, Lang, Translation } from '@energetika/shared';
+import type { AboutContent, AboutStats, Lang, Translation } from '@energetika/shared';
 
 /** `GET /api/about` javobi. */
 export interface AboutResponse {
   data: AboutContent;
-  live: { labs: number; employees: number; publications: number };
+  stats: AboutStats;
 }
-
-export const VALUE_ICON_MAP: Record<AboutValueIcon, LucideIcon> = {
-  atom: Atom,
-  zap: Zap,
-  leaf: Leaf,
-  shield: ShieldCheck,
-  users: Users,
-  award: Award,
-  globe: Globe,
-  lightbulb: Lightbulb,
-};
 
 /** Tanlangan tildagi matn; tarjima bo'lmasa o'zbekchasi (soxta matn emas). */
 export function pick(tr: Translation | undefined, lang: Lang): string {
@@ -24,9 +12,7 @@ export function pick(tr: Translation | undefined, lang: Lang): string {
   return (tr[lang] || tr.uz || '').trim();
 }
 
-/** Bo'sh qator bilan ajratilgan matnni xatboshilarga bo'ladi. */
-export function paragraphs(value: string): string[] {
-  return value.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+/** Tahrirlagich bo'sh holatda `<p></p>` qoldiradi — uni bo'sh deb hisoblaymiz. */
+export function isEmptyHtml(html: string): boolean {
+  return html.replace(/<[^>]*>/g, '').trim() === '' && !/<img\b/i.test(html);
 }
-
-export const emptyTranslation = (): Translation => ({ uz: '', en: '', ru: '' });
