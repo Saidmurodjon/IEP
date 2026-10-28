@@ -14,7 +14,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
-**🆕 Bosh sahifa mobil joylashuvi (raqam kartochkalari, ixcham oraliqlar) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Bosh sahifa va footer mobil joylashuvi (raqam kartochkalari, ixcham oraliqlar, 2 ustunli havolalar) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 
 **🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — LOKALDA tayyor,
 production'ga CHIQARILMAGAN.** Raqamlar (lab/xodim/ilmiy xodim/nashr) bazadan avtomatik, bosh sahifa
@@ -233,6 +233,13 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — footer mobil/planshetga moslashtirildi
+- `Footer.tsx`: «Sahifalar» ro'yxati mobil va planshetda 2 ustun (lg da 1 ustun); planshetda logo
+  bloki to'liq qatorda, «Sahifalar» va «Aloqa» yonma-yon; pastki qator mobilda chapga tekislandi
+  (oldin © chapda, «Admin» markazda edi); ichki oraliq `py-10 sm:py-12`.
+- Tekshirildi: `tsc` toza; Playwright bilan 360/768/1280 px footer skrinshoti — skroll yo'q,
+  desktop ko'rinishi oldingiday.
 
 ### 2026-10-28 — bosh sahifa: raqam kartochkalari yana yonma-yon
 - Foydalanuvchi so'rovi: mobilda ikonka raqam yonida (chapda) tursin — ustma-ust variant qaytarildi.

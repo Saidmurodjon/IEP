@@ -25,10 +25,10 @@ export default function Footer() {
 
   return (
     <footer className="bg-primary-950 text-gray-300">
-      <div className="container py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="container py-10 sm:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
           {/* Logo & description */}
-          <div className="lg:col-span-2">
+          <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               {/*
                 Faqat emblema — Header'dagi bilan bir xil, fonsiz va yozuvsiz.
@@ -57,7 +57,8 @@ export default function Footer() {
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
               {t('footer.pages')}
             </h3>
-            <ul className="space-y-2">
+            {/* Mobil va planshetda 2 ustun — uzun ro'yxat ekranni egallamasin */}
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 lg:grid-cols-1 lg:gap-y-2">
               {FOOTER_LINKS.map((link) => (
                 <li key={link.id}>
                   <LocalizedLink
@@ -129,7 +130,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-primary-800">
-        <div className="container py-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div className="container py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <p className="text-xs text-gray-400">
             © {year} {t('common.institute_name')}. {t('footer.rights')}.
           </p>
