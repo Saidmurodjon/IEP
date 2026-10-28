@@ -232,6 +232,19 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — fix(web): «Institut haqida» yuklanishda eski matn chaqnashi + yangi dizayn
+- Muammo: refresh'da bir lahza i18n'dagi statik matn (`about.mission_text` va h.k.,
+  `common.academy`) ko'rinardi — `GET /api/about` kelguncha zaxira matn chizilardi.
+- Tuzatish: `isLoading` paytida skeleton (hero, raqamlar, matn); zaxira matn faqat
+  javob kelib, kontent bo'sh bo'lsa (yoki API xatosi) ko'rsatiladi.
+- Dizayn: hero LabsPage uslubida (gradient + fon ikonka), raqamlar heroga chiqib turgan
+  kartochkalar, matn oq kartochkada (h2 chap chiziq bilan), lab ro'yxati sarlavhali panel +
+  «Barchasini ko'rish» → `/laboratories`. Yangi i18n kaliti yo'q.
+- Tekshirildi: `tsc --noEmit` (web) toza; brauzerda refresh — avval skeleton, keyin
+  ma'lumot, eski matn ko'rinmadi (skrinshot).
+- Tekshirilmadi: mobil kenglik vizual, en/ru tillari.
+- Eslatma: jurnal 250 qatordan oshgan — arxivlash keyingi sessiyaga.
+
 ### 2026-10-28 — refactor: sozlamalar statik, «Institut haqida» rich text, raqamlar avtomatik
 - Foydalanuvchi: sozlamalar kerak emas (statik yetadi), about «bachkana» — asosiysini qoldirib
   rich text qilish, bosh sahifa ham shundan olsin, raqamlar qo'lda kiritilmasin.
