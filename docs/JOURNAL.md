@@ -14,47 +14,48 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
-**🆕 Xavfsizlik: IP cheklovlarini soxta sarlavha bilan chetlab o'tish va `?drafts=true` qoralamalar oqishi TUZATILDI — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat API deploy; deploydan keyin prod'da soxta `X-Forwarded-For` bilan qayta sinash SHART (proksi IP ni oxiriga qo'shishiga tayanadi). Auditning qolgan (o'rta/past) bandlari ochiq — YOZUVLAR, 2026-10-28 audit.
+**🚀 2026-10-28: master (`438803a`) to'liq iep.uz ga deploy qilindi** — API + migratsiyalar (`migrate deploy`, oldin `~/iep-backups/pre-deploy-*.sql` zaxira) + frontend. Keyingi deploy: `bash apps/api/scripts/deploy-hosting.sh` (foydalanuvchi `!` bilan ishga tushiradi — auto-mode prod SSH ni bloklaydi). Quyidagi «iep.uz uchun: ... deploy» eslatmalari eskirgan; faqat `ERROR_LOG_DIR` va bo'linmalarni qayta tuzish (9) holati alohida tekshirilmagan.
 
-**🆕 Node API jarayon darajasidagi xatolar ham `error_logs` ga yoziladi (ishga tushish/to'xtash, `UNCAUGHT_EXCEPTION`, `UNHANDLED_REJECTION`, `PROCESS_START_FAILED`, `PROCESS_KILLED`); baza o'chiq bo'lsa `ERROR_LOG_DIR` faylida kutadi — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API deploy + cPanel'da `ERROR_LOG_DIR=/home/iepuz/iep-logs` (ixtiyoriy, migratsiya kerak emas).
+**🆕 Xavfsizlik: IP cheklovlarini soxta sarlavha bilan chetlab o'tish va `?drafts=true` qoralamalar oqishi TUZATILDI — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: faqat API deploy; deploydan keyin prod'da soxta `X-Forwarded-For` bilan qayta sinash SHART (proksi IP ni oxiriga qo'shishiga tayanadi). Auditning qolgan (o'rta/past) bandlari ochiq — YOZUVLAR, 2026-10-28 audit.
 
-**🆕 Murojaatni o'chirish (`DELETE /api/contact/:id`, `POST /api/contact/cleanup`) faqat SUPER_ADMIN; oddiy admin uchun o'chirish tugmasi yashirin — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy.
+**🆕 Node API jarayon darajasidagi xatolar ham `error_logs` ga yoziladi (ishga tushish/to'xtash, `UNCAUGHT_EXCEPTION`, `UNHANDLED_REJECTION`, `PROCESS_START_FAILED`, `PROCESS_KILLED`); baza o'chiq bo'lsa `ERROR_LOG_DIR` faylida kutadi — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: API deploy + cPanel'da `ERROR_LOG_DIR=/home/iepuz/iep-logs` (ixtiyoriy, migratsiya kerak emas).
 
-**🆕 Admin «Xabarlar» (`/admin/messages`) — ikki panelli inbox (holat tablari sonlar bilan, qidiruv, bosqichlar, tasdiq oynalari) LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy (migratsiya kerak emas).
+**🆕 Murojaatni o'chirish (`DELETE /api/contact/:id`, `POST /api/contact/cleanup`) faqat SUPER_ADMIN; oddiy admin uchun o'chirish tugmasi yashirin — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: API + web deploy.
 
-**🆕 `/news` sahifasida 6 tadan yangilik (pagination) — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
+**🆕 Admin «Xabarlar» (`/admin/messages`) — ikki panelli inbox (holat tablari sonlar bilan, qidiruv, bosqichlar, tasdiq oynalari) ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: API + web deploy (migratsiya kerak emas).
 
-**🆕 Yangilik kartasi: portret muqova (talabgor fotosi) xira rangli fon ustida — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
+**🆕 `/news` sahifasida 6 tadan yangilik (pagination) — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: faqat web deploy.
 
-**🆕 Desktop navbar: mega-panel o'rniga har bir guruh o'z tugmasi tagida ochiladigan ixcham dropdown — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Yangilik kartasi: portret muqova (talabgor fotosi) xira rangli fon ustida — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: faqat web deploy.
+
+**🆕 Desktop navbar: mega-panel o'rniga har bir guruh o'z tugmasi tagida ochiladigan ixcham dropdown — ✅ iep.uz da (2026-10-28 deploy).**
 iep.uz uchun: faqat web deploy, foydalanuvchi tasdig'i bilan.
 
-**🆕 Vakansiyalar (`/vacancies` + admin «Vakansiyalar») LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Vakansiyalar (`/vacancies` + admin «Vakansiyalar») ✅ iep.uz da (2026-10-28 deploy).**
 Migratsiya `11_vacancies` (faqat lokal bazaga). Ariza saytda qabul qilinmaydi — pochta/telefon orqali.
 iep.uz uchun: migratsiya 11 + API + web deploy, foydalanuvchi tasdig'i bilan.
 
-**🆕 Bosh sahifa va footer mobil joylashuvi (raqam kartochkalari, ixcham oraliqlar, 2 ustunli havolalar) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Bosh sahifa va footer mobil joylashuvi (raqam kartochkalari, ixcham oraliqlar, 2 ustunli havolalar) ✅ iep.uz da (2026-10-28 deploy).**
 
-**🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — LOKALDA tayyor,
-production'ga CHIQARILMAGAN.** Raqamlar (lab/xodim/ilmiy xodim/nashr) bazadan avtomatik, bosh sahifa
+**🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — ✅ iep.uz da (2026-10-28 deploy).** Raqamlar (lab/xodim/ilmiy xodim/nashr) bazadan avtomatik, bosh sahifa
 ham `GET /api/about` dan. ⚠️ Lokal bazada lorem ipsum matn + 3 ta public-domain rasm — haqiqiy matnni institut beradi.
 iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
 
-**🆕 Admin navbar: qidiruv maydoni + davr filtri ikonkasi (dashboard grafiklariga ham) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Admin navbar: qidiruv maydoni + davr filtri ikonkasi (dashboard grafiklariga ham) ✅ iep.uz da (2026-10-28 deploy).**
 `GET /api/stats?from&to` (62 kungacha kunlik, aks holda oylik), `GET /api/stats/search?q`.
 iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
 
-**🆕 Hamkorlar kartochkasi (responsiv) LOKALDA tayyor, production'ga CHIQARILMAGAN.** Lokal bazaga
+**🆕 Hamkorlar kartochkasi (responsiv) ✅ iep.uz da (2026-10-28 deploy).** Lokal bazaga
 namuna: Fanlar akademiyasi. iep.uz uchun: web deploy + admin orqali haqiqiy hamkorlarni kiritish.
 
-**🆕 Laboratoriyalar — to'liq admin boshqaruvi LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Laboratoriyalar — to'liq admin boshqaruvi ✅ iep.uz da (2026-10-28 deploy).**
 Migratsiya `10_lab_details` (structure_units: content/directions ×3, imageUrl, email, phone, room,
 foundedYear). Admin: `/admin/labs` kartochkalar (to'liqlik ko'rsatkichi), `/admin/labs/:id` ichida
 «Ma'lumotlar» va «Xodimlar» tablari — xodim lab ichida qo'shiladi/tahrirlanadi (`EmployeeForm`).
 Ochiq `/laboratories` va lab sahifasi faqat shu ma'lumotlardan; `staffCount` o'rniga haqiqiy xodim soni.
 iep.uz uchun: migratsiya 10 + API + web, foydalanuvchi tasdig'i bilan.
 
-**🆕 Asosiy bo'limlar + xodimning laboratoriyasi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Asosiy bo'limlar + xodimning laboratoriyasi — ✅ iep.uz da (2026-10-28 deploy).**
 Bo'linma turi `section` (asosiy bo'lim) va `laboratory` — ikkalasi ham yuqori darajada, lab bo'lim
 ichida emas. Xodim: `unitId` = bo'lim, yangi `labId` = laboratoriya (migratsiya `9_employee_lab`).
 Admin: yon panelda alohida «Bo'limlar» (`/admin/sections`) va «Laboratoriyalar» (`/admin/labs`) sahifalari
@@ -63,18 +64,17 @@ Lokal bazada eski bo'linmalar o'chirildi, 6 lab saqlandi, 2 bo'lim yaratildi (Ma
 Ilmiy xodimlar). iep.uz uchun: migratsiya 9 + bo'linmalarni qayta tuzish SQL (yozuvdagi) + deploy,
 foydalanuvchi tasdig'i bilan.
 
-**🆕 18-A + 18-B — admin rollari va dashboard grafiklari LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 18-A + 18-B — admin rollari va dashboard grafiklari ✅ iep.uz da (2026-10-28 deploy).**
 18-B: `GET /api/stats` + dashboard'da KPI kartochkalar va 5 ta grafik (recharts 2.15.4).
 ⚠️ Lokal bazada 15 ta nashr 18-B davomida noma'lum sabab bilan o'chib ketdi — foydalanuvchidan so'raldi.
 Migratsiya `8_admin_roles` faqat lokal bazaga (5433) qo'llangan. iep.uz ga chiqarish: migratsiya +
 API + web, foydalanuvchi tasdig'i bilan.
 
-**🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi LOKALDA tayyor,
-production'ga CHIQARILMAGAN.** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Admin qo'shish/tahrirlash
+**🆕 19-C — admin panel: yuqori navbar, til (uz/en/ru), qorong'i mavzu, profil sahifasi ✅ iep.uz da (2026-10-28 deploy).** Admin matnlari to'liq i18n'da. Login sahifasi ham yangilandi (navbar, til/mavzu menyusi, parolni ko'rsatish). Admin qo'shish/tahrirlash
 shakllari oyna emas, ro'yxat o'rnida to'liq sahifa (`AdminFormPage`, sticky «Saqlash» paneli); yangilik slug'i faqat
 sarlavhadan avtomatik. Xodim formasi ixcham ikki ustunli; ochiq saytda xodim surati 3x4 sm, kartochka mobil uchun qayta dizayn qilingan. Keyingi: D (kiritish qulayligi).
 
-**🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 17 — tasdiqlangan tuzilma sxemasi (rasm) ✅ iep.uz da (2026-10-28 deploy).**
 `/structure` da FAQAT rasm (bo'linmalar daraxti olib tashlandi). Admin: «Tuzilma» — rasm,
 yangi «Bo'linmalar» (`/admin/units`) — bo'linma/laboratoriya tahriri (laboratoriyalar,
 «Institut haqida», xodimlar shunga bog'liq). Production
@@ -252,6 +252,19 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — iep.uz ga to'liq deploy (`438803a`)
+- Hamkorlar kartochkasi gorizontal + bosh sahifa CTA ixcham (`PartnersStrip.tsx`, `HomePage.tsx`) kommit qilindi.
+- Yangi `apps/api/scripts/deploy-hosting.sh`: API fayllari (tar+ssh) → serverda `pg_dump` zaxira, `npm install`,
+  `generate`, `migrate deploy`, restart → frontend `dist-webname` → curl tekshiruv. `DATABASE_URL` ni
+  `cloudlinux-selector list --json` dan oladi (`get` ilovalarni QAYTARMAYDI — birinchi urinish shu sabab to'xtadi).
+- Tekshirildi: tsc (api, web) toza; 76/76 test; prod'da 200 — `/api/news`, `/api/about`, `/api/vacancies`
+  (11-migratsiya bor), `https://iep.uz/`; tokensiz `?drafts=true` va `/api/admins` → 401; CORS `https://iep.uz`;
+  har so'rovda soxta `X-Forwarded-For` bilan `/api/search` — 31-dan 429 (chetlab o'tish yopilgan).
+- Tekshirilmadi: `migrate deploy` chiqishi (foydalanuvchi faqat oxirini yubordi); admin login va yangi admin sahifalari
+  brauzerda; `ERROR_LOG_DIR` env'da bormi; 9-migratsiya uchun bo'linmalarni qayta tuzish SQL kerakmi (baza seed'dan).
+- Eslatma: jurnal 720+ qator — arxivlash (CLAUDE.md 9) kerak, bu sessiyada qilinmadi.
+
 
 ### 2026-10-28 — fix: IP spoofing va qoralamalar oqishi (auditning 2 ta jiddiy bandi)
 - `clientIp()` endi FAQAT `CF-Connecting-IP` ni o'qiydi (Workers'da uni Cloudflare qo'yadi).
