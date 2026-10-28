@@ -108,7 +108,7 @@ export default function Header() {
 
       {/* Main nav */}
       <div className="container">
-        {/* `relative` — mega-menyu paneli (`DesktopNav`) shu qatorga nisbatan ochiladi */}
+        {/* Dropdown panellar (`DesktopNav`) har biri o'z tugmasiga nisbatan ochiladi */}
         <div className="relative flex items-center justify-between h-16">
           {/* Logo */}
           <LocalizedLink to="/" className="flex items-center gap-2 flex-shrink-0">
@@ -135,7 +135,7 @@ export default function Header() {
             </div>
           </LocalizedLink>
 
-          {/* Desktop nav — ikki darajali mega-menyu, `config/navigation.ts` dan */}
+          {/* Desktop nav — ikki darajali dropdown menyu, `config/navigation.ts` dan */}
           <DesktopNav activeGroupId={activeGroupId} onActiveGroupChange={handleActiveGroupChange} />
 
           {/* Qidiruv + til + mobil menyu */}

@@ -16,7 +16,8 @@ interface NavPanelProps {
 }
 
 /**
- * Bitta guruhning to'liq kengliklik paneli. Har doim DOM da turadi (texnik
+ * Bitta guruhning dropdown paneli — o'z tugmasi tagida, bir ustunli ro'yxat.
+ * Har doim DOM da turadi (texnik
  * cheklov 8) — yopiq holatda shaffoflik va tabIndex orqali yashiriladi,
  * `display`/unmount bilan emas, aks holda ochilish animatsiyasi ishlamaydi.
  */
@@ -26,7 +27,6 @@ const NavPanel = forwardRef<HTMLDivElement, NavPanelProps>(function NavPanel(
 ) {
   const { t } = useTranslation();
   const visible = group.children.filter((item) => !item.hidden);
-  const columns = visible.length <= 4 ? 'columns-2' : 'columns-3';
 
   return (
     // Hit-test qutisi (bu tashqi `div`) hech qachon siljimaydi — faqat
@@ -45,37 +45,37 @@ const NavPanel = forwardRef<HTMLDivElement, NavPanelProps>(function NavPanel(
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onKeyDown={onKeyDown}
-      className={clsx('absolute inset-x-0 top-full z-50', open ? 'pointer-events-auto' : 'pointer-events-none')}
+      // `pt-2` — tugma va panel orasidagi ko'rinmas ko'prik: sichqoncha
+      // bo'shliqdan o'tayotganda panel yopilib qolmaydi.
+      className={clsx('absolute left-0 top-full z-50 pt-2', open ? 'pointer-events-auto' : 'pointer-events-none')}
     >
       <div
         className={clsx(
-          'border-t-2 border-primary-600 bg-white shadow-2xl rounded-b-xl transition-[opacity,transform] duration-150 motion-reduce:transition-none',
+          'min-w-[240px] rounded-xl border border-gray-100 bg-white p-1.5 shadow-xl ring-1 ring-black/5 transition-[opacity,transform] duration-150 motion-reduce:transition-none',
           open ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
         )}
       >
-        <div className="max-w-[1200px] mx-auto p-8">
-          <div className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
-            {t(group.i18nKey)}
-          </div>
-          <div className={clsx(columns, 'gap-8')}>
-            {visible.map((item) => (
+        <ul>
+          {visible.map((item) => (
+            <li key={item.id}>
               <LocalizedNavLink
-                key={item.id}
                 to={item.path}
                 tabIndex={open ? 0 : -1}
                 aria-current={isLinkActive(pathname, item) ? 'page' : undefined}
                 className={({ isActive }) =>
                   clsx(
-                    'block break-inside-avoid mb-2 text-sm py-1 rounded-md transition-colors',
-                    isActive ? 'text-primary-700 font-medium' : 'text-gray-700 hover:text-primary-700'
+                    'block whitespace-nowrap rounded-lg px-3.5 py-2.5 text-sm transition-colors',
+                    isActive
+                      ? 'bg-primary-50 text-primary-700 font-medium'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-primary-700'
                   )
                 }
               >
                 {t(item.i18nKey)}
               </LocalizedNavLink>
-            ))}
-          </div>
-        </div>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

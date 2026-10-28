@@ -14,6 +14,9 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Desktop navbar: mega-panel o'rniga har bir guruh o'z tugmasi tagida ochiladigan ixcham dropdown — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+iep.uz uchun: faqat web deploy, foydalanuvchi tasdig'i bilan.
+
 **🆕 Vakansiyalar (`/vacancies` + admin «Vakansiyalar») LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 Migratsiya `11_vacancies` (faqat lokal bazaga). Ariza saytda qabul qilinmaydi — pochta/telefon orqali.
 iep.uz uchun: migratsiya 11 + API + web deploy, foydalanuvchi tasdig'i bilan.
@@ -237,6 +240,17 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — navbar: dropdown o'z tugmasi tagida
+- Muammo: guruh bosilganda butun kenglikdagi mega-panel ochilardi, guruhlarda esa 1–6 ta havola — ko'z tugmadan uzoqqa ketardi.
+- `DesktopNav.tsx`: har bir `NavPanel` o'z `NavGroupButton` i bilan bitta `relative` o'ramga ko'chirildi.
+  Kechikishlar, focusout, tashqariga bosish, Escape, ↑/↓ mantiqi o'zgarmadi.
+- `NavPanel.tsx`: `absolute left-0 top-full`, min 240px, bir ustunli `ul`, faol havola `bg-primary-50`.
+  `pt-2` — tugma va panel orasidagi ko'rinmas ko'prik (hover uzilmasin). Header kommentlari yangilandi.
+- Tekshirildi: `tsc --noEmit` (web) toza; brauzerda 1728px — 4 ta guruh paneli tugmaning chap cheti bilan aynan bir
+  joyda (left farqi 0), button.bottom+8px; ArrowDown→birinchi havola, yana ArrowDown→ikkinchi, Escape→fokus tugmaga, yopiladi.
+- Tekshirilmadi: haqiqiy sichqoncha bilan tugmadan panelga o'tish (faqat JS click); mobil menyu tegilmagan.
+- Eslatma: JOURNAL.md 250 qatordan oshgan (~500) — arxivlash kerak, bu sessiyada qilinmadi.
 
 ### 2026-10-28 — demo yangilik (faqat lokal baza)
 - Foydalanuvchi so'rovi: to'liq formatli namuna yangilik, lorem matn + haqiqiy rasmlar. Kod o'zgarmadi.

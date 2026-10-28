@@ -171,13 +171,13 @@ export default function DesktopNav({ activeGroupId, onActiveGroupChange }: Deskt
   );
 
   return (
-    <>
-      <nav aria-label={t('a11y.main_nav')} className="hidden xl:flex flex-shrink-0 items-center gap-1">
-        {NAV_ITEMS.map((item) => {
-          if (isNavGroup(item)) {
-            return (
+    <nav aria-label={t('a11y.main_nav')} className="hidden xl:flex flex-shrink-0 items-center gap-1">
+      {NAV_ITEMS.map((item) => {
+        if (isNavGroup(item)) {
+          // Panel tugma bilan bitta `relative` o'ramda — dropdown aynan o'z tugmasi tagida ochiladi.
+          return (
+            <div key={item.id} className="relative">
               <NavGroupButton
-                key={item.id}
                 ref={(el) => {
                   if (el) buttonRefs.current.set(item.id, el);
                   else buttonRefs.current.delete(item.id);
@@ -190,46 +190,42 @@ export default function DesktopNav({ activeGroupId, onActiveGroupChange }: Deskt
                 onMouseEnter={() => scheduleOpen(item.id)}
                 onMouseLeave={scheduleClose}
               />
-            );
-          }
-          if (item.hidden) return null;
-          return (
-            <LocalizedNavLink
-              key={item.id}
-              to={item.path}
-              end={item.path === '/'}
-              onMouseEnter={scheduleClose}
-              className={({ isActive }) =>
-                clsx(
-                  'relative flex-shrink-0 px-3.5 py-2.5 text-[15px] font-medium whitespace-nowrap rounded-lg transition-colors',
-                  isActive
-                    ? "text-primary-700 after:absolute after:left-3.5 after:right-3.5 after:-bottom-px after:h-0.5 after:bg-primary-700 after:content-['']"
-                    : 'text-gray-600 hover:text-primary-700 hover:bg-gray-50'
-                )
-              }
-            >
-              {t(item.i18nKey)}
-            </LocalizedNavLink>
+              <NavPanel
+                ref={(el) => {
+                  if (el) panelRefs.current.set(item.id, el);
+                  else panelRefs.current.delete(item.id);
+                }}
+                group={item}
+                buttonId={`nav-button-${item.id}`}
+                open={activeGroupId === item.id}
+                pathname={location.pathname}
+                onMouseEnter={clearTimers}
+                onMouseLeave={scheduleClose}
+                onKeyDown={handlePanelKeyDown(item.id)}
+              />
+            </div>
           );
-        })}
-      </nav>
-
-      {NAV_ITEMS.filter(isNavGroup).map((group) => (
-        <NavPanel
-          key={group.id}
-          ref={(el) => {
-            if (el) panelRefs.current.set(group.id, el);
-            else panelRefs.current.delete(group.id);
-          }}
-          group={group}
-          buttonId={`nav-button-${group.id}`}
-          open={activeGroupId === group.id}
-          pathname={location.pathname}
-          onMouseEnter={clearTimers}
-          onMouseLeave={scheduleClose}
-          onKeyDown={handlePanelKeyDown(group.id)}
-        />
-      ))}
-    </>
+        }
+        if (item.hidden) return null;
+        return (
+          <LocalizedNavLink
+            key={item.id}
+            to={item.path}
+            end={item.path === '/'}
+            onMouseEnter={scheduleClose}
+            className={({ isActive }) =>
+              clsx(
+                'relative flex-shrink-0 px-3.5 py-2.5 text-[15px] font-medium whitespace-nowrap rounded-lg transition-colors',
+                isActive
+                  ? "text-primary-700 after:absolute after:left-3.5 after:right-3.5 after:-bottom-px after:h-0.5 after:bg-primary-700 after:content-['']"
+                  : 'text-gray-600 hover:text-primary-700 hover:bg-gray-50'
+              )
+            }
+          >
+            {t(item.i18nKey)}
+          </LocalizedNavLink>
+        );
+      })}
+    </nav>
   );
 }
