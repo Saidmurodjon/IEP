@@ -25,10 +25,10 @@ export default function Footer() {
 
   return (
     <footer className="bg-primary-950 text-gray-300">
-      <div className="container py-10 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
+      <div className="container py-8 sm:py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-x-10 gap-y-8">
           {/* Logo & description */}
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 lg:col-span-4">
             <div className="flex items-center gap-3 mb-4">
               {/*
                 Faqat emblema — Header'dagi bilan bir xil, fonsiz va yozuvsiz.
@@ -53,12 +53,12 @@ export default function Footer() {
           </div>
 
           {/* Quick links */}
-          <div>
+          <div className="lg:col-span-5">
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
               {t('footer.pages')}
             </h3>
-            {/* Mobil va planshetda 2 ustun — uzun ro'yxat ekranni egallamasin */}
-            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 lg:grid-cols-1 lg:gap-y-2">
+            {/* Doim 2 ustun — uzun ro'yxat footerni pastga cho'zib yubormasin */}
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5">
               {FOOTER_LINKS.map((link) => (
                 <li key={link.id}>
                   <LocalizedLink
@@ -73,7 +73,7 @@ export default function Footer() {
           </div>
 
           {/* Contact info */}
-          <div>
+          <div className="lg:col-span-3">
             <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">
               {t('contact.title')}
             </h3>
@@ -116,7 +116,7 @@ export default function Footer() {
         materiallardan foydalanish sharti va axborotning yangilanish sanasi.
       */}
       <div className="border-t border-primary-800/70">
-        <div className="container py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div className="container py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           {/* To'q footer fonida `gray-500` 3.1:1 beradi — `gray-400` 5.9:1 (10B4). */}
           <p className="text-xs text-gray-400 leading-relaxed max-w-2xl">
             {t('footer.usage_terms')}
@@ -130,7 +130,7 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-primary-800">
-        <div className="container py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <div className="container py-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <p className="text-xs text-gray-400">
             © {year} {t('common.institute_name')}. {t('footer.rights')}.
           </p>

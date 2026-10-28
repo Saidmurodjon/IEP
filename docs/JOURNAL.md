@@ -241,6 +241,12 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — fix(web): footer ixchamlashtirildi
+- Foydalanuvchi: footer pastga cho'zilib ketgan (12 ta havola bitta ustunda). Desktop'da 12 ustunli grid
+  (logo 4 / sahifalar 5 / aloqa 3), sahifalar havolalari doim 2 ustunda, oraliqlar kichraytirildi.
+- Tekshirildi: `tsc` toza; brauzerda 1728px — footer balandligi ~780px dan ~396px ga tushdi.
+  Tekshirilmadi: mobil, en/ru. Footer LOKALDA, production'ga chiqarilmagan.
+
 ### 2026-10-28 — fix(web): rahbariyat kartochkasi — rasm ostida bo'sh joy qolmaydi
 - Foydalanuvchi: kulrang chap ustunda rasm tagi bo'sh. `LeaderCard` qayta tuzildi: yuqori qatorda 3x4 sm
   surat + lavozim/ism/daraja/xona/pochta/telefon (balandligi suratga teng), ilmiy yo'nalish va qabul kunlari
