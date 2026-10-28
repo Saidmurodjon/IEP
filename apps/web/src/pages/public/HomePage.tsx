@@ -241,13 +241,13 @@ export default function HomePage() {
       </section>
 
       {/* CTA Contact — engil fon, yagona to'q element: tugma */}
-      <section className="py-10 sm:py-16 bg-primary-50">
+      <section className="py-8 sm:py-10 bg-primary-50">
         <div className="container text-center">
-          <h2 className="text-2xl font-bold mb-4 text-primary-900">{t('home.contact_title')}</h2>
-          <p className="text-primary-700 mb-8 max-w-xl mx-auto">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 text-primary-900">{t('home.contact_title')}</h2>
+          <p className="text-primary-700 mb-5 max-w-xl mx-auto">
             {t('home.contact_desc')}
           </p>
-          <LocalizedLink to="/contact" className="btn bg-primary-800 text-white hover:bg-primary-900 px-8 py-3 font-semibold">
+          <LocalizedLink to="/contact" className="btn bg-primary-800 text-white hover:bg-primary-900 px-6 py-2.5 font-semibold">
             {t('nav.contact')} <ArrowRight className="h-4 w-4 ml-2" />
           </LocalizedLink>
         </div>
