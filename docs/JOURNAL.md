@@ -241,6 +241,14 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — data: demo himoya e'loni rich text ko'rinishiga o'tkazildi (lokal baza)
+- Foydalanuvchi: talabgor rasmi va barcha ma'lumot matn ichida bo'lsin, «To'liq o'qish»da chiqsin;
+  kategoriya hozircha QO'SHILMAYDI.
+- `PUT /api/news/:id`: muqova (`imageUrl`) olib tashlandi, rasm uchala til `content` boshiga
+  `<img width="180" height="240">` bilan qo'yildi. Kod o'zgarmadi.
+- Tekshirildi: brauzerda `/uz/news/demo-dissertatsiya-himoyasi-elon` — rasm ~180×240, ostida matn.
+  Tekshirilmadi: en/ru sahifalar, mobil. Ro'yxat kartasida endi muqova o'rnida zaxira belgi chiqadi.
+
 ### 2026-10-28 — data: demo dissertatsiya himoyasi e'loni (faqat lokal baza)
 - Foydalanuvchi so'radi: himoya/seminar e'loni yangiliklarda qanday ko'rinishini sinash uchun bitta demo.
 - Admin API orqali (`POST /api/uploads` + `POST /api/news`) lokal bazaga (localhost:4444) yaratildi:
