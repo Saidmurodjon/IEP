@@ -388,7 +388,9 @@
     "office": "Xona",
     "reception": "Qabul kunlari",
     "research_area": "Ilmiy yo'nalish",
-    "photo_alt": "surati"
+    "photo_alt": "surati",
+    "email": "Elektron pochta",
+    "phone": "Telefon"
   },
   "partners": {
     "title": "Hamkorlar",

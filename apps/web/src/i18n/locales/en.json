@@ -388,7 +388,9 @@
     "office": "Room",
     "reception": "Reception hours",
     "research_area": "Research area",
-    "photo_alt": "photo"
+    "photo_alt": "photo",
+    "email": "Email",
+    "phone": "Phone"
   },
   "partners": {
     "title": "Partners",

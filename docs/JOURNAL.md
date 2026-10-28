@@ -241,6 +241,14 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — feat(web): rahbariyat sahifasi rasmiy uslubda, direktor markazda
+- Yangi `components/LeaderCard.tsx` (faqat `/management`): yuqorida to'q chiziq, lavozim sarlavha ustida,
+  ma'lumot `dl` qatorlarda (yo'nalish/xona/pochta/telefon), qabul kunlari chap chiziqli blok. `h2` (avval h3 — sakrash bor edi).
+- Birinchi rahbar (`order` bo'yicha) — `featured`, alohida markazda (surat chapda); qolganlari ostida 2 ustunli setka.
+- `EmployeeCard` o'zgarmadi (xodimlar, lab sahifalari ishlatadi). i18n: `employee.email`, `employee.phone` (uz/en/ru).
+- Tekshirildi: `tsc` toza; brauzerda desktop (1493px) — direktor markazda, 2 kartochka yonma-yon, uzun pochta sig'adi.
+- Tekshirilmadi: mobil kenglik (oyna o'lchami o'zgarmadi), en/ru ko'rinishi. Production'ga chiqarilmagan.
+
 ### 2026-10-28 — demo rahbariyat: direktor + ilmiy ishlar bo'yicha o'rinbosar (faqat lokal baza)
 - Foydalanuvchi so'rovi: «Rahbariyat» sahifasiga lorem ma'lumotli, rasmli 2 rahbar. Kod o'zgarmadi.
 - Lokal API (8787) orqali admin bilan: 2 portret `POST /api/uploads?kind=image` (Unsplash litsenziyasi,

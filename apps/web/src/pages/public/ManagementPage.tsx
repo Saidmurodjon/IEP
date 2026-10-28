@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Users } from 'lucide-react';
 import SeoHead from '@/components/SeoHead';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import EmployeeCard from '@/components/EmployeeCard';
+import LeaderCard from '@/components/LeaderCard';
 import EmptyState from '@/components/EmptyState';
 import { employeesApi } from '@/lib/api';
 import type { Employee } from '@/lib/employee';
@@ -23,6 +23,8 @@ export default function ManagementPage() {
 
   const management: Employee[] = ((data?.data?.data ?? []) as Employee[])
     .filter((employee) => employee.isManagement);
+  // Birinchi (`order` bo'yicha) — direktor: alohida, markazda. Qolganlari ostida yonma-yon.
+  const [director, ...others] = management;
 
   return (
     <>
@@ -44,11 +46,19 @@ export default function ManagementPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 max-w-5xl mx-auto">
-          {management.map((employee) => (
-            <EmployeeCard key={employee.id} employee={employee} variant="extended" />
-          ))}
-        </div>
+        {director && (
+          <div className="mx-auto max-w-4xl">
+            <LeaderCard employee={director} featured />
+          </div>
+        )}
+
+        {others.length > 0 && (
+          <div className="mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+            {others.map((employee) => (
+              <LeaderCard key={employee.id} employee={employee} />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
