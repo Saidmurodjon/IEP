@@ -45,14 +45,24 @@ export default function NewsCover({ src, alt, frameClassName = 'aspect-[16/9]', 
   }
 
   return (
-    <div className={`relative w-full overflow-hidden ${frameClassName} ${portrait ? 'bg-gradient-to-br from-primary-50 to-primary-100' : ''}`}>
+    <div className={`relative w-full overflow-hidden ${frameClassName} ${portrait ? 'bg-primary-900' : ''}`}>
+      {/* Portret ikki yonidagi bo'shliqni shu rasmning xira nusxasi to'ldiradi (bezak). */}
+      {portrait && (
+        <A11yImage
+          src={src}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-70"
+        />
+      )}
+      {portrait && <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-br from-primary-800/70 to-primary-900/40" />}
       <A11yImage
         src={src}
         alt={alt}
         onLoad={handleLoad}
         className={
           portrait
-            ? 'absolute left-1/2 top-1/2 h-[84%] aspect-[3/4] -translate-x-1/2 -translate-y-1/2 rounded-lg object-cover object-top ring-4 ring-white shadow-md'
+            ? 'relative h-full aspect-[3/4] mx-auto object-cover object-top shadow-2xl'
             : 'w-full h-full object-cover'
         }
       />

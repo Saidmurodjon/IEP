@@ -14,7 +14,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
-**🆕 Yangilik kartasi: portret muqova (talabgor fotosi) 3:4 tik ramkada — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
+**🆕 Yangilik kartasi: portret muqova (talabgor fotosi) xira rangli fon ustida — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
 
 **🆕 Desktop navbar: mega-panel o'rniga har bir guruh o'z tugmasi tagida ochiladigan ixcham dropdown — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 iep.uz uchun: faqat web deploy, foydalanuvchi tasdig'i bilan.
@@ -242,6 +242,12 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — fix(web): portret kartada xira fon
+- Foydalanuvchi: 3:4 foto kartaning o'rtasida yolg'iz turibdi, fon yoki boshqa yechim kerak.
+- `NewsCover` (karta): foto endi kartaning to'liq balandligida; ikki yonida shu rasmning xira
+  nusxasi (`blur-2xl`, bezak — `alt=""`, `aria-hidden`) + `primary-800/900` gradient qoplama.
+- Tekshirildi: `tsc` toza; lokal bosh sahifada skrinshot. Tekshirilmadi: mobil kenglik, production.
 
 ### 2026-10-28 — feat(web): portret muqovali yangilik kartasi
 - Foydalanuvchi: himoya e'lonidagi talabgor fotosi 16:9 kartada kesilib, xunuk chiqadi; karta uslubi o'zgarsin.
