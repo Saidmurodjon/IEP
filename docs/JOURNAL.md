@@ -241,6 +241,12 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — refactor(web): rahbariyat kartochkalari ixchamlashtirildi
+- Foydalanuvchi: kartochkalar juda ko'p joy egallaydi. `LeaderCard`: surat doim yonda (mobil'da tepada),
+  96×128 / direktor 120×160; ma'lumot zich qatorlar, pochta/telefon yorlig'i `sr-only` (dt saqlangan);
+  qabul kunlari bir qatorli blok. Sahifa: direktor `max-w-2xl`, setka oralig'i 4.
+- Tekshirildi: `tsc` toza; brauzerda desktop — 3 kartochka bitta ekranga sig'adi. Tekshirilmadi: mobil, en/ru.
+
 ### 2026-10-28 — feat(web): rahbariyat sahifasi rasmiy uslubda, direktor markazda
 - Yangi `components/LeaderCard.tsx` (faqat `/management`): yuqorida to'q chiziq, lavozim sarlavha ustida,
   ma'lumot `dl` qatorlarda (yo'nalish/xona/pochta/telefon), qabul kunlari chap chiziqli blok. `h2` (avval h3 — sakrash bor edi).

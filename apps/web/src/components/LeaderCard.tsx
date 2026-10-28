@@ -8,26 +8,29 @@ import A11yImage from '@/components/A11yImage';
 
 interface Props {
   employee: Employee;
-  /** Direktor kartochkasi — kengroq, surat kattaroq, sahifa markazida. */
+  /** Direktor kartochkasi — surat biroz kattaroq, sahifa markazida. */
   featured?: boolean;
 }
 
-/** Ma'lumot qatori: ikonka + yorliq + qiymat. Bo'sh qiymat chaqirilmaydi. */
-function Row({ icon: Icon, label, wide, children }: { icon: typeof Mail; label: string; wide: boolean; children: ReactNode }) {
+/**
+ * Ma'lumot qatori: ikonka + qiymat. Yorliq ekran o'qigichlar uchun saqlanadi
+ * (`dt`), ko'zga faqat `showLabel` bo'lsa ko'rinadi — ixchamlik uchun.
+ */
+function Row({ icon: Icon, label, showLabel = false, children }: {
+  icon: typeof Mail; label: string; showLabel?: boolean; children: ReactNode;
+}) {
   return (
-    <div className="flex items-start gap-3 py-2.5">
+    <div className="flex items-start gap-2">
       <Icon aria-hidden="true" className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary-700" />
-      <div className="min-w-0 flex-1 sm:flex sm:gap-3">
-        <dt className={`text-sm text-gray-500 sm:flex-shrink-0 ${wide ? 'sm:w-40' : 'sm:w-28'}`}>{label}</dt>
-        <dd className="text-sm text-gray-800 [overflow-wrap:anywhere]">{children}</dd>
-      </div>
+      <dt className={showLabel ? 'flex-shrink-0 text-gray-500' : 'sr-only'}>{label}:</dt>
+      <dd className="min-w-0 text-gray-800 [overflow-wrap:anywhere]">{children}</dd>
     </div>
   );
 }
 
 /**
- * Rahbariyat kartochkasi — rasmiy uslub: tekis fon, yuqorida to'q chiziq,
- * lavozim sarlavha ustida, ma'lumot jadval ko'rinishidagi qatorlarda.
+ * Rahbariyat kartochkasi — rasmiy, ixcham: yuqorida to'q chiziq, surat chapda
+ * (mobil'da tepada), lavozim ism ustida, aloqa ma'lumoti zich qatorlarda.
  * To'ldirilmagan maydon ko'rsatilmaydi. Surat 3x4 nisbatda.
  */
 export default function LeaderCard({ employee, featured = false }: Props) {
@@ -45,55 +48,51 @@ export default function LeaderCard({ employee, featured = false }: Props) {
   const hasRows = researchArea || employee.officeRoom || employee.email || employee.phone;
 
   const link = 'text-primary-800 underline-offset-2 hover:text-primary-900 hover:underline';
-  const photoSize = featured ? 'h-[5.2cm] w-[3.9cm]' : 'h-[4cm] w-[3cm]';
+  const photoSize = featured ? 'h-40 w-[7.5rem]' : 'h-32 w-24';
+  const idLink =
+    'inline-flex min-h-[44px] items-center rounded border border-gray-300 px-2 text-xs font-semibold text-gray-700 hover:border-primary-400 hover:text-primary-800 sm:min-h-0 sm:py-0.5';
 
   return (
-    <article
-      className={`flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 border-t-4 border-t-primary-800 bg-white shadow-sm ${featured ? 'sm:flex-row' : ''}`}
-    >
-      <div
-        className={`flex flex-shrink-0 justify-center bg-gray-50 p-6 ${featured ? 'sm:border-r sm:border-gray-200 sm:p-8' : 'border-b border-gray-200'}`}
-      >
-        <div className={`${photoSize} overflow-hidden rounded-md bg-gray-100 ring-1 ring-gray-200`}>
-          {employee.photoUrl ? (
-            <A11yImage
-              src={employee.photoUrl}
-              alt={`${name} — ${t('employee.photo_alt')}`}
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div
-              aria-hidden="true"
-              className="flex h-full w-full items-center justify-center bg-primary-100 text-3xl font-semibold text-primary-800"
-            >
-              {initials(name)}
-            </div>
-          )}
-        </div>
+    <article className="flex h-full flex-col gap-4 rounded-lg border border-gray-200 border-t-4 border-t-primary-800 bg-white p-4 shadow-sm sm:flex-row sm:p-5">
+      <div className={`${photoSize} mx-auto flex-shrink-0 overflow-hidden rounded-md bg-gray-100 ring-1 ring-gray-200 sm:mx-0`}>
+        {employee.photoUrl ? (
+          <A11yImage
+            src={employee.photoUrl}
+            alt={`${name} — ${t('employee.photo_alt')}`}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className="flex h-full w-full items-center justify-center bg-primary-100 text-2xl font-semibold text-primary-800"
+          >
+            {initials(name)}
+          </div>
+        )}
       </div>
 
-      <div className={`flex flex-1 flex-col p-6 ${featured ? 'sm:p-8' : ''}`}>
+      <div className="flex min-w-0 flex-1 flex-col">
         <header className="text-center sm:text-left">
           <p className="text-xs font-semibold uppercase tracking-wider text-primary-700">{position}</p>
-          <h2 className={`mt-2 font-bold leading-snug text-gray-900 ${featured ? 'text-2xl' : 'text-xl'}`}>{name}</h2>
-          {credentials && <p className="mt-1 text-sm text-gray-600">{credentials}</p>}
+          <h2 className={`mt-1 font-bold leading-snug text-gray-900 ${featured ? 'text-xl' : 'text-lg'}`}>{name}</h2>
+          {credentials && <p className="text-sm text-gray-600">{credentials}</p>}
         </header>
 
         {hasRows && (
-          <dl className="mt-5 divide-y divide-gray-100 border-y border-gray-100">
+          <dl className="mt-3 space-y-1.5 border-t border-gray-100 pt-3 text-sm">
             {researchArea && (
-              <Row icon={BookOpen} wide={featured} label={t('employee.research_area')}>{researchArea}</Row>
+              <Row icon={BookOpen} label={t('employee.research_area')} showLabel={featured}>{researchArea}</Row>
             )}
             {employee.officeRoom && (
-              <Row icon={MapPin} wide={featured} label={t('employee.office')}>{employee.officeRoom}</Row>
+              <Row icon={MapPin} label={t('employee.office')} showLabel>{employee.officeRoom}</Row>
             )}
             {employee.email && (
-              <Row icon={Mail} wide={featured} label={t('employee.email')}>
+              <Row icon={Mail} label={t('employee.email')}>
                 <a href={`mailto:${employee.email}`} className={link}>{employee.email}</a>
               </Row>
             )}
             {employee.phone && (
-              <Row icon={Phone} wide={featured} label={t('employee.phone')}>
+              <Row icon={Phone} label={t('employee.phone')}>
                 <a href={telHref(employee.phone)} className={link}>{employee.phone}</a>
               </Row>
             )}
@@ -101,34 +100,26 @@ export default function LeaderCard({ employee, featured = false }: Props) {
         )}
 
         {(employee.orcid || employee.scopusId) && (
-          <div className="mt-4 flex flex-wrap justify-center gap-2 sm:justify-start">
+          <div className="mt-2 flex flex-wrap justify-center gap-2 sm:justify-start">
             {employee.orcid && (
-              <a href={orcidUrl(employee.orcid)} target="_blank" rel="noopener noreferrer"
-                className="inline-flex min-h-[44px] items-center rounded border border-gray-300 px-3 text-xs font-semibold text-gray-700 hover:border-primary-400 hover:text-primary-800 sm:min-h-0 sm:py-1">
-                ORCID
-              </a>
+              <a href={orcidUrl(employee.orcid)} target="_blank" rel="noopener noreferrer" className={idLink}>ORCID</a>
             )}
             {employee.scopusId && (
-              <a href={scopusUrl(employee.scopusId)} target="_blank" rel="noopener noreferrer"
-                className="inline-flex min-h-[44px] items-center rounded border border-gray-300 px-3 text-xs font-semibold text-gray-700 hover:border-primary-400 hover:text-primary-800 sm:min-h-0 sm:py-1">
-                Scopus
-              </a>
+              <a href={scopusUrl(employee.scopusId)} target="_blank" rel="noopener noreferrer" className={idLink}>Scopus</a>
             )}
           </div>
         )}
 
         {/* Qabul kunlari ajratilgan — fuqarolar saytga aynan shu ma'lumot uchun kiradi. */}
         {reception && (
-          <div className="mt-auto pt-5">
-            <div className="flex items-start gap-3 rounded-md border-l-4 border-accent-500 bg-accent-50 px-4 py-3">
+          <div className="mt-auto pt-3">
+            <p className="flex items-start gap-2 rounded border-l-4 border-accent-500 bg-accent-50 px-3 py-2 text-sm">
               <Clock aria-hidden="true" className="mt-0.5 h-4 w-4 flex-shrink-0 text-accent-800" />
-              <div>
-                <div className="text-xs font-semibold uppercase tracking-wide text-accent-900">
-                  {t('employee.reception')}
-                </div>
-                <div className="mt-0.5 text-sm text-gray-800">{reception}</div>
-              </div>
-            </div>
+              <span>
+                <span className="font-semibold text-accent-900">{t('employee.reception')}: </span>
+                <span className="text-gray-800">{reception}</span>
+              </span>
+            </p>
           </div>
         )}
       </div>

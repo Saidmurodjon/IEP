@@ -37,7 +37,7 @@ export default function ManagementPage() {
         </div>
       </div>
 
-      <div className="container py-10">
+      <div className="container py-8">
         {isLoading && <LoadingSpinner />}
 
         {!isLoading && management.length === 0 && (
@@ -47,13 +47,13 @@ export default function ManagementPage() {
         )}
 
         {director && (
-          <div className="mx-auto max-w-4xl">
+          <div className="mx-auto max-w-2xl">
             <LeaderCard employee={director} featured />
           </div>
         )}
 
         {others.length > 0 && (
-          <div className="mx-auto mt-6 grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="mx-auto mt-4 grid max-w-5xl grid-cols-1 gap-4 md:grid-cols-2">
             {others.map((employee) => (
               <LeaderCard key={employee.id} employee={employee} />
             ))}
