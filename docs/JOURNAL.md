@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Node API jarayon darajasidagi xatolar ham `error_logs` ga yoziladi (ishga tushish/to'xtash, `UNCAUGHT_EXCEPTION`, `UNHANDLED_REJECTION`, `PROCESS_START_FAILED`, `PROCESS_KILLED`); baza o'chiq bo'lsa `ERROR_LOG_DIR` faylida kutadi — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API deploy + cPanel'da `ERROR_LOG_DIR=/home/iepuz/iep-logs` (ixtiyoriy, migratsiya kerak emas).
+
 **🆕 Murojaatni o'chirish (`DELETE /api/contact/:id`, `POST /api/contact/cleanup`) faqat SUPER_ADMIN; oddiy admin uchun o'chirish tugmasi yashirin — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy.
 
 **🆕 Admin «Xabarlar» (`/admin/messages`) — ikki panelli inbox (holat tablari sonlar bilan, qidiruv, bosqichlar, tasdiq oynalari) LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy (migratsiya kerak emas).
@@ -248,6 +250,25 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — feat: Node API jarayon darajasidagi xatolarni bazaga yozish
+- Foydalanuvchi: «sayt har qanday holatda nima sababli to'xtaganini bila olaylik».
+- Avval bor edi: so'rov ichidagi xatolar (`onError`) va admin «Jurnal». Yo'q edi: jarayon yiqilishi.
+- `node.ts`: `uncaughtException` (yozib, `exit(1)`), `unhandledRejection` (yozib, davom etadi),
+  SIGTERM/SIGINT → `PROCESS_STOPPED`, ishga tushish → `PROCESS_STARTED` (Node versiya, rss, uptime),
+  `buildEnv` xatosi → `PROCESS_START_FAILED`, fon vazifasi xatosi → `BACKGROUND_TASK_FAILED`.
+- `lib/crash-log.ts` (faqat Node): `run/<pid>` belgisi — egasi tirik bo'lmagan belgi = SIGKILL/LVE
+  limiti → `PROCESS_KILLED`; zaxira `pending-errors.jsonl` (1 MB chegarasi, faqat tozalangan yozuv),
+  keyingi ishga tushishda asl vaqt bilan bazaga ko'chadi.
+- `error-log.ts`: `setFallbackSink`/`writeFallback`, `recordError(..., { force, at })`. Workers o'zgarmadi.
+- Tekshirildi: tsc, 73 vitest (5 tasi yangi), wrangler dry-run, `build:node`; `server.cjs` lokal
+  bazada (5433) haqiqiy jarayon sifatida: kill -9 → keyingi start `PROCESS_KILLED`; SIGTERM → exit 0;
+  `--require` bilan sun'iy throw → `UNCAUGHT_EXCEPTION`, exit 1; bo'sh `JWT_SECRET` → faylga, keyin
+  bazaga; noto'g'ri DB porti → 500 + 3 yozuv faylga (parol yo'q) → keyingi startda «Replayed 3».
+- Tekshirilmadi: hostingda (Passenger/CloudLinux) haqiqiy ishlashi; Passenger idle-to'xtatishi SIGTERM
+  yuboradimi — yo'q bo'lsa `PROCESS_KILLED` soxta chiqishi mumkin, deploydan keyin kuzatish kerak.
+- Lokal bazada sinov yozuvlari qoldi (`e2e ...`, `PROCESS_*`) — o'chirish uchun so'rash kerak.
+- Kuzatildi: jurnal 667 qator (>250) — arxivlash kerak, alohida ish.
 
 ### 2026-10-28 — fix: murojaatni faqat super admin o'chira oladi
 - Foydalanuvchi: «admin xabarni o'chirolmasin, super admin o'chira oladi».

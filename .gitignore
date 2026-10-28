@@ -9,6 +9,8 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+# Node API zaxira xato jurnali (`lib/crash-log.ts`)
+logs/
 coverage/
 .turbo/
 

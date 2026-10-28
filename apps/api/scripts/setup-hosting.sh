@@ -33,6 +33,7 @@ print(json.dumps({
   "JWT_SECRET": e["JWT_SECRET"],
   "FRONTEND_URL": e["SITE_URL"],
   "MEDIA_DIR": "/home/iepuz/iep-media",
+  "ERROR_LOG_DIR": "/home/iepuz/iep-logs",
 }))')"
 
 # stdin: avval uch qator ma'lumot, keyin serverda bajariladigan skript.

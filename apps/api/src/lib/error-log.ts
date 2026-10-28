@@ -71,6 +71,46 @@ function shortHash(input: string): string {
 }
 
 /**
+ * Baza ishlamay qolganda yozuv yo'qolmasligi uchun zaxira joy (Node'da — disk
+ * fayli, `lib/crash-log.ts`). Workers'da o'rnatilmaydi. Unga faqat TOZALANGAN
+ * yozuv uzatiladi.
+ */
+export type FallbackSink = (entry: LogInput & { at: string }) => void;
+let fallbackSink: FallbackSink | null = null;
+
+export function setFallbackSink(sink: FallbackSink | null): void {
+  fallbackSink = sink;
+}
+
+/** Yozuvni tozalaydi — bazaga ham, zaxira faylga ham faqat shu ko'rinishda tushadi. */
+function sanitize(input: LogInput): LogInput {
+  return {
+    ...input,
+    message: redactMessage(input.message),
+    stack: redactStack(input.stack),
+    path: input.path ? redactText(input.path).slice(0, 500) : null,
+    userAgent: input.userAgent ? redactText(input.userAgent).slice(0, 300) : null,
+  };
+}
+
+/** Zaxira joyga yozadi. Hech qachon `throw` qilmaydi. */
+export function writeFallback(input: LogInput, at: Date = new Date()): void {
+  if (!fallbackSink) return;
+  try {
+    fallbackSink({ ...sanitize(input), at: at.toISOString() });
+  } catch (error) {
+    fallbackLog('fallbackSink', error);
+  }
+}
+
+export interface RecordOptions {
+  /** Throttle'ni chetlab o'tish — jarayon yiqilishi va zaxira fayldan tiklash uchun. */
+  force?: boolean;
+  /** Hodisa vaqti (zaxira fayldan tiklashda — asl vaqt). */
+  at?: Date;
+}
+
+/**
  * Barmoq izi: xato matni + zanjirning birinchi qatori + yo'l.
  *
  * Matndagi o'zgaruvchan qismlar (identifikatorlar, raqamlar) olib tashlanadi,
@@ -103,11 +143,14 @@ export function buildFingerprint(input: {
  * **Hech qachon `throw` qilmaydi** — chaqiruvchi kod uchun xavfsiz.
  * Chaqiruv `waitUntil()` ichida bajarilishi kerak, so'rovni bloklamasin.
  */
-export async function recordError(db: PrismaClient, input: LogInput): Promise<void> {
+export async function recordError(
+  db: PrismaClient,
+  input: LogInput,
+  options: RecordOptions = {}
+): Promise<void> {
+  const at = options.at ?? new Date();
   try {
-    const message = redactMessage(input.message);
-    const stack = redactStack(input.stack);
-    const path = input.path ? redactText(input.path).slice(0, 500) : null;
+    const { message, stack = null, path = null, userAgent = null } = sanitize(input);
 
     const fingerprint = buildFingerprint({
       source: input.source,
@@ -116,7 +159,7 @@ export async function recordError(db: PrismaClient, input: LogInput): Promise<vo
       path,
     });
 
-    const now = Date.now();
+    const now = at.getTime();
 
     // Har bir takrorlanish avval hisobga olinadi.
     const accumulated = (pending.get(fingerprint) ?? 0) + 1;
@@ -125,7 +168,7 @@ export async function recordError(db: PrismaClient, input: LogInput): Promise<vo
     // Throttle: bitta barmoq izi uchun bazaga daqiqasiga bitta yozish.
     // To'plangan takrorlanishlar keyingi yozishda qo'shiladi.
     const previous = lastWrite.get(fingerprint);
-    if (previous !== undefined && now - previous < THROTTLE_MS) return;
+    if (!options.force && previous !== undefined && now - previous < THROTTLE_MS) return;
 
     lastWrite.set(fingerprint, now);
     pending.set(fingerprint, 0);
@@ -149,7 +192,8 @@ export async function recordError(db: PrismaClient, input: LogInput): Promise<vo
     if (existing) {
       await db.errorLog.update({
         where: { fingerprint },
-        data: { count: { increment }, lastSeenAt: new Date(now) },
+        // Zaxira fayldan tiklanganda vaqt orqaga ketmasin.
+        data: { count: { increment }, ...(options.at ? {} : { lastSeenAt: new Date(now) }) },
       });
       return;
     }
@@ -165,7 +209,7 @@ export async function recordError(db: PrismaClient, input: LogInput): Promise<vo
         path,
         method: input.method ?? null,
         statusCode: input.statusCode ?? null,
-        userAgent: input.userAgent ? redactText(input.userAgent).slice(0, 300) : null,
+        userAgent,
         adminId: input.adminId ?? null,
         count: increment,
         firstSeenAt: new Date(now),
@@ -177,6 +221,8 @@ export async function recordError(db: PrismaClient, input: LogInput): Promise<vo
   } catch (error) {
     // JURNALGA YOZISH XATOSI QAYTA QAYD ETILMAYDI (cheksiz halqa).
     fallbackLog('recordError', error);
+    // Lekin asl hodisa yo'qolmasin: baza qaytgach zaxiradan tiklanadi.
+    writeFallback(input, at);
   }
 }
 

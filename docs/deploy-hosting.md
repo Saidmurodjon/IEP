@@ -85,6 +85,7 @@ Faqat maxfiy bo'lmagan ma'lumot. Parollar — parol menejerida, bu yerda emas.
 | `JWT_SECRET` | ≥ 32 belgi, `openssl rand -hex 32` | Yangi yarating, hech qayerga ko'chirmang, chatga yozmang |
 | `FRONTEND_URL` | `https://iep.uz` | **Bosh/oxirgi bo'sh joysiz**, oxirida `/` yo'q — aks holda CORS ishlamaydi |
 | `MEDIA_DIR` | `/home/<user>/iep-media` | Papka `public_html` dan tashqarida |
+| `ERROR_LOG_DIR` | `/home/<user>/iep-logs` | Ixtiyoriy. Baza ishlamaganda xatolar shu yerga yoziladi va keyingi ishga tushishda bazaga ko'chadi; yo'q bo'lsa `<ilova>/logs` (deployda o'chib ketishi mumkin) |
 | `RESEND_API_KEY` | Resend kaliti | Kontakt formasi xatlari uchun |
 | `MAIL_FROM` | masalan `IEP <noreply@iep.uz>` | Resend'da domen tasdiqlangan bo'lsin |
 | `DB_CONNECTION_LIMIT` | ixtiyoriy, standart `2` | Hosting ulanish limitiga qarab |
