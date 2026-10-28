@@ -119,15 +119,20 @@ contactRouter.post('/', zValidator('json', messageSchema), async (c) => {
    * Robotga muvaffaqiyat ko'rinishi qaytariladi — u rad etilganini
    * bilmasligi kerak, aks holda himoyani aylanib o'tishga urinadi.
    */
-  const silentSuccess = () => c.json({ data: { ticketNumber: null }, message: 'Message sent successfully' }, 201);
+  const silentSuccess = (reason: string) => {
+    // Haqiqiy fuqaro ham adashib rad etilishi mumkin — sababi jurnalda ko'rinsin.
+    // Matn, ism, pochta yozilmaydi — faqat sabab.
+    logEvent(c, { source: 'server', level: 'warning', code: 'APPEAL_SPAM_REJECTED', message: `Appeal silently rejected: ${reason}` });
+    return c.json({ data: { ticketNumber: null }, message: 'Message sent successfully' }, 201);
+  };
 
   // 1. Ko'rinmas maydon to'ldirilgan — robot.
-  if (data.website && data.website.trim().length > 0) return silentSuccess();
+  if (data.website && data.website.trim().length > 0) return silentSuccess('honeypot filled');
 
   // 2. Juda tez yuborilgan — robot.
   if (typeof data.formOpenedAt === 'number') {
     const elapsed = Date.now() - data.formOpenedAt;
-    if (elapsed >= 0 && elapsed < MIN_FILL_MS) return silentSuccess();
+    if (elapsed >= 0 && elapsed < MIN_FILL_MS) return silentSuccess('submitted too fast');
   }
 
   // 3. IP cheklovi.

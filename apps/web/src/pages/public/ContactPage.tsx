@@ -19,8 +19,6 @@ type FormData = {
   phone?: string;
   subject: string;
   message: string;
-  /** Ko'rinmas maydon (honeypot) — odam uni to'ldirmaydi, robot to'ldiradi. */
-  website?: string;
 };
 
 export default function ContactPage() {
@@ -34,6 +32,13 @@ export default function ContactPage() {
    * (09-topshiriq, 5-bo'lim). Serverda tekshiriladi.
    */
   const openedAt = useRef(Date.now());
+  /**
+   * Ko'rinmas maydon (honeypot) — odam uni to'ldirmaydi, robot to'ldiradi.
+   * `react-hook-form` ga ATAYLAB ulanmagan va nomi semantik emas: `website`
+   * nomli maydonni brauzer/parol menejeri avtomatik to'ldirib, haqiqiy
+   * murojaat jimgina rad etilardi (2026-10-28).
+   */
+  const honeypot = useRef<HTMLInputElement>(null);
   // Aloqa ma'lumotlari statik — `config/contact.ts` (bazadan olinmaydi).
   const lang = useCurrentLang();
   const address = localizedAddress(lang);
@@ -49,7 +54,6 @@ export default function ContactPage() {
         phone: z.string().optional(),
         subject: z.string().min(2, t('contact.err_subject')),
         message: z.string().min(10, t('contact.err_message')),
-        website: z.string().optional(),
       }),
     [t]
   );
@@ -61,7 +65,9 @@ export default function ContactPage() {
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      const response = await contactApi.send({ ...data, formOpenedAt: openedAt.current });
+      const response = await contactApi.send({
+        ...data, website: honeypot.current?.value ?? '', formOpenedAt: openedAt.current,
+      });
       setTicketNumber(response.data?.data?.ticketNumber ?? null);
       setSent(true);
       reset();
@@ -184,13 +190,19 @@ export default function ContactPage() {
                   `hidden` maydonlarni o'tkazib yuboradi.
                 */}
                 <div aria-hidden="true" className="absolute left-[-9999px] top-auto h-px w-px overflow-hidden">
-                  <label htmlFor="website">Veb-sayt</label>
+                  <label htmlFor="iep-hp">—</label>
                   <input
-                    id="website"
+                    ref={honeypot}
+                    id="iep-hp"
+                    name="iep_hp"
                     type="text"
                     tabIndex={-1}
                     autoComplete="off"
-                    {...register('website')}
+                    data-1p-ignore=""
+                    data-lpignore="true"
+                    data-bwignore=""
+                    data-form-type="other"
+                    defaultValue=""
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

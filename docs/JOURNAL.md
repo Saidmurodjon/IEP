@@ -247,6 +247,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — fix: aloqa formasi honeypot'i autofill'dan himoyalandi
+- Foydalanuvchi `/uz/contact` dan yozgan xabar bazaga tushmadi (javobda raqam yo'q = jim rad).
+- Sabab (ehtimoliy, foydalanuvchi brauzerida takrorlanmadi): `website` nomli yashirin maydonni
+  brauzer/parol menejeri to'ldirgan. Mening brauzerimdan forma ishladi (M-2026-0002).
+- Web `ContactPage`: honeypot RHF dan uzildi, `ref` bilan o'qiladi; nomi `iep_hp`, yorlig'i
+  neytral, `data-1p-ignore`/`data-lpignore`/`data-bwignore`. API kaliti `website` o'zgarmadi.
+- API: jim rad etishda `APPEAL_SPAM_REJECTED` ogohlantirishi jurnalga (faqat sabab, PII yo'q) —
+  keyingi safar «Xatoliklar jurnali» da ko'rinadi.
+- Tekshirildi: tsc, 68 vitest, wrangler dry-run, vite build; brauzerda forma → M-2026-0003 (201);
+  curl honeypot va <3 s → ikkalasi ham jurnalda.
+- Tekshirilmadi: foydalanuvchining o'z autofill'i bilan qayta yuborish.
+
 ### 2026-10-28 — feat: admin murojaatlar sahifasi — ikki panelli inbox
 - Foydalanuvchi: `/admin/messages` noqulay, «wow» bo'lsin.
 - Web `AdminMessagesPage`: chapda ro'yxat (avatar, nisbiy vaqt, matndan parcha, «yangi» nuqtasi),
