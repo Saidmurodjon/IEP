@@ -24,6 +24,7 @@ import { setDb } from './lib/db';
 import { getFrontendUrl, getJwtSecret } from './lib/env';
 import { recordError, setFallbackSink, writeFallback, type LogInput } from './lib/error-log';
 import { createFsStorage } from './lib/fs-storage';
+import { withProxyClientIp } from './lib/rate-limit';
 
 // Zaxira jurnal hammadan oldin o'rnatiladi — ishga tushishdagi xato ham qayd etilsin.
 const logDir = process.env.ERROR_LOG_DIR || join(process.cwd(), 'logs');
@@ -133,7 +134,7 @@ const executionCtx = {
 const port = Number(process.env.PORT) || 3000;
 
 const server = serve({
-  fetch: (request) => app.fetch(request, env, executionCtx),
+  fetch: (request) => app.fetch(withProxyClientIp(request), env, executionCtx),
   port,
 });
 

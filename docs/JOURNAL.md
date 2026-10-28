@@ -14,7 +14,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
-**⚠️ Xavfsizlik auditi (2026-10-28): prod'da IP cheklovlarini soxta `CF-Connecting-IP`/`X-Forwarded-For` bilan chetlab o'tish va `?drafts=true` orqali qoralamalar ochiqligi TASDIQLANDI — tuzatilmagan.** Batafsil: YOZUVLAR, 2026-10-28 audit.
+**🆕 Xavfsizlik: IP cheklovlarini soxta sarlavha bilan chetlab o'tish va `?drafts=true` qoralamalar oqishi TUZATILDI — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat API deploy; deploydan keyin prod'da soxta `X-Forwarded-For` bilan qayta sinash SHART (proksi IP ni oxiriga qo'shishiga tayanadi). Auditning qolgan (o'rta/past) bandlari ochiq — YOZUVLAR, 2026-10-28 audit.
 
 **🆕 Node API jarayon darajasidagi xatolar ham `error_logs` ga yoziladi (ishga tushish/to'xtash, `UNCAUGHT_EXCEPTION`, `UNHANDLED_REJECTION`, `PROCESS_START_FAILED`, `PROCESS_KILLED`); baza o'chiq bo'lsa `ERROR_LOG_DIR` faylida kutadi — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API deploy + cPanel'da `ERROR_LOG_DIR=/home/iepuz/iep-logs` (ixtiyoriy, migratsiya kerak emas).
 
@@ -252,6 +252,20 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — fix: IP spoofing va qoralamalar oqishi (auditning 2 ta jiddiy bandi)
+- `clientIp()` endi FAQAT `CF-Connecting-IP` ni o'qiydi (Workers'da uni Cloudflare qo'yadi).
+  Node'da `withProxyClientIp()` (`node.ts` fetch'da) mijoz yuborgan `CF-Connecting-IP` ni o'chiradi
+  va `X-Forwarded-For` ning OXIRGI elementini yozadi. `auth.ts` dagi alohida `getClientIp` olib tashlandi.
+- Nega oxirgisi: prod'da sinaldi — sarlavhasiz so'rov mening haqiqiy IP im bo'yicha cheklandi, soxta
+  XFF bilan esa yo'q → Apache/Passenger haqiqiy IP ni XFF ga qo'shadi, bosh qismi mijozdan.
+- `news.ts`: `?drafts=true` bo'lsa `requireAuth` (frontend o'zgarmadi — axios tokenni doim yuboradi).
+- Tekshirildi: tsc (api+web), 76 vitest (3 yangi `withProxyClientIp`), wrangler dry-run, `build:node`;
+  `server.cjs` lokal bazada (5433) HTTP: drafts tokensiz/yaroqsiz token → 401, admin token → 4 ta
+  (1 qoralama); status: CF/XFF bosh qismi almashsa ham 6-so'rov 429, boshqa haqiqiy IP → 404;
+  login POST: tana saqlanadi (401), soxta IP almashtirilsa ham 6-urinish 429.
+- Tekshirilmadi: prod'da (deploy qilinmagan); Passenger XFF ni har doim qo'shishi deploydan keyin
+  `curl -H "X-Forwarded-For: 1.2.3.4"` × 6 bilan tasdiqlansin. Admin panel brauzerda ochilmadi.
 
 ### 2026-10-28 — xavfsizlik auditi (kod o'zgarmadi)
 - Foydalanuvchi: production'dan oldin kiberxavfsizlik tekshiruvi. Faqat o'qish + iep.uz ga zararsiz GET so'rovlar.

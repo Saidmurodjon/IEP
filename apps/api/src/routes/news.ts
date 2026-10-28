@@ -1,4 +1,4 @@
-import { Hono } from 'hono';
+import { Hono, type Context, type Next } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { requireAuth } from '../middleware/auth';
@@ -34,7 +34,16 @@ function orNull(value: string | undefined): string | null | undefined {
   return value === '' ? null : value;
 }
 
-newsRouter.get('/', async (c) => {
+/**
+ * Qoralamalar (`?drafts=true`) faqat admin uchun: so'rovda shu parametr bo'lsa
+ * token talab qilinadi. Ilgari tekshiruv yo'q edi — e'lon qilinmagan yangilik
+ * istalgan tashrifchiga ochiq edi (2026-10-28 audit).
+ */
+function requireAuthForDrafts(c: Context<AppContext>, next: Next) {
+  return c.req.query('drafts') === 'true' ? requireAuth(c, next) : next();
+}
+
+newsRouter.get('/', requireAuthForDrafts, async (c) => {
   const db = c.get('db');
   const page = parseInt(c.req.query('page') ?? '1');
   const limit = parseInt(c.req.query('limit') ?? '10');
@@ -59,7 +68,7 @@ newsRouter.get('/', async (c) => {
   return c.json({ data: items, total, page, limit, totalPages: Math.ceil(total / limit) });
 });
 
-newsRouter.get('/:slug', async (c) => {
+newsRouter.get('/:slug', requireAuthForDrafts, async (c) => {
   const db = c.get('db');
   const item = await db.news.findUnique({ where: { slug: c.req.param('slug') } });
   if (!item) return c.json({ error: 'Not found' }, 404);

@@ -20,15 +20,30 @@ export function createStore(): RateLimitStore {
 const MAX_KEYS = 5000;
 
 /**
- * Mijoz IP si. Cloudflare `CF-Connecting-IP` ni o'zi qo'yadi va uni mijoz
- * o'zgartira olmaydi; `X-Forwarded-For` esa zaxira variant.
+ * Mijoz IP si — FAQAT `CF-Connecting-IP` dan.
+ *
+ * Workers'da bu sarlavhani Cloudflare o'zi qo'yadi (mijoz yuborganini ustidan
+ * yozadi). Node'da (iep.uz, Cloudflare'siz) uni `withProxyClientIp()` qo'yadi.
+ * `X-Forwarded-For` ga to'g'ridan-to'g'ri ishonilmaydi: uning boshini mijoz
+ * istalgancha yozadi va shu bilan barcha cheklovlarni chetlab o'tardi
+ * (2026-10-28 auditida prod'da tasdiqlangan).
  */
 export function clientIp(headers: Headers): string {
-  return (
-    headers.get('CF-Connecting-IP') ??
-    headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ??
-    'unknown'
-  );
+  return headers.get('CF-Connecting-IP')?.trim() || 'unknown';
+}
+
+/**
+ * Node (Apache + Passenger) uchun: proksi haqiqiy IP ni `X-Forwarded-For`
+ * OXIRIGA qo'shadi, oldingi qismi esa mijozdan keladi. Shuning uchun faqat
+ * oxirgi element olinadi va `CF-Connecting-IP` ga yoziladi; mijoz o'zi
+ * yuborgan `CF-Connecting-IP` o'chiriladi.
+ */
+export function withProxyClientIp(request: Request): Request {
+  const headers = new Headers(request.headers);
+  headers.delete('CF-Connecting-IP');
+  const ip = headers.get('X-Forwarded-For')?.split(',').pop()?.trim();
+  if (ip) headers.set('CF-Connecting-IP', ip);
+  return new Request(request, { headers });
 }
 
 /**

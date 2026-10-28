@@ -1,13 +1,13 @@
 import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
-import type { Context } from 'hono';
 import { DUMMY_PASSWORD_HASH, hashPassword, verifyPassword } from '@energetika/shared';
 import { signToken } from '../lib/jwt';
 import { ConfigError, getJwtSecret } from '../lib/env';
 import { requireAuth } from '../middleware/auth';
 import { logEvent } from '../lib/error-log';
 import { fail } from '../lib/errors';
+import { clientIp } from '../lib/rate-limit';
 import type { AppContext } from '../index';
 
 export const authRouter = new Hono<AppContext>();
@@ -43,14 +43,6 @@ interface AttemptRecord {
 }
 
 const loginAttempts = new Map<string, AttemptRecord>();
-
-function getClientIp(c: Context<AppContext>): string {
-  const cfIp = c.req.header('CF-Connecting-IP');
-  if (cfIp) return cfIp;
-  const forwarded = c.req.header('X-Forwarded-For');
-  if (forwarded) return forwarded.split(',')[0].trim();
-  return 'unknown';
-}
 
 function attemptKey(ip: string, email: string): string {
   return `${ip}|${email.toLowerCase()}`;
@@ -104,7 +96,7 @@ authRouter.post('/login', zValidator('json', loginSchema), async (c) => {
 
   const { email, password } = c.req.valid('json');
   const now = Date.now();
-  const key = attemptKey(getClientIp(c), email);
+  const key = attemptKey(clientIp(c.req.raw.headers), email);
 
   pruneExpired(now);
   if (isRateLimited(key, now)) {
