@@ -4,9 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { logsApi, newsApi, statsApi } from '@/lib/api';
 import BarCard from '@/components/admin/charts/BarCard';
 import { Newspaper, BookOpen, MessageSquare, Users, FileText, HardDrive, Bug } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
-import DashboardFilters, { PERIOD_PRESETS, presetRange, toDayString, type PeriodPreset } from '@/components/admin/DashboardFilters';
-import type { StatsRangeParams } from '@/lib/api';
+import { Link } from 'react-router-dom';
+import { useAdminRange } from '@/store/adminPeriod';
 import { useAuthStore, isSuperAdmin } from '@/store/auth';
 import { formatDate } from '@/lib/date';
 import type { LucideIcon } from 'lucide-react';
@@ -18,30 +17,8 @@ export default function DashboardPage() {
 
   const { data: newsData } = useQuery({ queryKey: ['admin-news'], queryFn: () => newsApi.list(1, 5) });
 
-  // Davr URL da saqlanadi (`?period=30d` yoki `?period=custom&from=..&to=..`) — havola bilan ulashsa bo'ladi.
-  const [params, setParams] = useSearchParams();
-  const rawPreset = params.get('period');
-  const preset: PeriodPreset = PERIOD_PRESETS.includes(rawPreset as PeriodPreset) ? rawPreset as PeriodPreset : '12m';
-  const customFrom = params.get('from') ?? '';
-  const customTo = params.get('to') ?? '';
-  const customError = preset === 'custom' && (!customFrom || !customTo)
-    ? t('admin.dashboardStats.filter.required')
-    : preset === 'custom' && customFrom > customTo ? t('admin.dashboardStats.filter.invalid') : undefined;
-  const range: StatsRangeParams = preset === 'custom'
-    ? (customError ? {} : { from: customFrom, to: customTo })
-    : presetRange(preset);
-
-  const setPreset = (p: PeriodPreset) => {
-    if (p === '12m') { setParams({}, { replace: true }); return; }
-    if (p === 'custom') {
-      // Joriy oraliqdan boshlanadi — foydalanuvchi faqat kerakli sanani o'zgartiradi.
-      const r = range.from ? range : { from: toDayString(new Date(new Date().getFullYear(), new Date().getMonth() - 11, 1)), to: toDayString(new Date()) };
-      setParams({ period: 'custom', from: r.from ?? '', to: r.to ?? '' }, { replace: true });
-      return;
-    }
-    setParams({ period: p }, { replace: true });
-  };
-  const setCustom = (from: string, to: string) => setParams({ period: 'custom', from, to }, { replace: true });
+  // Davr navbar'dagi filtrdan (`PeriodFilter`) olinadi.
+  const { range } = useAdminRange();
 
   const statsQuery = useQuery({
     queryKey: ['admin-stats', range.from, range.to],
@@ -119,16 +96,7 @@ export default function DashboardPage() {
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.dashboard')}</h1>
           <p className="text-gray-600 dark:text-gray-300 text-sm mt-1">{tt('welcome', { name: admin?.name })}</p>
-        </div>
-
-        {/* Davr filtri */}
-        <section className="card p-5 mb-4" aria-labelledby="dash-filter-title">
-          <h2 id="dash-filter-title" className="sr-only">{tf('title')}</h2>
-          <DashboardFilters
-            preset={preset} from={customFrom} to={customTo} error={customError}
-            onPreset={setPreset} onCustom={setCustom}
-          />
-          <p className="text-sm text-gray-700 dark:text-gray-300 mt-3" aria-live="polite">
+          <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 min-h-[1.25rem]" aria-live="polite">
             {stats && (
               <>
                 <span className="font-medium">{fmtDay(stats.range.from)} — {fmtDay(stats.range.to)}</span>
@@ -138,7 +106,7 @@ export default function DashboardPage() {
               </>
             )}
           </p>
-        </section>
+        </div>
 
         {/* KPI kartochkalari */}
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4" aria-live="polite">

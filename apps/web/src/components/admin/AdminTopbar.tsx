@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/auth';
 import { useAdminPrefs, useResolvedAdminTheme, type AdminLang, type AdminTheme } from '@/store/adminPrefs';
 import HeaderMenu from '@/components/admin/HeaderMenu';
 import AdminSearch from '@/components/admin/AdminSearch';
+import PeriodFilter from '@/components/admin/PeriodFilter';
 
 const LANGS: AdminLang[] = ['uz', 'en', 'ru'];
 const THEMES: { value: AdminTheme; icon: typeof Sun }[] = [
@@ -67,8 +68,9 @@ export default function AdminTopbar({ onOpenSidebar, onLogout }: Props) {
       >
         <Menu className="h-5 w-5" aria-hidden="true" />
       </button>
-      <div className="flex flex-1 items-center">
+      <div className="flex flex-1 items-center gap-1">
         <AdminSearch />
+        <PeriodFilter />
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">

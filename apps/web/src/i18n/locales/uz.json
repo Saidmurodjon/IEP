@@ -293,7 +293,6 @@
       "chartNewsDaily": "Nashr etilgan yangiliklar (kunlar bo'yicha)",
       "chartAppealsDaily": "Murojaatlar (kunlar bo'yicha)",
       "filter": {
-        "title": "Davr filtri",
         "period": "Davr",
         "presets": {
           "7d": "7 kun",
@@ -303,8 +302,8 @@
           "year": "Joriy yil",
           "custom": "Oraliq"
         },
-        "start": "Boshlanish sanasi",
-        "end": "Tugash sanasi",
+        "start": "Dan",
+        "end": "Gacha",
         "required": "Ikkala sanani ham kiriting",
         "invalid": "Boshlanish sanasi tugash sanasidan keyin bo'lmasin",
         "summary": "{{news}} ta yangilik, {{appeals}} ta murojaat, {{pubs}} ta nashr",
@@ -620,7 +619,6 @@
     "profile": "Profil",
     "search": {
       "label": "Qidiruv",
-      "placeholder": "Yangilik, nashr, xodim yoki murojaat raqami…",
       "clear": "Qidiruvni tozalash",
       "loading": "Qidirilmoqda…",
       "error": "Qidiruvda xato yuz berdi",
@@ -636,9 +634,6 @@
         "employees": "Xodimlar",
         "appeals": "Murojaatlar"
       },
-      "open": "Qidiruv (Ctrl+K)",
-      "close": "Yopish",
-      "hint": "Yangiliklar, nashrlar, xodimlar va murojaatlar bo'yicha",
       "trigger": "Yangilik, nashr, xodim, murojaat…"
     }
   },

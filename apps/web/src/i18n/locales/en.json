@@ -293,7 +293,6 @@
       "chartNewsDaily": "Published news (by day)",
       "chartAppealsDaily": "Appeals (by day)",
       "filter": {
-        "title": "Period filter",
         "period": "Period",
         "presets": {
           "7d": "7 days",
@@ -303,8 +302,8 @@
           "year": "This year",
           "custom": "Custom"
         },
-        "start": "Start date",
-        "end": "End date",
+        "start": "From",
+        "end": "To",
         "required": "Enter both dates",
         "invalid": "Start date must not be after end date",
         "summary": "{{news}} news, {{appeals}} appeals, {{pubs}} publications",
@@ -620,7 +619,6 @@
     "profile": "Profile",
     "search": {
       "label": "Search",
-      "placeholder": "News, publication, employee or appeal number…",
       "clear": "Clear search",
       "loading": "Searching…",
       "error": "Search failed",
@@ -636,9 +634,6 @@
         "employees": "Employees",
         "appeals": "Appeals"
       },
-      "open": "Search (Ctrl+K)",
-      "close": "Close",
-      "hint": "Across news, publications, employees and appeals",
       "trigger": "Search news, publications, people…"
     }
   },

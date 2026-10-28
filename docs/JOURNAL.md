@@ -14,7 +14,7 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-27
 
-**🆕 Dashboard davr filtri + admin navbar qidiruvi LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+**🆕 Admin navbar: qidiruv maydoni + davr filtri ikonkasi (dashboard grafiklariga ham) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `GET /api/stats?from&to` (62 kungacha kunlik, aks holda oylik), `GET /api/stats/search?q`.
 iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
 
@@ -226,6 +226,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — feat(web): qidiruv navbar'ning o'zida, davr filtri navbar ikonkasida
+- Foydalanuvchi: modal noqulay. `AdminSearch` endi navbar'dagi haqiqiy maydon, natijalar ostida
+  ochiladigan panelda (tashqariga bosish / Escape / sahifa almashishi yopadi, `Ctrl/⌘+K` fokus beradi).
+- Yangi `PeriodFilter` (navbar, `SlidersHorizontal` ikonkasi): tayyor davrlar ro'yxati + «Oraliq»
+  (Dan/Gacha sanalari). Standartdan farqli davrda ikonka rangi + nuqta. Escape/tashqariga bosish yopadi.
+- Yangi `store/adminPeriod.ts` (zustand): umumiy davr; dashboard grafiklari va qidiruv shundan o'qiydi.
+  Dashboard'dagi filtr kartochkasi va `DashboardFilters.tsx` o'chirildi, URL dagi `?period=` endi yo'q
+  (davr sahifa yangilanganda 1 yilga qaytadi). Davr xulosasi dashboard sarlavhasi ostida.
+- Tekshirildi: `tsc`, `vite build`; brauzer: oraliq 25 Avg–5 Sen → kunlik grafiklar va xulosa;
+  «7 kun» da qidiruv murojaatlarni chiqarmaydi (ular 31 Avg), xodimlar chiqadi; Escape panelni yopadi.
+- Tekshirilmadi: mobil kenglikda navbar sig'ishi, qorong'i mavzu skrinshoti.
 
 ### 2026-10-27 — feat: dashboard davr filtri va admin navbar qidiruvi
 - API `GET /api/stats`: `from`/`to` (`YYYY-MM-DD`, zod), standart — oxirgi 12 oy. ≤62 kun → kunlik,
