@@ -238,6 +238,15 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — demo yangilik (faqat lokal baza)
+- Foydalanuvchi so'rovi: to'liq formatli namuna yangilik, lorem matn + haqiqiy rasmlar. Kod o'zgarmadi.
+- Lokal API (8787) orqali admin bilan: 3 rasm `POST /api/uploads?kind=image` (Wikimedia Commons, 1280px:
+  quyosh PES — PD, shamol fermasi — PD, podstansiya — CC BY-SA 4.0, mualliflik figcaption'da), keyin `POST /api/news`.
+- Slug `quyosh-va-shamol-energetikasi-boyicha-xalqaro-seminar`; uch tilda sarlavha/tavsif, matnda h2/h3, ul/ol,
+  blockquote, 2 ta figure+figcaption, ichki havola. Manba maydoni: Wikimedia Commons.
+- Tekshirildi: `GET /api/news/:slug` — sanitizatsiyadan keyin barcha teglar va 2 ta `img src` saqlangan; 3 fayl 200 image/jpeg.
+- Tekshirilmadi: sahifaning brauzerdagi ko'rinishi (skrinshot olinmadi). Production'ga QO'SHILMAGAN.
+
 ### 2026-10-28 — vakansiyalar sahifasi (ochiq + admin)
 - Foydalanuvchi qarori: admin boshqaradi, ariza pochta/telefon orqali (saytda fayl yuklash yo'q — shaxsiy ma'lumot xavfi).
 - DB: `Vacancy` (uz/en/ru sarlavha+tavsif, `unitId`→bo'linma SetNull, ish turi full/part/contract,
