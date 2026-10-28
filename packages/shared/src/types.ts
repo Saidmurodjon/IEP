@@ -112,3 +112,27 @@ export interface AboutStats {
   scientists: number;
   publications: number;
 }
+
+export type VacancyEmploymentType = 'full' | 'part' | 'contract';
+
+export interface Vacancy {
+  id: string;
+  titleUz: string;
+  titleEn: string;
+  titleRu: string;
+  descriptionUz: string;
+  descriptionEn: string;
+  descriptionRu: string;
+  unitId: string | null;
+  unit: { id: string; nameUz: string; nameEn: string; nameRu: string; type: string } | null;
+  employmentType: VacancyEmploymentType;
+  salaryFrom: number | null;
+  salaryTo: number | null;
+  deadline: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -218,6 +218,14 @@ export const partnersApi = {
   delete: (id: string) => api.delete(`/api/partners/${id}`),
 };
 
+export const vacanciesApi = {
+  list: () => api.get('/api/vacancies'),
+  adminList: () => api.get('/api/vacancies/admin'),
+  create: (data: unknown) => api.post('/api/vacancies', data),
+  update: (id: string, data: unknown) => api.put(`/api/vacancies/${id}`, data),
+  delete: (id: string) => api.delete(`/api/vacancies/${id}`),
+};
+
 export const uploadsApi = {
   /**
    * Faylni yuklaydi. Rasm OLDIN `prepareImage()` bilan tayyorlanadi —

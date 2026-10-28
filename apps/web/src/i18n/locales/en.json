@@ -313,7 +313,8 @@
     },
     "back_to_list": "Back to list",
     "modal_subtitle": "Fields marked with an asterisk (*) are required.",
-    "about": "About the institute"
+    "about": "About the institute",
+    "vacancies": "Vacancies"
   },
   "common": {
     "test_mode_banner": "The site is running in test mode",
@@ -442,7 +443,9 @@
     "settings_saved": "Changes saved.",
     "saved": "Changes saved.",
     "image_resized": "The image was resized from {{from}} to {{to}} pixels, from {{before}} to {{after}}.",
-    "copied_from_uz": "Uzbek text copied."
+    "copied_from_uz": "Uzbek text copied.",
+    "vacancy_saved": "Vacancy saved.",
+    "vacancy_deleted": "Vacancy deleted."
   },
   "editor": {
     "bold": "Bold",
@@ -731,6 +734,31 @@
       "th_number": "Number",
       "th_date": "Date",
       "empty": "No documents have been added yet."
+    },
+    "vacancies": {
+      "err_title": "Enter the title",
+      "title_label": "Position title ({{lang}}) *",
+      "desc_label": "Description ({{lang}})",
+      "unit": "Unit",
+      "unit_none": "Not assigned",
+      "unit_sections": "Sections",
+      "unit_labs": "Laboratories",
+      "type": "Employment type",
+      "salary_from": "Salary from, UZS",
+      "salary_to": "Salary up to, UZS",
+      "deadline": "Application deadline",
+      "email": "Contact email",
+      "phone": "Contact phone",
+      "contact_hint": "If left empty, the Institute's general contact details are shown on the site.",
+      "th_title": "Position",
+      "th_unit": "Unit",
+      "th_deadline": "Deadline",
+      "expired": "Expired",
+      "active": "Active",
+      "hidden": "Hidden",
+      "empty": "No vacancies have been added yet.",
+      "err_salary": "\"From\" must not exceed \"up to\"",
+      "err_email": "Invalid email address"
     }
   },
   "adminD": {
@@ -899,5 +927,28 @@
     "content": "Text",
     "sec_stats": "Figures (automatic)",
     "sec_stats_desc": "Calculated from the database: laboratories from «Laboratories», staff from «Employees» (researchers — those with an academic degree), publications from «Publications»."
+  },
+  "vacancies": {
+    "title": "Vacancies",
+    "subtitle": "Open positions at the Institute",
+    "empty": "There are no open vacancies at the moment.",
+    "empty_hint": "New positions will be announced here when they become available.",
+    "error": "Could not load vacancies. Please try again later.",
+    "unit": "Unit",
+    "type_full": "Full-time",
+    "type_part": "Part-time",
+    "type_contract": "Contract",
+    "salary": "Salary",
+    "salary_range": "{{from}} to {{to}} UZS",
+    "salary_from": "from {{from}} UZS",
+    "salary_to": "up to {{to}} UZS",
+    "salary_negotiable": "Negotiable",
+    "deadline": "Application deadline",
+    "show_details": "Details",
+    "hide_details": "Collapse",
+    "how_to_apply": "How to apply",
+    "apply_hint": "Applications are not accepted on the website. Send your CV and documents to the address below or call.",
+    "email": "Email",
+    "phone": "Phone"
   }
 }

@@ -59,7 +59,7 @@ apps/
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API
     src/routes/         about, auth, news, publications, structure, settings, contact, employees,
-                        partners, documents, uploads, files, search
+                        partners, documents, vacancies, uploads, files, search
     src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media,
                         redact, error-log, mail, mail-templates, rate-limit, search-index
     src/lib/__tests__/  vitest birlik sinovlari (`npm test --workspace=apps/api`)
@@ -83,7 +83,7 @@ packages/
 4. **Har bir yozuv (POST/PUT/PATCH/DELETE) endpoint'i `requireAuth` bilan himoyalansin.** Faqat quyidagilar ochiq:
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
-   `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`,
+   `GET /api/partners`, `GET /api/documents`, `GET /api/vacancies`, `GET /api/files/:key`, `POST /api/contact`,
    `GET /api/contact/status`, `GET /api/search`, `POST /api/logs/client`, `GET /api/about`.
    **Admin «Sozlamalar» sahifasi yo'q** — sayt qiymatlari statik: murojaat pochtasi va saqlash
    muddati `apps/api/src/lib/site-config.ts`, sayt manzili `apps/web/src/config/site.ts`

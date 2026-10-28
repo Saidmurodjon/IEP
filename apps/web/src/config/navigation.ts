@@ -51,7 +51,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
       { id: 'institute-documents', i18nKey: 'nav.institute.items.documents', path: '/documents' },
       // Hozircha ochiq sahifa yo'q — faqat admin CRUD va bosh sahifa lentasi bor.
       { id: 'institute-partners', i18nKey: 'nav.institute.items.partners', path: '/partners', hidden: true },
-      { id: 'institute-vacancies', i18nKey: 'nav.institute.items.vacancies', path: '/vacancies', hidden: true },
+      { id: 'institute-vacancies', i18nKey: 'nav.institute.items.vacancies', path: '/vacancies' },
     ],
   },
   {

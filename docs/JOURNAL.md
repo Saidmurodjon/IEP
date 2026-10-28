@@ -14,6 +14,10 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Vakansiyalar (`/vacancies` + admin «Vakansiyalar») LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+Migratsiya `11_vacancies` (faqat lokal bazaga). Ariza saytda qabul qilinmaydi — pochta/telefon orqali.
+iep.uz uchun: migratsiya 11 + API + web deploy, foydalanuvchi tasdig'i bilan.
+
 **🆕 Bosh sahifa va footer mobil joylashuvi (raqam kartochkalari, ixcham oraliqlar, 2 ustunli havolalar) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 
 **🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — LOKALDA tayyor,
@@ -233,6 +237,24 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — vakansiyalar sahifasi (ochiq + admin)
+- Foydalanuvchi qarori: admin boshqaradi, ariza pochta/telefon orqali (saytda fayl yuklash yo'q — shaxsiy ma'lumot xavfi).
+- DB: `Vacancy` (uz/en/ru sarlavha+tavsif, `unitId`→bo'linma SetNull, ish turi full/part/contract,
+  maosh dan/gacha, muddat, aloqa pochta/telefon, tartib, faol). Migratsiya `11_vacancies` qo'lda yozildi,
+  `migrate deploy` bilan lokal 5433 ga qo'llandi.
+- API `routes/vacancies.ts`: `GET /` ochiq (faol + muddati o'tmagan), `GET /admin` va CRUD — `requireAuth`.
+  Tavsif server tomonda tozalanadi, tavsifdagi rasmlar `syncContentFiles(..., 'vacancy', ...)` bilan biriktiriladi.
+  HTTP drayverda tranzaksiya yo'q — `create/update` + `include` 500 berdi, shuning uchun yozib, keyin alohida o'qiladi.
+- Web: `VacanciesPage` (kartochka, tavsif ochiladi, «Qanday ariza berish» — vakansiya pochtasi yoki `config/contact.ts`),
+  `AdminVacanciesPage` (til tablari, RichTextEditor, muddati o'tgan belgisi), menyuda `institute-vacancies` ochildi,
+  uchala locale yangilandi. CLAUDE.md ochiq endpointlar ro'yxatiga `GET /api/vacancies` qo'shildi.
+- Tekshirildi: `tsc` (api, web) toza; 68/68 test; `wrangler deploy --dry-run` OK. curl: 401 tokensiz, yaratish/tahrir,
+  `<script>` olib tashlanadi, muddati o'tgan va nofaol yashirinadi, salaryFrom>salaryTo rad etiladi, 404, bo'linma include,
+  bugungi muddat ko'rinadi. Brauzer: `/uz/vacancies` kartochka bilan, admin ro'yxat, tahrir formasi (editor yuklanadi), saqlash ishladi.
+- Tekshirilmadi: `prisma migrate diff`; en/ru sahifa ko'rinishi; editor orqali rasm yuklash; mobil kenglik.
+- Lokal bazada bitta namuna vakansiya qoldi («Kichik ilmiy xodim»). Lokal `error_logs` da bitta 500 yozuvi (tranzaksiya xatosi, tuzatilgan).
+- Vakansiyalar qidiruvga (`search-index`) qo'shilmadi — kerak bo'lsa alohida ish.
 
 ### 2026-10-28 — bosh sahifa: raqamlar bloki desktopda ham ixcham
 - Foydalanuvchi so'rovi: desktopda kartochkalar baland edi. Endi barcha kengliklarda ikonka chapda,

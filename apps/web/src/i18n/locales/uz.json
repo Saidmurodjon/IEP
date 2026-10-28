@@ -313,7 +313,8 @@
     },
     "back_to_list": "Ro'yxatga qaytish",
     "modal_subtitle": "Yulduzcha (*) bilan belgilangan maydonlar majburiy.",
-    "about": "Institut haqida"
+    "about": "Institut haqida",
+    "vacancies": "Vakansiyalar"
   },
   "common": {
     "test_mode_banner": "Sayt test rejimida ishlamoqda",
@@ -442,7 +443,9 @@
     "settings_saved": "O'zgarishlar saqlandi.",
     "saved": "O'zgarishlar saqlandi.",
     "image_resized": "Rasm {{from}} nuqtadan {{to}} nuqtaga kichraytirildi, hajmi {{before}} dan {{after}} ga tushdi.",
-    "copied_from_uz": "O'zbekcha matn ko'chirildi."
+    "copied_from_uz": "O'zbekcha matn ko'chirildi.",
+    "vacancy_saved": "Vakansiya saqlandi.",
+    "vacancy_deleted": "Vakansiya o'chirildi."
   },
   "editor": {
     "bold": "Qalin",
@@ -731,6 +734,31 @@
       "th_number": "Raqami",
       "th_date": "Sanasi",
       "empty": "Hujjatlar hali kiritilmagan."
+    },
+    "vacancies": {
+      "err_title": "Nomini kiriting",
+      "title_label": "Lavozim nomi ({{lang}}) *",
+      "desc_label": "Tavsif ({{lang}})",
+      "unit": "Bo'linma",
+      "unit_none": "Biriktirilmagan",
+      "unit_sections": "Bo'limlar",
+      "unit_labs": "Laboratoriyalar",
+      "type": "Ish turi",
+      "salary_from": "Maosh (dan), so'm",
+      "salary_to": "Maosh (gacha), so'm",
+      "deadline": "Ariza muddati",
+      "email": "Aloqa pochtasi",
+      "phone": "Aloqa telefoni",
+      "contact_hint": "Bo'sh qoldirilsa, saytda institutning umumiy aloqa ma'lumotlari ko'rsatiladi.",
+      "th_title": "Lavozim",
+      "th_unit": "Bo'linma",
+      "th_deadline": "Muddat",
+      "expired": "Muddati o'tgan",
+      "active": "Faol",
+      "hidden": "Yashirin",
+      "empty": "Vakansiyalar hali kiritilmagan.",
+      "err_salary": "«Dan» qiymati «gacha» qiymatidan katta bo'lmasligi kerak",
+      "err_email": "Pochta manzili noto'g'ri"
     }
   },
   "adminD": {
@@ -899,5 +927,28 @@
     "content": "Matn",
     "sec_stats": "Raqamlar (avtomatik)",
     "sec_stats_desc": "Bazadan hisoblanadi: laboratoriyalar — «Laboratoriyalar» bo'limidan, xodimlar — «Xodimlar»dan (ilmiy xodim — ilmiy darajasi ko'rsatilgan), nashrlar — «Nashrlar»dan."
+  },
+  "vacancies": {
+    "title": "Vakansiyalar",
+    "subtitle": "Institutdagi bo'sh ish o'rinlari",
+    "empty": "Hozircha ochiq vakansiyalar yo'q.",
+    "empty_hint": "Yangi bo'sh ish o'rinlari paydo bo'lganda shu yerda e'lon qilinadi.",
+    "error": "Vakansiyalarni yuklab bo'lmadi. Keyinroq qayta urinib ko'ring.",
+    "unit": "Bo'linma",
+    "type_full": "To'liq stavka",
+    "type_part": "Yarim stavka",
+    "type_contract": "Shartnoma asosida",
+    "salary": "Maosh",
+    "salary_range": "{{from}} dan {{to}} gacha so'm",
+    "salary_from": "{{from}} so'mdan",
+    "salary_to": "{{to}} so'mgacha",
+    "salary_negotiable": "Kelishilgan holda",
+    "deadline": "Ariza qabul qilish muddati",
+    "show_details": "Batafsil",
+    "hide_details": "Yig'ish",
+    "how_to_apply": "Qanday ariza berish mumkin",
+    "apply_hint": "Arizalar saytda qabul qilinmaydi. Rezyume va hujjatlaringizni quyidagi manzilga yuboring yoki qo'ng'iroq qiling.",
+    "email": "Elektron pochta",
+    "phone": "Telefon"
   }
 }

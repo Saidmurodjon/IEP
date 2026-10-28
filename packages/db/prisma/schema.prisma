@@ -115,6 +115,7 @@ model StructureUnit {
   employees     Employee[]      @relation("EmployeeUnit")
   // Laboratoriya (type = "laboratory") xodimlari — bo'limdan mustaqil
   labEmployees  Employee[]      @relation("EmployeeLab")
+  vacancies     Vacancy[]
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
 
@@ -328,4 +329,33 @@ model ErrorLog {
   @@index([lastSeenAt])
   @@index([isResolved, lastSeenAt])
   @@map("error_logs")
+}
+
+/// Bo'sh ish o'rinlari. Tavsif — HTML (vazifalar + talablar), server tozalaydi.
+model Vacancy {
+  id             String         @id @default(cuid())
+  titleUz        String
+  titleEn        String
+  titleRu        String
+  descriptionUz  String         @default("") @db.Text
+  descriptionEn  String         @default("") @db.Text
+  descriptionRu  String         @default("") @db.Text
+  unitId         String?
+  unit           StructureUnit? @relation(fields: [unitId], references: [id], onDelete: SetNull)
+  /// full | part | contract
+  employmentType String         @default("full")
+  /// Oylik maosh, so'm
+  salaryFrom     Int?
+  salaryTo       Int?
+  /// Hujjat qabul qilishning oxirgi kuni
+  deadline       DateTime?
+  contactEmail   String?
+  contactPhone   String?
+  order          Int            @default(0)
+  isActive       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([isActive, deadline])
+  @@map("vacancies")
 }

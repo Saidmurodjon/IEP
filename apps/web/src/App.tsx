@@ -19,6 +19,7 @@ const NewsPage = lazy(() => import('@/pages/public/NewsPage'));
 const NewsDetailPage = lazy(() => import('@/pages/public/NewsDetailPage'));
 const PublicationsPage = lazy(() => import('@/pages/public/PublicationsPage'));
 const DocumentsPage = lazy(() => import('@/pages/public/DocumentsPage'));
+const VacanciesPage = lazy(() => import('@/pages/public/VacanciesPage'));
 const ContactPage = lazy(() => import('@/pages/public/ContactPage'));
 const AppealStatusPage = lazy(() => import('@/pages/public/AppealStatusPage'));
 const SearchPage = lazy(() => import('@/pages/public/SearchPage'));
@@ -38,6 +39,7 @@ const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
 const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'));
 const AdminPartnersPage = lazy(() => import('@/pages/admin/AdminPartnersPage'));
 const AdminDocumentsPage = lazy(() => import('@/pages/admin/AdminDocumentsPage'));
+const AdminVacanciesPage = lazy(() => import('@/pages/admin/AdminVacanciesPage'));
 const AdminLogsPage = lazy(() => import('@/pages/admin/AdminLogsPage'));
 const AdminUsersPage = lazy(() => import('@/pages/admin/AdminUsersPage'));
 const AdminProfilePage = lazy(() => import('@/pages/admin/AdminProfilePage'));
@@ -140,6 +142,7 @@ export default function App() {
           <Route path="about" element={<AdminAboutPage />} />
           <Route path="partners" element={<AdminPartnersPage />} />
           <Route path="documents" element={<AdminDocumentsPage />} />
+          <Route path="vacancies" element={<AdminVacanciesPage />} />
           <Route path="logs" element={<SuperAdminRoute><AdminLogsPage /></SuperAdminRoute>} />
           <Route path="users" element={<SuperAdminRoute><AdminUsersPage /></SuperAdminRoute>} />
           <Route path="profile" element={<AdminProfilePage />} />
@@ -165,6 +168,7 @@ export default function App() {
             <Route path="news/:slug" element={<NewsDetailPage />} />
             <Route path="publications" element={<PublicationsPage />} />
             <Route path="documents" element={<DocumentsPage />} />
+            <Route path="vacancies" element={<VacanciesPage />} />
             <Route path="contact" element={<ContactPage />} />
             <Route path="appeal-status" element={<AppealStatusPage />} />
             <Route path="search" element={<SearchPage />} />
