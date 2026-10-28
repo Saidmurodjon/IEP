@@ -16,6 +16,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **🚀 2026-10-28: master (`438803a`) to'liq iep.uz ga deploy qilindi** — API + migratsiyalar (`migrate deploy`, oldin `~/iep-backups/pre-deploy-*.sql` zaxira) + frontend. Keyingi deploy: `bash apps/api/scripts/deploy-hosting.sh` (foydalanuvchi `!` bilan ishga tushiradi — auto-mode prod SSH ni bloklaydi). Quyidagi «iep.uz uchun: ... deploy» eslatmalari eskirgan; faqat `ERROR_LOG_DIR` va bo'linmalarni qayta tuzish (9) holati alohida tekshirilmagan.
 
+**🕓 Keyingi versiya: murojaat xatlari Resend o'rniga hostingning SMTP'si orqali** — reja `docs/tasks/17-hosting-smtp-pochta.md`. `info@iep.uz` in/out ishlaydi, SPF+MX bor; DKIM va DMARC yo'q (foydalanuvchi qo'shadi). Kod hali yozilmagan.
+
 **🆕 Xavfsizlik: IP cheklovlarini soxta sarlavha bilan chetlab o'tish va `?drafts=true` qoralamalar oqishi TUZATILDI — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: faqat API deploy; deploydan keyin prod'da soxta `X-Forwarded-For` bilan qayta sinash SHART (proksi IP ni oxiriga qo'shishiga tayanadi). Auditning qolgan (o'rta/past) bandlari ochiq — YOZUVLAR, 2026-10-28 audit.
 
 **🆕 Node API jarayon darajasidagi xatolar ham `error_logs` ga yoziladi (ishga tushish/to'xtash, `UNCAUGHT_EXCEPTION`, `UNHANDLED_REJECTION`, `PROCESS_START_FAILED`, `PROCESS_KILLED`); baza o'chiq bo'lsa `ERROR_LOG_DIR` faylida kutadi — ✅ iep.uz da (2026-10-28 deploy).** iep.uz uchun: API deploy + cPanel'da `ERROR_LOG_DIR=/home/iepuz/iep-logs` (ixtiyoriy, migratsiya kerak emas).
@@ -252,6 +254,13 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — reja: hosting SMTP orqali xat yuborish (kod o'zgarmadi)
+- Savol: webname Resend vazifasini bajara oladimi. Javob: ha — API Node'da, SMTP (nodemailer) mumkin.
+- Tekshirildi: foydalanuvchi `info@iep.uz` dan Gmail'ga yubordi → Inbox; Gmail → info@iep.uz keldi.
+  `dig @8.8.8.8`: MX `mail.iep.uz`, SPF bor; `x._domainkey` va `_dmarc` — NXDOMAIN.
+- Qaror (foydalanuvchi): keyingi versiyada amalga oshiriladi. Topshiriq `docs/tasks/17-hosting-smtp-pochta.md`.
+- Tekshirilmadi: Gmail «Show original» SPF/DKIM natijasi, Mail.ru/Yandex'ga yetkazish, hosting yuborish limiti.
 
 ### 2026-10-28 — iep.uz ga to'liq deploy (`438803a`)
 - Hamkorlar kartochkasi gorizontal + bosh sahifa CTA ixcham (`PartnersStrip.tsx`, `HomePage.tsx`) kommit qilindi.
