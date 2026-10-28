@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Yangilik kartasi: portret muqova (talabgor fotosi) 3:4 tik ramkada — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
+
 **🆕 Desktop navbar: mega-panel o'rniga har bir guruh o'z tugmasi tagida ochiladigan ixcham dropdown — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 iep.uz uchun: faqat web deploy, foydalanuvchi tasdig'i bilan.
 
@@ -240,6 +242,20 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — feat(web): portret muqovali yangilik kartasi
+- Foydalanuvchi: himoya e'lonidagi talabgor fotosi 16:9 kartada kesilib, xunuk chiqadi; karta uslubi o'zgarsin.
+- Yangi `components/NewsCover.tsx`: rasm yuklangach `naturalHeight > naturalWidth*1.05` bo'lsa portret
+  rejimi — kartada rangli fon ustida 3:4 tik ramka (yumaloq burchak, `object-top`), e'lon sahifasida
+  markazda 3:4 foto. Gorizontal rasmlar avvalgidek. Rasmlar o'chirilgan (a11y) bo'lsa — oddiy `A11yImage`.
+- Qo'llandi: `HomePage` (yangiliklar kartasi), `NewsPage`, `NewsDetailPage`.
+- Qaror: bazaga `kind` maydoni QO'SHILMADI (foydalanuvchi tanlovi) — turni rasm o'lchami belgilaydi.
+- Foydalanuvchi aylana foto taklifini rad etdi → 3:4 to'rtburchak.
+- Tekshirildi: `tsc --noEmit` (web) toza; lokal dev'da bosh sahifa, /uz/news va e'lon sahifasi —
+  demo rasm 1024×1365 portret klassini oldi, gorizontal rasm `object-cover` qoldi (DOM + skrinshot).
+- Tekshirilmadi: mobil kenglik, rasmlar o'chirilgan rejim vizual; production'ga chiqarilmagan.
+- Kommitga `HomePage.tsx` dagi boshqa (CTA oraliqlari) va `PartnersStrip.tsx` o'zgarishlari KIRMADI.
+- Kuzatuv: demo e'lon matni ichida ham siluet rasm bor — kontent masalasi, admin orqali almashtirish kerak.
 
 ### 2026-10-28 — fix(api): yangilik muqovasi yuklanganda VALIDATION_ERROR
 - Foydalanuvchi: admin «Yangiliklar» formasi to'liq to'ldirilganda ham «Ma'lumotlar to'liq emas».

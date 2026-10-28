@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Calendar, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
-import A11yImage from '@/components/A11yImage';
+import NewsCover from '@/components/NewsCover';
 
 export default function NewsPage() {
   const { t, i18n } = useTranslation();
@@ -48,7 +48,7 @@ export default function NewsPage() {
           {news.map((item: Record<string, string>) => (
             <article key={item.id} className="card hover:shadow-md transition-shadow flex flex-col">
               {item.imageUrl && (
-                <A11yImage src={item.imageUrl} alt={getField(item, 'title')} className="w-full h-48 object-cover" />
+                <NewsCover src={item.imageUrl} alt={getField(item, 'title')} frameClassName="h-48" />
               )}
               {!item.imageUrl && (
                 <div className="w-full h-32 bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">

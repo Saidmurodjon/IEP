@@ -9,7 +9,7 @@ import { Calendar, ArrowLeft } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import { sanitizeHtml } from '@/lib/sanitize';
 import type { Lang } from '@energetika/shared';
-import A11yImage from '@/components/A11yImage';
+import NewsCover from '@/components/NewsCover';
 import { useAccessibility } from '@/hooks/useAccessibility';
 import { replaceImagesWithAlt } from '@/lib/a11y';
 
@@ -75,10 +75,10 @@ export default function NewsDetailPage() {
       <div className="container py-10">
         <div className="max-w-3xl mx-auto">
           {(item as Record<string, string>).imageUrl && (
-            <A11yImage
+            <NewsCover
               src={(item as Record<string, string>).imageUrl}
               alt={getField('title')}
-              className="w-full rounded-xl mb-8 shadow-sm"
+              variant="detail"
             />
           )}
           <p className="text-lg text-gray-600 mb-6 italic border-l-4 border-primary-300 pl-4">

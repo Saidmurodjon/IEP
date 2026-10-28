@@ -11,6 +11,7 @@ import { pick, type AboutResponse } from '@/lib/about';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 import A11yImage from '@/components/A11yImage';
+import NewsCover from '@/components/NewsCover';
 
 export default function HomePage() {
   const { t, i18n } = useTranslation();
@@ -171,11 +172,7 @@ export default function HomePage() {
               {news.map((item: Record<string, string>) => (
                 <article key={item.id} className="card hover:shadow-md transition-shadow flex flex-col">
                   {item.imageUrl ? (
-                    <A11yImage
-                      src={item.imageUrl}
-                      alt={getTitle(item)}
-                      className="w-full aspect-[16/9] object-cover"
-                    />
+                    <NewsCover src={item.imageUrl} alt={getTitle(item)} />
                   ) : (
                     <div className="w-full aspect-[16/9] bg-primary-50 flex items-center justify-center">
                       <Zap className="h-10 w-10 text-primary-200" strokeWidth={1.5} />
