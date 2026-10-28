@@ -14,7 +14,11 @@ const newsSchema = z.object({
   titleUz: z.string().min(1), titleEn: z.string().min(1), titleRu: z.string().min(1),
   summaryUz: z.string().min(1), summaryEn: z.string().min(1), summaryRu: z.string().min(1),
   contentUz: z.string().min(1), contentEn: z.string().min(1), contentRu: z.string().min(1),
-  imageUrl: z.string().url().optional().or(z.literal('')),
+  // `POST /api/uploads` nisbiy manzil (`/api/files/...`) qaytaradi; eski
+  // yozuvlarda to'liq URL bor — ikkalasi ham qabul qilinadi.
+  imageUrl: z.string().max(500)
+    .refine((value) => value.startsWith('/api/files/') || /^https?:\/\//.test(value), 'Invalid image url')
+    .optional().or(z.literal('')),
   // Manba — 373-son qarorning 4-bandi talabi. Ixtiyoriy, lekin boshqa
   // manbadan olingan material uchun to'ldirilishi shart.
   sourceName: z.string().max(200).optional().or(z.literal('')),

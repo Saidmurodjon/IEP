@@ -241,6 +241,16 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — fix(api): yangilik muqovasi yuklanganda VALIDATION_ERROR
+- Foydalanuvchi: admin «Yangiliklar» formasi to'liq to'ldirilganda ham «Ma'lumotlar to'liq emas».
+- Sabab: `POST /api/uploads` nisbiy `/api/files/...` qaytaradi, `newsSchema.imageUrl` esa
+  `z.string().url()` edi → `Invalid url`. Endi `/api/files/` yoki `http(s)://` (eski yozuvlar), max 500.
+- Tekshirildi (HTTP PUT): `/api/files/x.jpg` → 200, `javascript:` → 400, `""` → 200; `tsc` toza,
+  68 sinov o'tdi, `wrangler --dry-run` yig'ildi. Admin formasini brauzerda o'zim bosib ko'rmadim.
+- Yo'l-yo'lakay: `publications.fileUrl` da ham xuddi shu `.url()` bor — hujjat yuklansa shu xato
+  bo'lishi mumkin, tekshirilmadi/tuzatilmadi. Frontend formasi `imageUrl` xatosini qizil bilan ko'rsatmaydi.
+- LOKALDA, production'ga chiqarilmagan (iep.uz: faqat API deploy).
+
 ### 2026-10-28 — data: demo himoya e'loni rich text ko'rinishiga o'tkazildi (lokal baza)
 - Foydalanuvchi: talabgor rasmi va barcha ma'lumot matn ichida bo'lsin, «To'liq o'qish»da chiqsin;
   kategoriya hozircha QO'SHILMAYDI.
