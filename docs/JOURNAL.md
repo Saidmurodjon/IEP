@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Bosh sahifa mobil joylashuvi (raqam kartochkalari, ixcham oraliqlar) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+
 **🆕 «Institut haqida» = qisqa tavsif + rich text; «Sozlamalar» sahifasi olib tashlandi — LOKALDA tayyor,
 production'ga CHIQARILMAGAN.** Raqamlar (lab/xodim/ilmiy xodim/nashr) bazadan avtomatik, bosh sahifa
 ham `GET /api/about` dan. ⚠️ Lokal bazada lorem ipsum matn + 3 ta public-domain rasm — haqiqiy matnni institut beradi.
@@ -231,6 +233,17 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — bosh sahifa: mobil joylashuv tartibga keltirildi
+- Muammo (foydalanuvchi skrinshoti): mobilda raqamlar bloki tarqoq (katta bo'shliq, `gap-8`),
+  bo'limlar orasida ortiqcha `py-16`, hero matni katta.
+- `HomePage.tsx`: raqamlar oq kartochkalarga (mobil — ikonka tepada, sm — chapda, lg — markazda);
+  hero sarlavha/tavsif mobilda kichikroq, tugmalar mobilda 2 ustunli teng grid; bo'limlar `py-10 sm:py-16`.
+- Tekshirildi: `tsc --noEmit` (web) toza; Playwright (tizim Chrome) bilan 360 va 412 px kenglikda
+  skrinshot — gorizontal skroll yo'q (`scrollWidth` = kenglik), kartochkalar tekis.
+- Tekshirilmadi: haqiqiy telefonda; desktop ko'rinishi faqat klasslar bo'yicha (lg uslubi oldingiday markazda).
+- Eslatma: skrinshotdagi o'ngdagi tarjima/«G»/miya tugmalari — brauzer kengaytmalari, saytniki emas.
+- Eslatma: jurnal 250 qatordan oshgan — arxivlash kerak (alohida ish).
 
 ### 2026-10-28 — lokal baza: «Institut haqida» lorem + rasmlar (kod o'zgarmadi)
 - Foydalanuvchi so'rovi: dizaynni ko'rish uchun lorem matn va haqiqiy rasmlar.

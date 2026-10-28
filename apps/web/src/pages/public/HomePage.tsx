@@ -65,18 +65,18 @@ export default function HomePage() {
         />
         {/* Qoplama: chapdan o'ngga shaffoflashadi — matn chapda o'qiladi */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary-950/85 via-primary-900/70 to-primary-900/30" />
-        <div className="container relative py-16 lg:py-24">
+        <div className="container relative py-12 sm:py-16 lg:py-24">
           <div className="max-w-3xl">
-            <p className="text-accent-300 text-sm font-medium mb-3 uppercase tracking-wider">
+            <p className="text-accent-300 text-xs sm:text-sm font-medium mb-3 uppercase tracking-wider">
               {t('home.hero_title')}
             </p>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+            <h1 className="text-[1.75rem] sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
               {t('home.hero_subtitle')}
             </h1>
-            <p className="text-primary-100 text-lg mb-8 leading-relaxed max-w-2xl">
+            <p className="text-primary-100 text-base sm:text-lg mb-7 sm:mb-8 leading-relaxed max-w-2xl">
               {t('home.hero_desc')}
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-4">
               <LocalizedLink to="/about" className="btn bg-white text-primary-900 hover:bg-primary-50 font-semibold px-6 py-3">
                 {t('home.learn_more')}
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -91,13 +91,21 @@ export default function HomePage() {
 
       {/* Stats — yumshoq fon, oltin ikonkalar */}
       <section className="bg-primary-50 border-b border-primary-100">
-        <div className="container py-12">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="container py-6 sm:py-10">
+          {/* Mobil: ixcham kartochkalar; planshetda ikonka chapda, katta ekranda — markazda */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {stats.map(({ value, label, icon: Icon }) => (
-              <div key={label} className="text-center">
-                <Icon className="h-7 w-7 text-accent-700 mx-auto mb-2" strokeWidth={1.75} />
-                <div className="text-3xl font-bold text-primary-800 mb-1">{value}</div>
-                <div className="text-sm text-primary-600">{label}</div>
+              <div
+                key={label}
+                className="flex flex-col items-start gap-2 rounded-xl bg-white border border-primary-100 p-4 sm:flex-row sm:items-center sm:gap-3 lg:flex-col lg:items-center lg:text-center lg:gap-2 lg:p-5"
+              >
+                <span className="flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-lg bg-accent-50 lg:h-12 lg:w-12">
+                  <Icon className="h-5 w-5 text-accent-700 lg:h-6 lg:w-6" strokeWidth={1.75} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-2xl lg:text-3xl font-bold leading-none text-primary-800">{value}</div>
+                  <div className="mt-1 text-xs sm:text-sm leading-snug text-primary-600">{label}</div>
+                </div>
               </div>
             ))}
           </div>
@@ -105,9 +113,9 @@ export default function HomePage() {
       </section>
 
       {/* Institut haqida qisqacha — matn + tasvir */}
-      <section className="py-16 bg-white">
+      <section className="py-10 sm:py-16 bg-white">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div>
               <p className="text-accent-700 text-sm font-semibold uppercase tracking-wider mb-3">
                 {t('home.about_kicker')}
@@ -141,7 +149,7 @@ export default function HomePage() {
       </section>
 
       {/* Latest News */}
-      <section className="py-16 bg-primary-50/60">
+      <section className="py-10 sm:py-16 bg-primary-50/60">
         <div className="container">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -199,7 +207,7 @@ export default function HomePage() {
       </section>
 
       {/* Latest Publications */}
-      <section className="py-16 bg-white">
+      <section className="py-10 sm:py-16 bg-white">
         <div className="container">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -236,7 +244,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Contact — engil fon, yagona to'q element: tugma */}
-      <section className="py-16 bg-primary-50">
+      <section className="py-10 sm:py-16 bg-primary-50">
         <div className="container text-center">
           <h2 className="text-2xl font-bold mb-4 text-primary-900">{t('home.contact_title')}</h2>
           <p className="text-primary-700 mb-8 max-w-xl mx-auto">
