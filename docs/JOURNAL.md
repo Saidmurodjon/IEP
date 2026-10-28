@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 `/news` sahifasida 6 tadan yangilik (pagination) — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
+
 **🆕 Yangilik kartasi: portret muqova (talabgor fotosi) xira rangli fon ustida — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
 
 **🆕 Desktop navbar: mega-panel o'rniga har bir guruh o'z tugmasi tagida ochiladigan ixcham dropdown — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
@@ -242,6 +244,13 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — feat(web): yangiliklar sahifasida 6 tadan
+- Foydalanuvchi: yangiliklar 6 tadan, pagination bilan.
+- `NewsPage`: sahifa hajmi 9 → `NEWS_PER_PAGE = 6` (3 ustunli to'rda 2 qator). Pagination
+  (oldingi/keyingi, `1 / N`) avvaldan bor edi. Sahifa almashganda `scrollTo(0)` qo'shildi.
+- Tekshirildi: `tsc` toza; lokal API `?limit=2` bilan sahifa 1 → 2 ta, sahifa 2 → 1 ta, `totalPages=2`.
+- Tekshirilmadi: brauzerda tugmalar — lokal bazada atigi 3 ta yangilik, 6 dan kam, tugmalar chiqmaydi.
 
 ### 2026-10-28 — fix(web): portret kartada xira fon
 - Foydalanuvchi: 3:4 foto kartaning o'rtasida yolg'iz turibdi, fon yoki boshqa yechim kerak.

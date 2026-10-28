@@ -2,13 +2,16 @@ import { useTranslation } from 'react-i18next';
 import SeoHead from '@/components/SeoHead';
 import { useQuery } from '@tanstack/react-query';
 import LocalizedLink from '@/components/LocalizedLink';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { newsApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Calendar, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 import NewsCover from '@/components/NewsCover';
+
+// Yangiliklar sahifasida bir sahifadagi kartochkalar soni
+const NEWS_PER_PAGE = 6;
 
 export default function NewsPage() {
   const { t, i18n } = useTranslation();
@@ -17,8 +20,13 @@ export default function NewsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['news', page],
-    queryFn: () => newsApi.list(page, 9),
+    queryFn: () => newsApi.list(page, NEWS_PER_PAGE),
   });
+
+  // Sahifa almashganda ro'yxat boshiga qaytariladi
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [page]);
 
   const news = data?.data?.data ?? [];
   const totalPages = data?.data?.totalPages ?? 1;
