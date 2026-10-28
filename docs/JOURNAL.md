@@ -12,7 +12,13 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 > Bu blok **doim joriy** bo'lishi kerak — eskisi o'chiriladi, o'rniga yangisi yoziladi.
 
-**Oxirgi yangilanish:** 2026-10-27
+**Oxirgi yangilanish:** 2026-10-28
+
+**🆕 «Institut haqida» dinamik + sozlamalar tozalandi — LOKALDA tayyor, production'ga CHIQARILMAGAN.**
+`GET/PUT /api/about` (`site_settings.about_page` JSON, zod), admin `/admin/about`, ochiq sahifa yangi
+dizaynda. `GET /api/settings` endi maxfiy kalitlarni bermaydi (`/private` — super admin).
+⚠️ Lokal bazada NAMUNA matnlar turibdi — haqiqiy matnni institut berishi kerak.
+iep.uz uchun: API + web deploy (migratsiya kerak emas), foydalanuvchi tasdig'i bilan.
 
 **🆕 Admin navbar: qidiruv maydoni + davr filtri ikonkasi (dashboard grafiklariga ham) LOKALDA tayyor, production'ga CHIQARILMAGAN.**
 `GET /api/stats?from&to` (62 kungacha kunlik, aks holda oylik), `GET /api/stats/search?q`.
@@ -226,6 +232,29 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — feat: «Institut haqida» admin orqali boshqariladi, sozlamalar tozalandi
+- Sozlamalar: `site_name_*` hech qayerda ishlatilmasdi (nom i18n'dan) — olib tashlandi; `email` va
+  `appeals_email` bitta «Bildirishnoma pochtasi»ga birlashtirildi (API'da `email` zaxira bo'lib qoldi).
+  Qoldi: pochta, saqlash muddati, `site_url` — izoh bilan, xabar `useToast`.
+- **Xavfsizlik:** ochiq `GET /api/settings` murojaat pochtasini hammaga berardi → `PRIVATE_KEYS`
+  filtri, admin uchun `GET /api/settings/private` (SUPER_ADMIN). `about_page` ni settings orqali
+  yozish taqiqlangan (400).
+- `/api/about`: shior, tanishtiruv, yil, missiya/istiqbol, tarix, sanalar (≤40), qadriyatlar (≤8,
+  ikonka enum), ilmiy/jami xodim. Hammasi ODDIY MATN (HTML yo'q → sanitizatsiya kerak emas).
+  PUT — `requireAuth` (oddiy ADMIN ham, chunki kontent). Lab/nashr soni jonli. Bosh sahifa
+  raqamlari ham shu manbadan (bo'sh bo'lsa `INSTITUTE_STAFF`).
+- Ochiq sahifa: hero + sanab chiquvchi raqamlar, missiya/istiqbol, qadriyatlar, tarix + vaqt
+  chizig'i, lab kartochkalari, havolalar. Harakat `motion-safe`, `CountUp` ekran o'quvchiga yakuniy son.
+  Bo'sh maydonlarda eski i18n matnlari ko'rinadi.
+- Topilgan xato (tuzatildi): oynaga qaytganda refetch → `reset` saqlanmagan matnni o'chirardi →
+  forma faqat bir marta to'ldiriladi + `refetchOnWindowFocus: false`.
+- **Tekshirildi:** tsc (api+web), 68 vitest, `wrangler --dry-run`; curl: GET 200, PUT tokensiz 401,
+  noto'g'ri tana 400, `about_page` bulk 400, ochiq settings'da pochta yo'q; brauzerda: ochiq sahifa
+  (1 ta h1, sarlavha tartibi, gorizontal siljish yo'q, konsol toza), admin'da raqam kiritib saqlash →
+  API'da ko'rindi, fokus hodisasidan keyin qiymat saqlanib qoldi; sozlamalar sahifasi yuklanadi.
+- **Tekshirilmadi:** mobil kenglik ko'zda, en/ru ochiq sahifa ko'zda, qorong'i mavzuda admin sahifa.
+- Jurnal 250 qatordan oshgan (avvaldan) — arxivlash keyingi sessiyaga.
 
 ### 2026-10-28 — feat(web): qidiruv navbar'ning o'zida, davr filtri navbar ikonkasida
 - Foydalanuvchi: modal noqulay. `AdminSearch` endi navbar'dagi haqiqiy maydon, natijalar ostida

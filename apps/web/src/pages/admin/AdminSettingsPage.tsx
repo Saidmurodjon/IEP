@@ -2,92 +2,116 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet-async';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
+import { Save, Mail, Globe, type LucideIcon } from 'lucide-react';
 import { settingsApi } from '@/lib/api';
-import { useEffect, useState } from 'react';
-import { Save, CheckCircle } from 'lucide-react';
+import { useToast } from '@/components/Toast';
 
 /**
- * Manzil, telefon va ish vaqti endi STATIK (`apps/web/src/config/contact.ts`)
- * — shu ro'yxatda YO'Q, chunki bu yerda o'zgartirilsa ham saytda ko'rinmaydi.
- * O'zgartirish kerak bo'lsa kod orqali (`config/contact.ts`).
+ * Faqat HAQIQATAN ishlatiladigan sozlamalar:
+ * - `appeals_email` — murojaat bildirishnomalari (`routes/contact.ts`);
+ * - `appeals_retention_days` — yopilgan murojaatlarni tozalash muddati;
+ * - `site_url` — canonical/hreflang va xatlardagi havola.
  *
- * `email` bu yerda qoladi: sayt aloqa emaili emas, balki murojaat
- * bildirishnomalari uchun ZAXIRA manzil (`appeals_email` bo'sh bo'lganda
- * ishlatiladi — `apps/api/src/routes/contact.ts`).
+ * Sayt nomi i18n'dan olinadi, manzil/telefon `config/contact.ts` da,
+ * «Institut haqida» matnlari — `/admin/about`. Eski `email` kaliti API'da
+ * zaxira sifatida qoladi; bu yerda bitta maydonga birlashtirilgan.
  */
-const SETTING_KEYS = [
-  { key: 'site_name_uz', labelKey: 'adminD.settings.site_name_uz', group: 'general' },
-  { key: 'site_name_en', labelKey: 'adminD.settings.site_name_en', group: 'general' },
-  { key: 'site_name_ru', labelKey: 'adminD.settings.site_name_ru', group: 'general' },
-  { key: 'site_url', labelKey: 'adminD.settings.site_url', group: 'general' },
-  { key: 'email', labelKey: 'adminD.settings.email', group: 'contact' },
-  { key: 'appeals_email', labelKey: 'adminD.settings.appeals_email', group: 'contact' },
-  { key: 'appeals_retention_days', labelKey: 'adminD.settings.appeals_retention_days', group: 'contact' },
+interface Field {
+  key: string;
+  type: 'email' | 'number' | 'url';
+}
+
+const GROUPS: ReadonlyArray<{ id: string; icon: LucideIcon; fields: Field[] }> = [
+  {
+    id: 'appeals',
+    icon: Mail,
+    fields: [
+      { key: 'appeals_email', type: 'email' },
+      { key: 'appeals_retention_days', type: 'number' },
+    ],
+  },
+  {
+    id: 'site',
+    icon: Globe,
+    fields: [{ key: 'site_url', type: 'url' }],
+  },
 ];
 
 export default function AdminSettingsPage() {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const [saved, setSaved] = useState(false);
+  const toast = useToast();
 
-  const { data } = useQuery({ queryKey: ['settings'], queryFn: () => settingsApi.all() });
-  const settings: Record<string, string> = data?.data?.data ?? {};
+  const { data } = useQuery({ queryKey: ['settings', 'private'], queryFn: () => settingsApi.private() });
+  const settings: Record<string, string> | undefined = data?.data?.data;
 
   const { register, handleSubmit, reset } = useForm<Record<string, string>>();
 
   useEffect(() => {
-    if (Object.keys(settings).length > 0) reset(settings);
+    if (!settings) return;
+    reset({
+      appeals_email: settings.appeals_email || settings.email || '',
+      appeals_retention_days: settings.appeals_retention_days || '365',
+      site_url: settings.site_url ?? '',
+    });
   }, [settings, reset]);
 
   const mutation = useMutation({
     mutationFn: (d: Record<string, string>) => settingsApi.bulkUpdate(d),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['settings'] });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      toast.success(t('adminD.settings.saved'));
     },
+    onError: (error) => toast.showError(error),
   });
-
-  const groups = ['general', 'contact'];
-  const groupLabels: Record<string, string> = {
-    general: t('adminD.settings.group_general'),
-    contact: t('adminD.settings.group_contact'),
-  };
 
   return (
     <>
       <Helmet><title>{t('adminD.settings.helmet')}</title></Helmet>
-      <div className="p-6 max-w-2xl">
-        <div className="flex items-center justify-between mb-6">
+      <div className="p-6 max-w-3xl">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('admin.settings')}</h1>
-          {saved && (
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-300 text-sm font-medium">
-              <CheckCircle className="h-4 w-4" aria-hidden="true" /> {t('adminD.settings.saved')}
-            </div>
-          )}
+          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{t('adminD.settings.subtitle')}</p>
         </div>
 
-        <form onSubmit={handleSubmit((data) => mutation.mutate(data))} className="space-y-6">
-          {groups.map((group) => (
-            <div key={group} className="card p-5">
-              <h2 className="font-semibold text-gray-900 dark:text-gray-100 mb-4 pb-2 border-b dark:border-gray-800">{groupLabels[group]}</h2>
-              <div className="space-y-4">
-                {SETTING_KEYS.filter((s) => s.group === group).map(({ key, labelKey }) => (
+        <form onSubmit={handleSubmit((d) => mutation.mutate(d))} className="space-y-6">
+          {GROUPS.map(({ id, icon: Icon, fields }) => (
+            <section key={id} className="card p-5" aria-labelledby={`settings-${id}`}>
+              <div className="mb-5 flex items-start gap-3 border-b pb-4 dark:border-gray-800">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 id={`settings-${id}`} className="font-semibold text-gray-900 dark:text-gray-100">
+                    {t(`adminD.settings.group_${id}`)}
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">{t(`adminD.settings.group_${id}_desc`)}</p>
+                </div>
+              </div>
+              <div className="space-y-5">
+                {fields.map(({ key, type }) => (
                   <div key={key}>
-                    <label htmlFor={`setting-${key}`} className="label">{t(labelKey)}</label>
-                    <input id={`setting-${key}`} {...register(key)} className="input" />
+                    <label htmlFor={`setting-${key}`} className="label">{t(`adminD.settings.${key}`)}</label>
+                    <input
+                      id={`setting-${key}`}
+                      type={type}
+                      min={type === 'number' ? 30 : undefined}
+                      aria-describedby={`setting-${key}-hint`}
+                      {...register(key)}
+                      className="input"
+                    />
+                    <p id={`setting-${key}-hint`} className="mt-1 text-xs text-gray-600 dark:text-gray-400">
+                      {t(`adminD.settings.${key}_hint`)}
+                    </p>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           ))}
 
-          <button
-            type="submit"
-            disabled={mutation.isPending}
-            className="btn-primary gap-2"
-          >
-            <Save className="h-4 w-4" />
+          <button type="submit" disabled={mutation.isPending} className="btn-primary gap-2">
+            <Save className="h-4 w-4" aria-hidden="true" />
             {mutation.isPending ? t('adminD.settings.saving') : t('admin.save')}
           </button>
         </form>

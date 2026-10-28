@@ -75,7 +75,18 @@
     "mission_text": "Our institute conducts fundamental and applied scientific research aimed at solving energy problems of the Republic of Uzbekistan.",
     "history_text": "The institute was established within the Academy of Sciences of Uzbekistan and has achieved many important scientific milestones in the energy sector.",
     "research_areas": "Research laboratories and areas of study",
-    "history_extra": "The institute operates under the structure approved by the Presidium of the Academy of Sciences on 27 February 2025."
+    "history_extra": "The institute operates under the structure approved by the Presidium of the Academy of Sciences on 27 February 2025.",
+    "since": "Since {{year}}",
+    "stats_label": "The institute in numbers",
+    "eyebrow_purpose": "Our purpose",
+    "mission_vision": "Mission and vision",
+    "vision": "Vision",
+    "eyebrow_values": "Principles",
+    "values": "Our values",
+    "eyebrow_history": "Our journey",
+    "eyebrow_research": "Research",
+    "all_labs": "All laboratories",
+    "explore": "Get to know the institute"
   },
   "structure": {
     "title": "Institute Structure",
@@ -312,7 +323,8 @@
       }
     },
     "back_to_list": "Back to list",
-    "modal_subtitle": "Fields marked with an asterisk (*) are required."
+    "modal_subtitle": "Fields marked with an asterisk (*) are required.",
+    "about": "About the institute"
   },
   "common": {
     "test_mode_banner": "The site is running in test mode",
@@ -742,15 +754,18 @@
     "settings": {
       "saved": "Saved!",
       "saving": "Saving...",
-      "group_general": "General",
-      "group_contact": "Contact information",
-      "site_name_uz": "Site name (UZ)",
-      "site_name_en": "Site name (EN)",
-      "site_name_ru": "Site name (RU)",
-      "site_url": "Site address (for canonical/hreflang)",
-      "email": "Fallback email for appeal notifications",
-      "appeals_email": "Email for appeal notifications",
-      "appeals_retention_days": "Retention period for closed appeals (days)"
+      "site_url": "Base URL",
+      "appeals_email": "Notification email",
+      "appeals_retention_days": "Closed appeal retention (days)",
+      "subtitle": "Technical site settings. Page texts are edited in their own sections.",
+      "group_appeals": "Appeals",
+      "group_appeals_desc": "Who is notified about citizen appeals and how long they are kept.",
+      "group_site": "Site address",
+      "group_site_desc": "Used by search engines and for links in emails.",
+      "appeals_email_hint": "A message is sent to this address when a new appeal arrives.",
+      "appeals_retention_days_hint": "At least 30 days. Closed appeals older than this are removed.",
+      "site_url_hint": "For example: https://iep.uz — without a trailing «/».",
+      "helmet": "Settings | Admin"
     },
     "units": {
       "types": {
@@ -894,5 +909,58 @@
     "make_head": "Make head",
     "remove_head": "Remove as head",
     "detach": "Remove from laboratory"
+  },
+  "adminAbout": {
+    "title": "About the institute",
+    "subtitle": "Texts, figures and milestones of the «About» page.",
+    "view_page": "View page",
+    "saved": "«About» page saved",
+    "unsaved": "You have unsaved changes",
+    "copy_empty_from_uz": "Copy Uzbek text into empty fields",
+    "sec_hero": "Header",
+    "sec_hero_desc": "Tagline and short introduction at the top of the page.",
+    "tagline": "Tagline",
+    "intro": "Short introduction",
+    "sec_stats": "Figures",
+    "sec_stats_desc": "Laboratory and publication counts are calculated automatically.",
+    "founded_year": "Year founded",
+    "scientists": "Researchers",
+    "staff": "Total staff",
+    "stats_hint": "If left empty, the official staffing figure is shown.",
+    "sec_mission": "Mission and vision",
+    "sec_mission_desc": "If vision is empty, only the mission card is shown.",
+    "mission": "Mission",
+    "vision": "Vision",
+    "sec_history": "History",
+    "history": "History text",
+    "history_hint": "Separate paragraphs with a blank line.",
+    "sec_milestones": "Milestones",
+    "sec_milestones_desc": "Shown on a timeline — enter them in chronological order.",
+    "milestones_empty": "No milestones yet.",
+    "year": "Year",
+    "err_year": "Enter a year",
+    "ms_title": "Event",
+    "ms_text": "Description",
+    "add_milestone": "Add milestone",
+    "sec_values": "Values",
+    "sec_values_desc": "Up to 8. If empty, the section is hidden.",
+    "icon": "Icon",
+    "val_title": "Name",
+    "val_text": "Description",
+    "add_value": "Add value",
+    "move_up": "Move up",
+    "move_down": "Move down",
+    "remove": "Remove",
+    "icons": {
+      "atom": "Atom",
+      "zap": "Energy",
+      "leaf": "Ecology",
+      "shield": "Reliability",
+      "users": "Team",
+      "award": "Award",
+      "globe": "International",
+      "lightbulb": "Idea"
+    },
+    "helmet": "About the institute | Admin"
   }
 }

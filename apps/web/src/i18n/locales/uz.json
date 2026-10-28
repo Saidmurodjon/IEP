@@ -75,7 +75,18 @@
     "mission_text": "Institutimiz O'zbekiston Respublikasi energetika muammolarini hal etishga qaratilgan fundamental va amaliy ilmiy tadqiqotlarni amalga oshiradi.",
     "history_text": "Institut O'zbekiston Fanlar akademiyasi tizimida tashkil etilgan bo'lib, energetika sohasida ko'plab muhim ilmiy yutuqlarga erishgan.",
     "research_areas": "Ilmiy laboratoriyalar va tadqiqot yo'nalishlari",
-    "history_extra": "Institut Fanlar akademiyasi Prezidiumining 2025-yil 27-fevraldagi qarori bilan tasdiqlangan tuzilma asosida faoliyat yuritadi."
+    "history_extra": "Institut Fanlar akademiyasi Prezidiumining 2025-yil 27-fevraldagi qarori bilan tasdiqlangan tuzilma asosida faoliyat yuritadi.",
+    "since": "{{year}}-yildan beri",
+    "stats_label": "Institut raqamlarda",
+    "eyebrow_purpose": "Maqsadimiz",
+    "mission_vision": "Missiya va istiqbol",
+    "vision": "Istiqbol",
+    "eyebrow_values": "Tamoyillar",
+    "values": "Qadriyatlarimiz",
+    "eyebrow_history": "Yo'limiz",
+    "eyebrow_research": "Tadqiqotlar",
+    "all_labs": "Barcha laboratoriyalar",
+    "explore": "Institut bilan yaqinroq tanishing"
   },
   "structure": {
     "title": "Institut tuzilmasi",
@@ -312,7 +323,8 @@
       }
     },
     "back_to_list": "Ro'yxatga qaytish",
-    "modal_subtitle": "Yulduzcha (*) bilan belgilangan maydonlar majburiy."
+    "modal_subtitle": "Yulduzcha (*) bilan belgilangan maydonlar majburiy.",
+    "about": "Institut haqida"
   },
   "common": {
     "test_mode_banner": "Sayt test rejimida ishlamoqda",
@@ -742,15 +754,18 @@
     "settings": {
       "saved": "Saqlandi!",
       "saving": "Saqlanmoqda...",
-      "group_general": "Umumiy",
-      "group_contact": "Aloqa ma'lumotlari",
-      "site_name_uz": "Sayt nomi (UZ)",
-      "site_name_en": "Sayt nomi (EN)",
-      "site_name_ru": "Sayt nomi (RU)",
-      "site_url": "Sayt manzili (canonical/hreflang uchun)",
-      "email": "Murojaat bildirishnomalari uchun zaxira pochta",
-      "appeals_email": "Murojaat bildirishnomalari uchun pochta",
-      "appeals_retention_days": "Yopilgan murojaatlarni saqlash muddati (kun)"
+      "site_url": "Asosiy manzil",
+      "appeals_email": "Bildirishnoma pochtasi",
+      "appeals_retention_days": "Yopilgan murojaatlarni saqlash muddati (kun)",
+      "subtitle": "Saytning texnik sozlamalari. Sahifa matnlari tegishli bo'limlarda tahrirlanadi.",
+      "group_appeals": "Murojaatlar",
+      "group_appeals_desc": "Fuqarolar murojaati kelganda kimga xabar boriladi va qancha saqlanadi.",
+      "group_site": "Sayt manzili",
+      "group_site_desc": "Qidiruv tizimlari va xatlardagi havolalar uchun.",
+      "appeals_email_hint": "Yangi murojaat kelganda shu manzilga xat yuboriladi.",
+      "appeals_retention_days_hint": "Kamida 30 kun. Muddat o'tgan yopilgan murojaatlar tozalanadi.",
+      "site_url_hint": "Masalan: https://iep.uz — oxirida «/» belgisisiz.",
+      "helmet": "Sozlamalar | Admin"
     },
     "units": {
       "types": {
@@ -894,5 +909,58 @@
     "make_head": "Rahbar qilish",
     "remove_head": "Rahbarlikdan olish",
     "detach": "Laboratoriyadan chiqarish"
+  },
+  "adminAbout": {
+    "title": "Institut haqida",
+    "subtitle": "«Institut haqida» sahifasidagi matnlar, raqamlar va tarixiy sanalar.",
+    "view_page": "Sahifani ko'rish",
+    "saved": "«Institut haqida» sahifasi saqlandi",
+    "unsaved": "Saqlanmagan o'zgarishlar bor",
+    "copy_empty_from_uz": "Bo'sh maydonlarga o'zbekchadan nusxa",
+    "sec_hero": "Sarlavha qismi",
+    "sec_hero_desc": "Sahifa tepasidagi shior va qisqa tanishtiruv.",
+    "tagline": "Shior",
+    "intro": "Qisqa tanishtiruv",
+    "sec_stats": "Raqamlar",
+    "sec_stats_desc": "Laboratoriyalar va nashrlar soni bazadan avtomatik hisoblanadi.",
+    "founded_year": "Tashkil topgan yil",
+    "scientists": "Ilmiy xodimlar",
+    "staff": "Jami xodimlar",
+    "stats_hint": "Bo'sh qoldirilsa, rasmiy shtat jadvalidagi raqam ko'rsatiladi.",
+    "sec_mission": "Missiya va istiqbol",
+    "sec_mission_desc": "Istiqbol bo'sh bo'lsa, faqat missiya kartochkasi ko'rsatiladi.",
+    "mission": "Missiya",
+    "vision": "Istiqbol",
+    "sec_history": "Tarix",
+    "history": "Tarix matni",
+    "history_hint": "Xatboshilarni bo'sh qator bilan ajrating.",
+    "sec_milestones": "Tarixiy sanalar",
+    "sec_milestones_desc": "Vaqt chizig'ida ko'rsatiladi — xronologik tartibda kiriting.",
+    "milestones_empty": "Hali sana qo'shilmagan.",
+    "year": "Yil",
+    "err_year": "Yilni kiriting",
+    "ms_title": "Voqea",
+    "ms_text": "Izoh",
+    "add_milestone": "Sana qo'shish",
+    "sec_values": "Qadriyatlar",
+    "sec_values_desc": "Ko'pi bilan 8 ta. Bo'sh bo'lsa, bo'lim ko'rsatilmaydi.",
+    "icon": "Ikonka",
+    "val_title": "Nomi",
+    "val_text": "Izoh",
+    "add_value": "Qadriyat qo'shish",
+    "move_up": "Yuqoriga",
+    "move_down": "Pastga",
+    "remove": "O'chirish",
+    "icons": {
+      "atom": "Atom",
+      "zap": "Energiya",
+      "leaf": "Ekologiya",
+      "shield": "Ishonchlilik",
+      "users": "Jamoa",
+      "award": "Mukofot",
+      "globe": "Xalqaro",
+      "lightbulb": "G'oya"
+    },
+    "helmet": "Institut haqida | Admin"
   }
 }

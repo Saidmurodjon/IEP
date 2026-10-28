@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { reportClientError } from '@/lib/client-logger';
+import type { AboutContent } from '@energetika/shared';
 
 // Chaqiruvlar allaqachon `/api/...` bilan boshlanadi, shuning uchun bu yerda
 // faqat origin turadi. Bo'sh qiymat — same-origin (vite proxy) rejimi.
@@ -262,7 +263,15 @@ export const logsApi = {
 
 export const settingsApi = {
   all: () => api.get('/api/settings'),
+  /** Maxfiy kalitlar bilan — faqat super admin. */
+  private: () => api.get('/api/settings/private'),
   bulkUpdate: (data: Record<string, string>) => api.post('/api/settings/bulk', data),
+};
+
+// --- About ---
+export const aboutApi = {
+  get: () => api.get('/api/about'),
+  update: (data: AboutContent) => api.put('/api/about', data),
 };
 
 // --- Contact ---

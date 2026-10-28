@@ -7,7 +7,8 @@ import PartnersStrip from '@/components/PartnersStrip';
 import {
   ArrowRight, Beaker, BookOpen, Calendar, ChevronRight, GraduationCap, Users, Zap,
 } from 'lucide-react';
-import { newsApi, pubsApi } from '@/lib/api';
+import { aboutApi, newsApi, pubsApi } from '@/lib/api';
+import type { AboutResponse } from '@/lib/about';
 import { formatDate } from '@/lib/date';
 import type { Lang } from '@energetika/shared';
 import A11yImage from '@/components/A11yImage';
@@ -26,6 +27,10 @@ export default function HomePage() {
     queryFn: () => pubsApi.list(1, 4),
   });
 
+  // «Institut haqida» bilan bir xil raqamlar — admin kiritgan, bo'lmasa rasmiy shtat.
+  const { data: aboutData } = useQuery({ queryKey: ['about'], queryFn: () => aboutApi.get() });
+  const about = aboutData?.data as AboutResponse | undefined;
+
   const news = newsData?.data?.data ?? [];
   const pubs = pubsData?.data?.data ?? [];
 
@@ -37,12 +42,12 @@ export default function HomePage() {
     item[`summary${lang.charAt(0).toUpperCase() + lang.slice(1)}`] ??
     item.summaryUz ?? item.summaryEn ?? '';
 
-  // Raqamlar rasmiy tuzilma hujjatidan (2025-02-27). Nashr soni bazadan (jonli).
+  // Lab va nashr soni bazadan (jonli); xodimlar — admin yoki rasmiy shtat (2025-02-27).
   const totalPubs = pubsData?.data?.total ?? 0;
   const stats = [
-    { value: String(INSTITUTE_STAFF.labs), label: t('home.stats_labs'), icon: Beaker },
-    { value: String(INSTITUTE_STAFF.scientists), label: t('home.stats_scientists'), icon: GraduationCap },
-    { value: String(INSTITUTE_STAFF.total), label: t('home.stats_staff'), icon: Users },
+    { value: String(about?.live.labs || INSTITUTE_STAFF.labs), label: t('home.stats_labs'), icon: Beaker },
+    { value: String(about?.data.stats.scientists ?? INSTITUTE_STAFF.scientists), label: t('home.stats_scientists'), icon: GraduationCap },
+    { value: String(about?.data.stats.staff ?? INSTITUTE_STAFF.total), label: t('home.stats_staff'), icon: Users },
     { value: String(totalPubs), label: t('home.stats_publications'), icon: BookOpen },
   ];
 

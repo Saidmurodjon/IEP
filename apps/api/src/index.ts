@@ -18,6 +18,7 @@ import { logsRouter } from './routes/logs';
 import { adminsRouter } from './routes/admins';
 import { searchRouter } from './routes/search';
 import { statsRouter } from './routes/stats';
+import { aboutRouter } from './routes/about';
 import { recordError } from './lib/error-log';
 import { redactStack } from './lib/redact';
 import { ConfigError, getFrontendUrl } from './lib/env';
@@ -118,6 +119,7 @@ app.route('/api/logs', logsRouter);
 app.route('/api/admins', adminsRouter);
 app.route('/api/search', searchRouter);
 app.route('/api/stats', statsRouter);
+app.route('/api/about', aboutRouter);
 
 app.notFound((c) => c.json({ error: 'Not found' }, 404));
 

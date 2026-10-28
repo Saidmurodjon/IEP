@@ -58,7 +58,7 @@ apps/
     src/hooks/          useAccessibility, useFocusTrap, useDebouncedValue, useLocalizedPath, ...
     src/i18n/locales/   uz.json / en.json / ru.json
   api/          Hono API
-    src/routes/         auth, news, publications, structure, settings, contact, employees,
+    src/routes/         about, auth, news, publications, structure, settings, contact, employees,
                         partners, documents, uploads, files, search
     src/lib/            db, jwt, env, errors, storage, file-types, sanitize, media,
                         redact, error-log, mail, mail-templates, rate-limit, search-index
@@ -84,7 +84,9 @@ packages/
    `GET /api/news`, `GET /api/news/:slug`, `GET /api/publications`, `GET /api/publications/:id`,
    `GET /api/structure`, `GET /api/settings`, `GET /api/employees`, `GET /api/employees/:id`,
    `GET /api/partners`, `GET /api/documents`, `GET /api/files/:key`, `POST /api/contact`,
-   `GET /api/contact/status`, `GET /api/search`, `POST /api/logs/client`.
+   `GET /api/contact/status`, `GET /api/search`, `POST /api/logs/client`, `GET /api/about`.
+   **`GET /api/settings` maxfiy kalitlarni qaytarmaydi** (`PRIVATE_KEYS`: pochta, murojaat
+   sozlamalari, `about_page`) — admin ularni `GET /api/settings/private` (super admin) dan oladi.
    **`GET /api/search` nega ochiq:** qidiruv 373-son qarorning 11-bandi bo'yicha har qanday
    tashrifchi uchun majburiy. Cheklov: IP bo'yicha daqiqasiga 30 ta, `q` kamida 2 belgi,
    `zValidator`, faqat nashr etilgan/faol yozuvlar chiqadi.

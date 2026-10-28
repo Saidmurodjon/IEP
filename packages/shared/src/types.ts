@@ -95,3 +95,34 @@ export interface LoginResponse {
     name: string;
   };
 }
+
+/** «Institut haqida» — qadriyat kartochkasi ikonkalari (frontend lucide'ga moslaydi). */
+export const ABOUT_VALUE_ICONS = ['atom', 'zap', 'leaf', 'shield', 'users', 'award', 'globe', 'lightbulb'] as const;
+export type AboutValueIcon = (typeof ABOUT_VALUE_ICONS)[number];
+
+export interface AboutMilestone {
+  year: string;
+  title: Translation;
+  text: Translation;
+}
+
+export interface AboutValue {
+  icon: AboutValueIcon;
+  title: Translation;
+  text: Translation;
+}
+
+/** `GET/PUT /api/about` — barcha matn oddiy matn (HTML emas). */
+export interface AboutContent {
+  tagline: Translation;
+  intro: Translation;
+  foundedYear: number | null;
+  mission: Translation;
+  vision: Translation;
+  /** Xatboshilar bo'sh qator bilan ajratiladi. */
+  history: Translation;
+  /** `null` — rasmiy shtat raqami (kodda) ishlatiladi. */
+  stats: { scientists: number | null; staff: number | null };
+  milestones: AboutMilestone[];
+  values: AboutValue[];
+}

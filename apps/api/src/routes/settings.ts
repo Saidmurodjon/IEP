@@ -6,6 +6,13 @@ import type { AppContext } from '../index';
 
 export const settingsRouter = new Hono<AppContext>();
 
+/**
+ * Ochiq `GET /api/settings` da QAYTARILMAYDIGAN kalitlar: xodimlar pochtasi
+ * va ichki sozlamalar tashrifchiga kerak emas. `about_page` — o'z
+ * endpointi (`/api/about`) bor, har sahifada yuklanmasin.
+ */
+const PRIVATE_KEYS = new Set(['email', 'appeals_email', 'appeals_retention_days', 'about_page']);
+
 settingsRouter.get('/', async (c) => {
   const db = c.get('db');
   // `lastUpdatedAt` — 373-son qarorning 6-bandi (axborot sanasi) uchun:
@@ -25,20 +32,30 @@ settingsRouter.get('/', async (c) => {
   const lastUpdatedAt = times.length ? new Date(Math.max(...times)).toISOString() : null;
 
   return c.json({
-    data: Object.fromEntries(settings.map((s) => [s.key, s.value])),
+    data: Object.fromEntries(settings.filter((s) => !PRIVATE_KEYS.has(s.key)).map((s) => [s.key, s.value])),
     lastUpdatedAt,
   });
 });
 
-settingsRouter.put('/:key', requireAuth, requireRole('SUPER_ADMIN'), zValidator('json', z.object({ value: z.string() })), async (c) => {
+/** Admin sozlamalar sahifasi uchun — maxfiy kalitlar ham (`about_page` dan tashqari). */
+settingsRouter.get('/private', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
-  const key = c.req.param('key');
+  const settings = await db.siteSetting.findMany({ where: { key: { not: 'about_page' } } });
+  return c.json({ data: Object.fromEntries(settings.map((s) => [s.key, s.value])) });
+});
+
+// `about_page` faqat `/api/about` orqali yoziladi — u yerda to'liq sxema tekshiruvi bor.
+const writableKey = z.string().refine((key) => key !== 'about_page');
+
+settingsRouter.put('/:key', requireAuth, requireRole('SUPER_ADMIN'), zValidator('param', z.object({ key: writableKey })), zValidator('json', z.object({ value: z.string() })), async (c) => {
+  const db = c.get('db');
+  const { key } = c.req.valid('param');
   const { value } = c.req.valid('json');
   const setting = await db.siteSetting.upsert({ where: { key }, update: { value }, create: { key, value } });
   return c.json({ data: setting });
 });
 
-settingsRouter.post('/bulk', requireAuth, requireRole('SUPER_ADMIN'), zValidator('json', z.record(z.string())), async (c) => {
+settingsRouter.post('/bulk', requireAuth, requireRole('SUPER_ADMIN'), zValidator('json', z.record(writableKey, z.string())), async (c) => {
   const db = c.get('db');
   const data = c.req.valid('json');
   await Promise.all(

@@ -34,6 +34,7 @@ const AdminUnitsPage = lazy(() => import('@/pages/admin/AdminUnitsPage'));
 const AdminLabsPage = lazy(() => import('@/pages/admin/AdminLabsPage'));
 const AdminLabDetailPage = lazy(() => import('@/pages/admin/AdminLabDetailPage'));
 const AdminSettingsPage = lazy(() => import('@/pages/admin/AdminSettingsPage'));
+const AdminAboutPage = lazy(() => import('@/pages/admin/AdminAboutPage'));
 const AdminMessagesPage = lazy(() => import('@/pages/admin/AdminMessagesPage'));
 const AdminEmployeesPage = lazy(() => import('@/pages/admin/AdminEmployeesPage'));
 const AdminPartnersPage = lazy(() => import('@/pages/admin/AdminPartnersPage'));
@@ -138,6 +139,7 @@ export default function App() {
           <Route path="units" element={<Navigate to="/admin/sections" replace />} />
           <Route path="settings" element={<SuperAdminRoute><AdminSettingsPage /></SuperAdminRoute>} />
           <Route path="employees" element={<AdminEmployeesPage />} />
+          <Route path="about" element={<AdminAboutPage />} />
           <Route path="partners" element={<AdminPartnersPage />} />
           <Route path="documents" element={<AdminDocumentsPage />} />
           <Route path="logs" element={<SuperAdminRoute><AdminLogsPage /></SuperAdminRoute>} />
