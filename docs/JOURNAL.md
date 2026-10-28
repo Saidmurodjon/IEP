@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**⚠️ Xavfsizlik auditi (2026-10-28): prod'da IP cheklovlarini soxta `CF-Connecting-IP`/`X-Forwarded-For` bilan chetlab o'tish va `?drafts=true` orqali qoralamalar ochiqligi TASDIQLANDI — tuzatilmagan.** Batafsil: YOZUVLAR, 2026-10-28 audit.
+
 **🆕 Node API jarayon darajasidagi xatolar ham `error_logs` ga yoziladi (ishga tushish/to'xtash, `UNCAUGHT_EXCEPTION`, `UNHANDLED_REJECTION`, `PROCESS_START_FAILED`, `PROCESS_KILLED`); baza o'chiq bo'lsa `ERROR_LOG_DIR` faylida kutadi — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API deploy + cPanel'da `ERROR_LOG_DIR=/home/iepuz/iep-logs` (ixtiyoriy, migratsiya kerak emas).
 
 **🆕 Murojaatni o'chirish (`DELETE /api/contact/:id`, `POST /api/contact/cleanup`) faqat SUPER_ADMIN; oddiy admin uchun o'chirish tugmasi yashirin — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy.
@@ -250,6 +252,23 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — xavfsizlik auditi (kod o'zgarmadi)
+- Foydalanuvchi: production'dan oldin kiberxavfsizlik tekshiruvi. Faqat o'qish + iep.uz ga zararsiz GET so'rovlar.
+- TASDIQLANDI (prod'da): (1) `clientIp()` va `auth.ts/getClientIp` mijoz yuborgan `CF-Connecting-IP`/
+  `X-Forwarded-For` ga ishonadi — iep.uz Cloudflare ortida emas, sarlavhani almashtirib BARCHA IP
+  cheklovlari (login, murojaat, holat, qidiruv, client log) chetlab o'tiladi (status endpointida
+  sinaldi: bir IP → 6-so'rovda 429, IP almashsa → doim 404). (2) `GET /api/news?drafts=true` va
+  `/:slug?drafts=true` auth'siz qoralamalarni beradi (prod'da 1 ta qoralama ko'rindi).
+  (3) `?limit=abc` → 500 (NaN; news/publications), `limit` yuqori chegarasiz.
+- Koddan: `employees?includeInactive=true` auth'siz; parol almashtirilganda eski JWT 7 kun amal
+  qiladi; token `localStorage` da; API `X-Powered-By: Passenger 6.2.0` ochiq; npm audit (prod):
+  1 critical (dompurify — IN_PLACE/hook ishlatilmaydi, server sanitizatsiyasi bor), 11 high (hono,
+  axios, zod, prisma, sharp, tiptap). `.env` dagi admin paroli taxmin qilinadigan naqshda.
+- Yaxshi: barcha yozuv endpointlari `requireAuth`, rol bazadan, JWT alg tekshiruvi, PBKDF2, xom SQL
+  parametrlangan, fayl yo'li `root` ichida, `.env`/`.git` 403, sanitizatsiya ikki qatlam, CORS bitta origin.
+- Tekshirilmadi: login brute-force amalda sinalmadi (prod'ni bloklamaslik uchun); Passenger haqiqiy
+  mijoz IP sini qaysi sarlavhada berishi serverda aniqlanishi kerak (tuzatish shunga bog'liq).
 
 ### 2026-10-28 — feat: Node API jarayon darajasidagi xatolarni bazaga yozish
 - Foydalanuvchi: «sayt har qanday holatda nima sababli to'xtaganini bila olaylik».
