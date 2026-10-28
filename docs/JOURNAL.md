@@ -234,6 +234,11 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — bosh sahifa: raqamlar bloki desktopda ham ixcham
+- Foydalanuvchi so'rovi: desktopda kartochkalar baland edi. Endi barcha kengliklarda ikonka chapda,
+  raqam + yorliq yonida; bo'lim oralig'i `py-6 sm:py-8`.
+- Tekshirildi: `tsc` toza; Playwright 1280 va 360 px skrinshot — kartochkalar bir qatorda, tekis.
+
 ### 2026-10-28 — footer mobil/planshetga moslashtirildi
 - `Footer.tsx`: «Sahifalar» ro'yxati mobil va planshetda 2 ustun (lg da 1 ustun); planshetda logo
   bloki to'liq qatorda, «Sahifalar» va «Aloqa» yonma-yon; pastki qator mobilda chapga tekislandi
