@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import { format, formatDistanceToNowStrict } from 'date-fns';
 import { uz, enUS, ru } from 'date-fns/locale';
 import type { Locale } from 'date-fns';
 import type { Lang } from '@energetika/shared';
@@ -34,4 +34,11 @@ export function formatDate(value: string | number | Date, lang?: Lang): string {
 /** Sana va vaqt: `26.08.2026 14:30`. */
 export function formatDateTime(value: string | number | Date, lang?: Lang): string {
   return safeFormat(value, DATE_TIME_FORMAT, lang);
+}
+
+/** Nisbiy vaqt: `3 soat oldin`. Noto'g'ri sana bo'lsa — bo'sh satr. */
+export function formatRelative(value: string | number | Date, lang?: Lang): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return formatDistanceToNowStrict(date, { addSuffix: true, locale: LOCALES[lang ?? activeLang()] });
 }

@@ -283,8 +283,8 @@ export const aboutApi = {
 // --- Contact ---
 export const contactApi = {
   send: (data: unknown) => api.post('/api/contact', data),
-  list: (page = 1, status?: string) =>
-    api.get('/api/contact', { params: { page, status: status || undefined } }),
+  list: (page = 1, status?: string, q?: string) =>
+    api.get('/api/contact', { params: { page, status: status || undefined, q: q || undefined } }),
   update: (id: string, data: { status?: string; answerNote?: string }) =>
     api.patch(`/api/contact/${id}`, data),
   delete: (id: string) => api.delete(`/api/contact/${id}`),

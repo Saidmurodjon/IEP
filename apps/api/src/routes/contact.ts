@@ -248,16 +248,32 @@ contactRouter.get('/', requireAuth, async (c) => {
   const page = Math.max(1, parseInt(c.req.query('page') ?? '1', 10) || 1);
   const limit = Math.min(100, parseInt(c.req.query('limit') ?? '20', 10) || 20);
   const status = c.req.query('status');
-  const where = STATUSES.includes(status as Status) ? { status } : {};
+  // Qidiruv: raqam, ism, pochta yoki mavzu bo'yicha. Uzunlik cheklangan.
+  const q = (c.req.query('q') ?? '').trim().slice(0, 100);
+  const search = q.length >= 2
+    ? {
+        OR: (['ticketNumber', 'name', 'email', 'subject'] as const).map((field) => ({
+          [field]: { contains: q, mode: 'insensitive' as const },
+        })),
+      }
+    : {};
+  const where = { ...search, ...(STATUSES.includes(status as Status) ? { status } : {}) };
 
-  const [items, total, unanswered] = await Promise.all([
+  const [items, total, unanswered, grouped] = await Promise.all([
     db.contactMessage.findMany({
       where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit,
     }),
     db.contactMessage.count({ where }),
     db.contactMessage.count({ where: { status: { in: ['new', 'in_review'] } } }),
+    // Tablardagi sonlar — qidiruvni hisobga oladi, holat filtrini emas.
+    db.contactMessage.groupBy({ by: ['status'], where: search, _count: { _all: true } }),
   ]);
-  return c.json({ data: items, total, page, limit, totalPages: Math.ceil(total / limit), unanswered });
+  const counts = Object.fromEntries(STATUSES.map((s) => [
+    s, grouped.find((g) => g.status === s)?._count._all ?? 0,
+  ]));
+  return c.json({
+    data: items, total, page, limit, totalPages: Math.ceil(total / limit), unanswered, counts,
+  });
 });
 
 contactRouter.patch(

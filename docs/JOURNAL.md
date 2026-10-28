@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Admin «Xabarlar» (`/admin/messages`) — ikki panelli inbox (holat tablari sonlar bilan, qidiruv, bosqichlar, tasdiq oynalari) LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy (migratsiya kerak emas).
+
 **🆕 `/news` sahifasida 6 tadan yangilik (pagination) — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
 
 **🆕 Yangilik kartasi: portret muqova (talabgor fotosi) xira rangli fon ustida — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
@@ -244,6 +246,25 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — feat: admin murojaatlar sahifasi — ikki panelli inbox
+- Foydalanuvchi: `/admin/messages` noqulay, «wow» bo'lsin.
+- Web `AdminMessagesPage`: chapda ro'yxat (avatar, nisbiy vaqt, matndan parcha, «yangi» nuqtasi),
+  o'ngda tafsilot (bosqichlar: qabul → ko'rib chiqish → javob → yopildi, sanalar bilan; nusxalash
+  tugmalari; ichki izoh; pastda qotirilgan amallar paneli — asosiy tugma keyingi qadam). Holat
+  tablari sonlar bilan, qidiruv (debounce), «Yana yuklash» (useInfiniteQuery), `?id=` havolasi,
+  J/K va ↑/↓. `confirm()` o'rniga `AdminFormModal`. Telefonda ro'yxat ↔ tafsilot + «Orqaga».
+- API `GET /api/contact`: `q` (raqam/ism/pochta/mavzu, ≥2 belgi, 100 gacha kesiladi) va
+  `counts` (holatlar bo'yicha, qidiruvni hisobga oladi). `lib/date.ts`: `formatRelative`.
+- i18n: `appeals.*` ga 22 ta kalit (uz/en/ru).
+- Tekshirildi: tsc (api+web), 68 vitest, wrangler dry-run, vite build. curl: counts/q/uzun q/401.
+  Brauzerda: ro'yxat, tafsilot, tablar soni, qidiruv, delete oynasi + Escape, J tugmasi, bitta h1.
+- Tekshirilmadi: telefon kengligi (oyna o'lchami o'zgarmadi), qorong'i rejim, status o'zgartirish
+  tugmasi brauzerda bosilmadi.
+- Topildi (tuzatilmadi): foydalanuvchi formadan yuborgan murojaat bazaga TUSHMADI — javobda
+  ticketNumber yo'q = `silentSuccess` (honeypot `website` brauzer autofill bilan to'lgan yoki <3 s).
+  API to'g'ridan-to'g'ri curl bilan ishlaydi (M-2026-0001 yaratildi). Foydalanuvchi 7 sinov
+  murojaatini o'zi o'chirgan. Jurnal 250 qatordan oshgan — arxivlash kerak.
 
 ### 2026-10-28 — feat(web): yangiliklar sahifasida 6 tadan
 - Foydalanuvchi: yangiliklar 6 tadan, pagination bilan.
