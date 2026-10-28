@@ -12,6 +12,7 @@ import { contactApi } from '@/lib/api';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import AdminFormModal from '@/components/admin/AdminFormModal';
 import { useToast } from '@/components/Toast';
+import { useAuthStore, isSuperAdmin } from '@/store/auth';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 import { formatDateTime, formatRelative } from '@/lib/date';
 
@@ -130,6 +131,7 @@ export default function AdminMessagesPage() {
   const q = useDebouncedValue(search.trim(), 300);
   const query = q.length >= 2 ? q : '';
   const selectedId = params.get('id');
+  const canDelete = isSuperAdmin(useAuthStore((s) => s.admin));
 
   const list = useInfiniteQuery({
     queryKey: ['admin-messages', filter, query],
@@ -382,7 +384,7 @@ export default function AdminMessagesPage() {
                 onBack={() => select(null)}
                 onStatus={(status) => changeStatus(selected, status)}
                 onSaveNote={(answerNote) => updateMut.mutate({ id: selected.id, values: { answerNote } })}
-                onDelete={() => setPending({ kind: 'delete', appeal: selected })}
+                onDelete={canDelete ? () => setPending({ kind: 'delete', appeal: selected }) : undefined}
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center p-10 text-center">
@@ -466,7 +468,8 @@ interface DetailProps {
   onBack: () => void;
   onStatus: (status: AppealStatus) => void;
   onSaveNote: (note: string) => void;
-  onDelete: () => void;
+  /** Faqat super admin uchun beriladi; yo'q bo'lsa o'chirish tugmasi ko'rsatilmaydi. */
+  onDelete?: () => void;
 }
 
 function AppealDetail({ appeal, busy, onBack, onStatus, onSaveNote, onDelete }: DetailProps) {
@@ -663,14 +666,16 @@ function AppealDetail({ appeal, busy, onBack, onStatus, onSaveNote, onDelete }: 
               </select>
             </>
           )}
-          <button
-            onClick={onDelete}
-            aria-label={t('admin.delete')}
-            title={t('admin.delete')}
-            className="ml-auto flex h-10 w-10 items-center justify-center rounded-lg text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
-          >
-            <Trash2 className="h-4 w-4" aria-hidden="true" />
-          </button>
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              aria-label={t('admin.delete')}
+              title={t('admin.delete')}
+              className="ml-auto flex h-10 w-10 items-center justify-center rounded-lg text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
+            >
+              <Trash2 className="h-4 w-4" aria-hidden="true" />
+            </button>
+          )}
         </div>
       </div>
     </article>

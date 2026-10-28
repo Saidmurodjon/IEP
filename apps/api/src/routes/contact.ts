@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import type { PrismaClient } from '@prisma/client';
-import { requireAuth } from '../middleware/auth';
+import { requireAuth, requireRole } from '../middleware/auth';
 import { fail } from '../lib/errors';
 import { getFrontendUrl } from '../lib/env';
 import { APPEALS_EMAIL, APPEALS_RETENTION_DAYS } from '../lib/site-config';
@@ -329,7 +329,8 @@ contactRouter.patch(
   }
 );
 
-contactRouter.delete('/:id', requireAuth, async (c) => {
+// Murojaatni o'chirish faqat super admin uchun — oddiy admin faqat holatini o'zgartiradi.
+contactRouter.delete('/:id', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
   await db.contactMessage.delete({ where: { id: c.req.param('id') } });
   return c.json({ message: 'Deleted successfully' });
@@ -344,7 +345,7 @@ contactRouter.delete('/:id', requireAuth, async (c) => {
  * Muddatni institut YURISKONSULTIDAN aniqlashtirish kerak, keyin bu
  * endpoint cron bilan ishga tushiriladi.
  */
-contactRouter.post('/cleanup', requireAuth, async (c) => {
+contactRouter.post('/cleanup', requireAuth, requireRole('SUPER_ADMIN'), async (c) => {
   const db = c.get('db');
   const days = APPEALS_RETENTION_DAYS;
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);

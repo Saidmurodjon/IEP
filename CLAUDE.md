@@ -98,7 +98,8 @@ packages/
    cheklovlar qattiq: IP bo'yicha daqiqasiga 10 ta, matn uzunligi cheklangan, `zValidator`.
 4a. **Ikki rol: `SUPER_ADMIN` va `ADMIN`.** Rol va `isActive` har so'rovda `requireAuth` ichida
    bazadan o'qiladi (tokenga ishonilmaydi). Faqat super admin uchun: `/api/admins/*`, sayt
-   sozlamalarini yozish, `/api/logs` admin endpointlari, `POST /api/uploads/cleanup` —
+   sozlamalarini yozish, `/api/logs` admin endpointlari, `POST /api/uploads/cleanup`, murojaatni o'chirish
+   (`DELETE /api/contact/:id`, `POST /api/contact/cleanup`) —
    `requireAuth, requireRole('SUPER_ADMIN')`. Yangi boshqaruv endpointi qo'shsangiz, rolini
    ham hal qiling. Frontend'da: `SuperAdminRoute` (`App.tsx`) va menyuda `superOnly`.
 5. **Kiruvchi ma'lumot doim zod bilan tekshirilsin** (`zValidator`). Validatsiyasiz `c.req.json()` ishlatmang.

@@ -14,6 +14,8 @@ Batafsil: `CLAUDE.md` 9-bo'lim.
 
 **Oxirgi yangilanish:** 2026-10-28
 
+**🆕 Murojaatni o'chirish (`DELETE /api/contact/:id`, `POST /api/contact/cleanup`) faqat SUPER_ADMIN; oddiy admin uchun o'chirish tugmasi yashirin — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy.
+
 **🆕 Admin «Xabarlar» (`/admin/messages`) — ikki panelli inbox (holat tablari sonlar bilan, qidiruv, bosqichlar, tasdiq oynalari) LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: API + web deploy (migratsiya kerak emas).
 
 **🆕 `/news` sahifasida 6 tadan yangilik (pagination) — LOKALDA tayyor, production'ga CHIQARILMAGAN.** iep.uz uchun: faqat web deploy.
@@ -246,6 +248,18 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 ---
 
 ## YOZUVLAR
+
+### 2026-10-28 — fix: murojaatni faqat super admin o'chira oladi
+- Foydalanuvchi: «admin xabarni o'chirolmasin, super admin o'chira oladi».
+- API `contact.ts`: `DELETE /:id` va `POST /cleanup` ga `requireRole('SUPER_ADMIN')`.
+- Web `AdminMessagesPage`: `onDelete` ixtiyoriy, faqat `isSuperAdmin` bo'lsa beriladi — aks holda
+  savatcha tugmasi chiqmaydi. CLAUDE.md 4a ro'yxati yangilandi.
+- Tekshirildi: tsc (api+web), 68 vitest, wrangler dry-run. Lokal API'ga haqiqiy HTTP (8787):
+  ADMIN tokeni bilan DELETE haqiqiy murojaatga → 403, yozuv bazada qoldi; cleanup → 403;
+  ro'yxat → 200. SUPER_ADMIN bilan mavjud bo'lmagan id → rol tekshiruvidan o'tdi (500, quyida).
+- Tekshirilmadi: brauzerda ADMIN sifatida kirib tugma yo'qligini ko'rish.
+- Topildi (tuzatilmadi): mavjud bo'lmagan id ni o'chirish 404 o'rniga 500 qaytaradi (Prisma P2025).
+- Eslatma: jurnal 650+ qator — arxivlash (9-bo'lim) kutilmoqda.
 
 ### 2026-10-28 — fix: aloqa formasi honeypot'i autofill'dan himoyalandi
 - Foydalanuvchi `/uz/contact` dan yozgan xabar bazaga tushmadi (javobda raqam yo'q = jim rad).
