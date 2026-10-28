@@ -668,7 +668,6 @@
       "th_order": "Order",
       "order_number": "Display order",
       "show_on_site": "Show on the website",
-      "attention": "Note.",
       "hide": "Hide",
       "show": "Show"
     },
@@ -716,10 +715,6 @@
       "name_label": "Organization name ({{lang}}) *",
       "logo": "Logo *",
       "website": "Website",
-      "warn_1": "A partner organization logo is its trademark. Only logos of organizations that genuinely cooperate with the institute may be placed on the site. For now, logo files are stored in the",
-      "warn_2": "folder, and the path is written as",
-      "warn_file": "name",
-      "warn_3": ".",
       "th_logo": "Logo",
       "th_website": "Website",
       "empty": "No partners have been added yet. When the list is empty, the section is not shown on the website."

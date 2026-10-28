@@ -668,7 +668,6 @@
       "th_order": "Tartib",
       "order_number": "Tartib raqami",
       "show_on_site": "Saytda ko'rsatilsin",
-      "attention": "Diqqat.",
       "hide": "Yashirish",
       "show": "Ko'rsatish"
     },
@@ -716,10 +715,6 @@
       "name_label": "Tashkilot nomi ({{lang}}) *",
       "logo": "Logotip *",
       "website": "Veb-sayti",
-      "warn_1": "Hamkor tashkilot logotipi uning savdo belgisi hisoblanadi. Saytga faqat institut bilan haqiqatan hamkorlik qiladigan tashkilotlar logotipi qo'yiladi. Logotip fayllari hozircha",
-      "warn_2": "papkasida saqlanadi, manzil",
-      "warn_file": "nom",
-      "warn_3": "ko'rinishida yoziladi.",
       "th_logo": "Logotip",
       "th_website": "Veb-sayt",
       "empty": "Hamkorlar hali kiritilmagan. Ro'yxat bo'sh bo'lganda saytda bo'lim ko'rinmaydi."

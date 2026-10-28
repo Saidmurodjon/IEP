@@ -172,20 +172,6 @@ export default function AdminPartnersPage() {
               </button>
             </div>
 
-            {/*
-              Hamkor logotipi — tashkilotning savdo belgisi. Faqat institut bilan
-              haqiqatan hamkorlik qiladigan tashkilotlar qo'yiladi (06-topshiriq).
-            */}
-            <div className="rounded-lg border border-amber-200 bg-amber-50/60 dark:border-amber-800 dark:bg-amber-900/30 p-4 mb-6">
-              <p className="text-xs text-amber-900 dark:text-amber-300 leading-relaxed">
-                <span className="font-semibold">{t('adminC.common.attention')}</span> {t('adminC.partners.warn_1')}{' '}
-                <code className="bg-white dark:bg-gray-800 px-1 py-0.5 rounded">public/images/partners/</code> {t('adminC.partners.warn_2')}{' '}
-                <code className="bg-white dark:bg-gray-800 px-1 py-0.5 rounded">/images/partners/{t('adminC.partners.warn_file')}.png</code>{' '}
-                {t('adminC.partners.warn_3')}
-              </p>
-            </div>
-
-
             {isLoading ? (
               <LoadingSpinner />
             ) : (

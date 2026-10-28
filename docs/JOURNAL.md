@@ -241,6 +241,16 @@ yuriskonsult javobi. **Logotipning vektor fayli (SVG/AI/EPS) yoki 1000px shaffof
 
 ## YOZUVLAR
 
+### 2026-10-28 — admin «Hamkorlar»: ogohlantirish bloki olib tashlandi
+
+- Foydalanuvchi so'rovi: «Diqqat. Hamkor tashkilot logotipi … savdo belgisi …» sariq bloki
+  `AdminPartnersPage.tsx` dan o'chirildi.
+- Endi ishlatilmaydigan i18n kalitlari uchala tilda o'chirildi: `adminC.partners.warn_1/2/3/file`,
+  `adminC.common.attention` (boshqa joyda ishlatilmasligi grep bilan tasdiqlandi).
+- `public/images/partners/README.md` tegilmadi (u admin panelda ko'rinmaydi).
+- Tekshirildi: uchala JSON parse bo'ladi, `apps/web` da `tsc --noEmit` toza.
+- Tekshirilmadi: sahifa brauzerda ochib ko'rilmadi (faqat blok o'chirildi).
+
 ### 2026-10-28 — navbar: dropdown o'z tugmasi tagida
 - Muammo: guruh bosilganda butun kenglikdagi mega-panel ochilardi, guruhlarda esa 1–6 ta havola — ko'z tugmadan uzoqqa ketardi.
 - `DesktopNav.tsx`: har bir `NavPanel` o'z `NavGroupButton` i bilan bitta `relative` o'ramga ko'chirildi.
